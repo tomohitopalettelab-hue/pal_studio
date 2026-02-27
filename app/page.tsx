@@ -8,7 +8,7 @@ export default function PaletteDesign() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'ai', content: 'こんにちは！Palette AIです。素敵なホームページを作るために、10ほど質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？' }
+    { role: 'ai', content: 'こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？' }
   ]);
   const [generatedCode, setGeneratedCode] = useState("");
 

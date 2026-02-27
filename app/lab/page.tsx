@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout, Check, RotateCcw, Monitor, Smartphone, Search, Eye, EyeOff, Plus, Sparkles, Loader2 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
 
 type Customer = {
   id: string;
@@ -59,21 +58,21 @@ export default function PaletteLab() {
     if (!aiInstruction || !selectedCustomer) return;
     setIsApplying(true);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY || "";
-      const ai = new GoogleGenAI({ apiKey });
-      const prompt = `あなたは優秀なWebデザイナーです。提供されたHTMLコードを、ユーザーの指示に従って正確に修正してください。
-      【厳守事項】
-      1. 返答は修正後のHTMLコードのみを出力。説明文や \`\`\`html などの装飾は不要。
-      2. HTMLの基本構造（IDやdata-id属性）は絶対に維持。
-      現在のHTML: ${selectedCustomer.htmlCode}
-      指示: ${aiInstruction}`;
-
-      const result = await ai.models.generateContent({
-        model: "gemini-3-flash-preview", 
-        contents: [{ role: "user", parts: [{ text: prompt }] }]
+      // サーバー側のAPIルートを使用（APIキーは.env.localから読み込まれる）
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: aiInstruction,
+          history: [
+            { role: 'ai', content: `現在のHTMLはこれです: ${selectedCustomer.htmlCode}` }
+          ]
+        })
       });
 
-      const cleanedText = (result?.text || "").replace(/```html/g, "").replace(/```/g, "").trim();
+      const data = await response.json();
+      const cleanedText = (data.text || "").replace(/```html/g, "").replace(/```/g, "").trim();
+
       if (cleanedText) {
         setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, htmlCode: cleanedText } : c));
       }
@@ -91,35 +90,22 @@ export default function PaletteLab() {
     if (!selectedCustomer) return;
     setIsApplying(true);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY || "";
-      const ai = new GoogleGenAI({ apiKey });
       const answerSummary = selectedCustomer.answers.map(a => `${a.q}: ${a.a}`).join("\n");
-      
-      // テンプレートとしてCafe Paletteのコードを使用（もし無ければ現在のコードを使用）
       const baseTemplate = customers.find(c => c.name.includes('Cafe'))?.htmlCode || selectedCustomer.htmlCode;
 
-      const prompt = `
-        あなたはプロのWebデザイナーです。以下の【ヒアリング内容】をもとに、【ベーステンプレート】を書き換えて、この顧客専用のホームページ初稿を作成してください。
-
-        【ヒアリング内容】
-        ${answerSummary}
-
-        【ベーステンプレート】
-        ${baseTemplate}
-
-        【制作ガイドライン】
-        1. 屋号、キャッチコピー、文章をすべて業種と雰囲気に合わせてリライトしてください。
-        2. 色彩設計（CSS変数やTailwindクラス）を業種に合わせて変更してください。
-        3. 画像URL（Unsplash）も、その業種にふさわしいものに差し替えてください。
-        4. 返答はHTMLコードのみ。解説は一切不要。
-      `;
-
-      const result = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [{ role: "user", parts: [{ text: prompt }] }]
+      // サーバー側のAPIルートを使用
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `以下の内容でホームページを作ってください。\n${answerSummary}\nベースにするHTML: ${baseTemplate}`,
+          history: []
+        })
       });
 
-      const cleanedText = (result?.text || "").replace(/```html/g, "").replace(/```/g, "").trim();
+      const data = await response.json();
+      const cleanedText = (data.text || "").replace(/```html/g, "").replace(/```/g, "").trim();
+
       if (cleanedText) {
         setCustomers(prev => prev.map(c => 
           c.id === selectedCustomerId ? { ...c, htmlCode: cleanedText, status: 'reviewing' } : c

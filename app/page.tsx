@@ -30,6 +30,7 @@ export default function PaletteDesign() {
     }
   }, [inputText]);
 
+  // ★DB保存の判定ロジックを含む関数
   const extractCode = async (text: string, currentMessages: any[]) => {
     const match = text.match(/```html([\s\S]*?)```/);
     if (!match || !match[1]) return;
@@ -37,20 +38,33 @@ export default function PaletteDesign() {
     const code = match[1].trim();
     setGeneratedCode(code);
     
+    // 「ワイヤーフレーム」や「構成案」という言葉が含まれている場合は、DB保存をスキップ
+    if (text.includes("ワイヤーフレーム") || text.includes("構成案") || text.includes("図面")) {
+      console.log("ワイヤーフレームを検知しました。プレビュー表示のみ行い、DB保存はスキップします。");
+      return;
+    }
+
     try {
-      const emailPayload = {
-        siteName: "Palette AI ヒアリング結果",
-        answers: currentMessages.map(m => ({ role: String(m.role), content: String(m.content) })),
+      // 本番デザインの場合のみ、ここから下の保存処理が実行される
+      const customerName = currentMessages.find(m => m.role === 'user')?.content || "新規顧客";
+      
+      const payload = {
+        name: customerName,
+        answers: currentMessages.map(m => ({ q: m.role, a: m.content })),
         htmlCode: code
       };
 
-      await fetch('/api/send', {
+      await fetch('/api/save-customer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailPayload),
+        body: JSON.stringify(payload),
       });
+
+      console.log("本番デザインをDBに保存しました！Labで確認できます。");
+      // alert("デザインが確定しました！Labに送信されました。"); // 必要ならコメントアウトを外してください
+
     } catch (err) {
-      console.error("送信エラー:", err);
+      console.error("保存エラー:", err);
     }
 
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -107,16 +121,13 @@ export default function PaletteDesign() {
   };
 
   return (
-    /* 修正: fixed inset-0 と touch-none で全体のスクロールと揺れを物理的に禁止 */
     <div className="fixed inset-0 w-full h-[100dvh] flex items-center justify-center p-0 md:p-8 overflow-hidden bg-slate-50 touch-none">
-      
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
         <div className="absolute w-[500px] h-[500px] bg-pink-400/10 blur-[120px] rounded-full -top-20 -left-20 animate-pulse" />
         <div className="absolute w-[600px] h-[600px] bg-cyan-400/10 blur-[150px] rounded-full -bottom-20 -right-20 animate-pulse" style={{ animationDelay: '-5s' }} />
       </div>
 
       <div className="w-full max-w-[1300px] h-full md:h-[90vh] bg-white/40 md:backdrop-blur-[30px] md:rounded-[60px] shadow-neu-flat flex flex-col md:flex-row border-none md:border md:border-white/60 overflow-hidden relative">
-        
         <div className="absolute top-4 left-1/2 -translate-x-1/2 flex md:hidden bg-white/90 backdrop-blur-md p-1 rounded-full shadow-lg border border-white/50 z-50">
           <button onClick={() => setActiveTab('chat')} className={`px-6 py-1.5 rounded-full text-[10px] font-black transition-all ${activeTab === 'chat' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400'}`}>CHAT</button>
           <button onClick={() => setActiveTab('preview')} className={`px-6 py-1.5 rounded-full text-[10px] font-black transition-all ${activeTab === 'preview' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400'}`}>VIEW</button>
@@ -133,7 +144,6 @@ export default function PaletteDesign() {
             </div>
           </header>
 
-          {/* 修正: touch-auto を追加し、メッセージ部分だけスクロール可能に */}
           <main className="flex-1 overflow-y-auto pr-1 space-y-6 custom-scrollbar flex flex-col pb-4 touch-auto">
             {messages.map((msg, index) => (
               <div key={index} className={`flex gap-3 items-start ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
@@ -161,7 +171,6 @@ export default function PaletteDesign() {
           <div className="mt-auto pt-4 pb-2 md:pb-0">
             <div className="p-2 rounded-[30px] shadow-neu-flat bg-white/30 border border-white/50">
               <div className="flex items-end shadow-neu-inset rounded-[24px] bg-[#F0F2F5]/50 px-3 py-1">
-                {/* 修正: text-base (16px) にして自動ズームを防止。touch-auto を追加 */}
                 <textarea 
                   ref={textareaRef} 
                   value={inputText} 

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Layout, MessageSquare, Sparkles, User, Box, PenLine, RefreshCw, BellRing } from 'lucide-react';
-import { TEMPLATES } from '../lib/templates';
 
 export default function PaletteDesign() {
   const [activeTab, setActiveTab] = useState<'chat' | 'preview'>('chat');

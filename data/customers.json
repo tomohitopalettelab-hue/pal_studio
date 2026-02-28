@@ -1,5 +1,66 @@
 [
   {
+    "name": "すみどころ",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "すみどころ"
+      },
+      {
+        "q": "ai",
+        "a": "「すみどころ」様ですね。承知いたしました。\n\n次に、**業種や具体的なサービス内容**について教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "飲食店"
+      },
+      {
+        "q": "ai",
+        "a": "飲食店ですね、承知いたしました。\n\n次に、**ターゲット層**について教えていただけますか？（例：30代〜50代の落ち着いた大人、近隣にお住まいのファミリー層、仕事帰りの会社員など）"
+      },
+      {
+        "q": "user",
+        "a": "仕事帰りのサラリーマン"
+      },
+      {
+        "q": "ai",
+        "a": "仕事帰りのサラリーマンをターゲットにされるのですね。一日の疲れを癒やす、立ち寄りたくなるお店作りをお手伝いいたします。\n\n続いて、**サイトの雰囲気やデザインの好み**について教えていただけますか？（例：落ち着いた和風、賑やかで活気のある居酒屋風、モダンでスタイリッシュなど）"
+      },
+      {
+        "q": "user",
+        "a": "落ち着いた雰囲気"
+      },
+      {
+        "q": "ai",
+        "a": "落ち着いた雰囲気ですね。仕事帰りの方々が、一日の終わりに静かにリラックスできるような、上品で心地よいデザインを検討させていただきます。\n\n最後に、**サイトに掲載したい主な内容**を教えていただけますか？\n（例：お品書き（メニュー）、店主のこだわり、店内の雰囲気・座席紹介、アクセスマップ、営業時間、ご予約方法など）"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "「おまかせ」とのことで承知いたしました。\n仕事帰りのサラリーマンがふらりと立ち寄りたくなる、落ち着いた雰囲気を重視した標準的な構成案（ワイヤーフレーム）を作成いたしました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>すみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <!-- ヘッダー -->\n        <header class=\"wf-section\" data-label=\"Header\">\n            <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n                <div style=\"font-size: 20px; font-weight: bold;\">すみどころ</div>\n                <nav>メニュー ｜ お店について ｜ お料理 ｜ お飲み物 ｜ アクセス</nav>\n            </div>\n        </header>\n\n        <!-- メインビジュアル -->\n        <section class=\"wf-section\" data-label=\"Main Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">一日の終わりに、至福のひとときを。</h1>\n                    <p class=\"wf-text\">仕事帰りの疲れを癒やす、落ち着いた空間と心温まるお料理。</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- コンセプト -->\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">すみどころのこだわり</h2>\n            <p class=\"wf-text\">\n                厳選した旬の食材と、全国から取り寄せた銘酒。<br>\n                サラリーマンの皆様が、明日への活力を養えるような<br>\n                「大人の隠れ家」として、丁寧なおもてなしを心がけております。\n            </p>\n        </section>\n\n        <!-- お料理・メニュー -->\n        <section class=\"wf-section\" data-label=\"Menu Showcase\">\n            <h2 class=\"wf-heading\">お品書き</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">名物・季節の逸品</div>\n                <div class=\"wf-box\">厳選・酒の肴</div>\n                <div class=\"wf-box\">店主お薦めの銘酒</div>\n            </div>\n            <div class=\"wf-btn\">メニュー詳細を見る</div>\n        </section>\n\n        <!-- 店内雰囲気 -->\n        <section class=\"wf-section\" data-label=\"Interior\">\n            <h2 class=\"wf-heading\">店内の雰囲気</h2>\n            <div style=\"display: flex; gap: 20px; justify-content: center;\">\n                <div class=\"wf-box\" style=\"width: 45%;\">お一人様でも安心のカウンター席</div>\n                <div class=\"wf-box\" style=\"width: 45%;\">落ち着いた語らいのための半個室</div>\n            </div>\n        </section>\n\n        <!-- インフォメーション -->\n        <section class=\"wf-section\" data-label=\"Information\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div style=\"text-align: left; max-width: 600px; margin: 0 auto;\">\n                <div class=\"wf-box\" style=\"height: 200px;\">アクセスマップ（地図）</div>\n                <p><strong>営業時間：</strong> 17:00 〜 23:30 (L.O. 23:00)</p>\n                <p><strong>定休日：</strong> 日曜日・祝日</p>\n                <p><strong>所在地：</strong> 〒000-0000 〇〇県〇〇市〇〇町 1-2-3</p>\n                <p><strong>お電話：</strong> 00-0000-0000</p>\n            </div>\n            <div class=\"wf-btn\" style=\"background: #333; color: #fff;\">ネット予約・お問い合わせ</div>\n        </section>\n\n        <!-- フッター -->\n        <footer class=\"wf-section\" data-label=\"Footer\">\n            <p>&copy; 2023 すみどころ. All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>すみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <!-- ヘッダー -->\n        <header class=\"wf-section\" data-label=\"Header\">\n            <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n                <div style=\"font-size: 20px; font-weight: bold;\">すみどころ</div>\n                <nav>メニュー ｜ お店について ｜ お料理 ｜ お飲み物 ｜ アクセス</nav>\n            </div>\n        </header>\n\n        <!-- メインビジュアル -->\n        <section class=\"wf-section\" data-label=\"Main Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">一日の終わりに、至福のひとときを。</h1>\n                    <p class=\"wf-text\">仕事帰りの疲れを癒やす、落ち着いた空間と心温まるお料理。</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- コンセプト -->\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">すみどころのこだわり</h2>\n            <p class=\"wf-text\">\n                厳選した旬の食材と、全国から取り寄せた銘酒。<br>\n                サラリーマンの皆様が、明日への活力を養えるような<br>\n                「大人の隠れ家」として、丁寧なおもてなしを心がけております。\n            </p>\n        </section>\n\n        <!-- お料理・メニュー -->\n        <section class=\"wf-section\" data-label=\"Menu Showcase\">\n            <h2 class=\"wf-heading\">お品書き</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">名物・季節の逸品</div>\n                <div class=\"wf-box\">厳選・酒の肴</div>\n                <div class=\"wf-box\">店主お薦めの銘酒</div>\n            </div>\n            <div class=\"wf-btn\">メニュー詳細を見る</div>\n        </section>\n\n        <!-- 店内雰囲気 -->\n        <section class=\"wf-section\" data-label=\"Interior\">\n            <h2 class=\"wf-heading\">店内の雰囲気</h2>\n            <div style=\"display: flex; gap: 20px; justify-content: center;\">\n                <div class=\"wf-box\" style=\"width: 45%;\">お一人様でも安心のカウンター席</div>\n                <div class=\"wf-box\" style=\"width: 45%;\">落ち着いた語らいのための半個室</div>\n            </div>\n        </section>\n\n        <!-- インフォメーション -->\n        <section class=\"wf-section\" data-label=\"Information\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div style=\"text-align: left; max-width: 600px; margin: 0 auto;\">\n                <div class=\"wf-box\" style=\"height: 200px;\">アクセスマップ（地図）</div>\n                <p><strong>営業時間：</strong> 17:00 〜 23:30 (L.O. 23:00)</p>\n                <p><strong>定休日：</strong> 日曜日・祝日</p>\n                <p><strong>所在地：</strong> 〒000-0000 〇〇県〇〇市〇〇町 1-2-3</p>\n                <p><strong>お電話：</strong> 00-0000-0000</p>\n            </div>\n            <div class=\"wf-btn\" style=\"background: #333; color: #fff;\">ネット予約・お問い合わせ</div>\n        </section>\n\n        <!-- フッター -->\n        <footer class=\"wf-section\" data-label=\"Footer\">\n            <p>&copy; 2023 すみどころ. All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>",
+    "id": "cust-1772253772804",
+    "updatedAt": "2026-02-28T04:42:52.804Z",
+    "status": "hearing"
+  },
+  {
     "name": "おばんざいすみどころ のコピー",
     "answers": [
       {

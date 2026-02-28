@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layout, Check, RotateCcw, Monitor, Smartphone, Search, Eye, EyeOff, Plus, Sparkles, Loader2, Grid } from 'lucide-react';
-import { TEMPLATES } from '../lib/templates';
+import { templates, Template } from './templates';
 
 type Customer = {
   id: string;
@@ -15,6 +15,31 @@ type Customer = {
   isTemplate?: boolean;
 };
 
+// AIのレスポンスからHTMLとコメントを分離するヘルパー関数
+const extractHtmlAndComment = (text: string) => {
+  const codeBlockRegex = /```html([\s\S]*?)```/;
+  const match = text.match(codeBlockRegex);
+  
+  if (match) {
+    return {
+      html: match[1].trim(),
+      comment: text.replace(match[0], "").trim()
+    };
+  }
+  
+  // コードブロックがない場合、HTMLタグで簡易判定
+  const htmlTagRegex = /<html[\s\S]*<\/html>/i;
+  const htmlMatch = text.match(htmlTagRegex);
+  if (htmlMatch) {
+    return {
+      html: htmlMatch[0],
+      comment: text.replace(htmlMatch[0], "").trim()
+    };
+  }
+
+  return { html: text, comment: "" };
+};
+
 export default function PaletteLab() {
   const [viewMode, setViewMode] = useState<'pc' | 'mobile'>('pc');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
@@ -24,19 +49,26 @@ export default function PaletteLab() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   
   const [activeSections, setActiveSections] = useState<{ [key: string]: boolean }>({
-    "1": true, "2": true, "3": true, "4": true, "5": true
+    "top": true,
+    "concept": true,
+    "features": true,
+    "service": true,
+    "works": true,
+    "company": true
   });
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0].id);
 
   const refreshCustomers = async () => {
     try {
       const response = await fetch('/api/get-customers');
       const dbData = await response.json();
+      const dbCustomers = Array.isArray(dbData) ? dbData : [];
       
       // テンプレートデータをCustomer型に変換
-      const templateData: Customer[] = TEMPLATES.map(t => ({
+      const templateData: Customer[] = templates.map(t => ({
         id: `tpl-${t.id}`,
         name: t.name,
         status: 'completed',
@@ -47,11 +79,12 @@ export default function PaletteLab() {
         isTemplate: true
       }));
 
-      const combinedData = [...templateData, ...(Array.isArray(dbData) ? dbData : [])];
+      const combinedData = [...templateData, ...dbCustomers];
       setCustomers(combinedData);
       
       if (combinedData.length > 0 && !selectedCustomerId) {
-        setSelectedCustomerId(combinedData[0].id);
+        // 実際の顧客がいればそれを優先的に選択、いなければ最初のテンプレートを選択
+        setSelectedCustomerId(dbCustomers.length > 0 ? dbCustomers[0].id : combinedData[0].id);
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -65,6 +98,55 @@ export default function PaletteLab() {
   }, []);
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
+
+  // テンプレート自動選択ロジック
+  const autoSelectTemplate = (answers: { q: string, a: string }[]) => {
+    if (!answers || answers.length === 0) return templates[0].id;
+
+    const text = answers.map(a => a.a).join(" ").toLowerCase();
+    const scores: { [key: string]: number } = {};
+
+    templates.forEach(t => {
+      scores[t.id] = 0;
+      t.tags.forEach(tag => {
+        // タグそのものが含まれているか
+        if (text.includes(tag)) scores[t.id] += 3;
+        
+        // タグに関連する日本語キーワードのマッチング（簡易版）
+        const keywords: {[key: string]: string[]} = {
+          'simple': ['シンプル', 'すっきり', '簡潔', '標準'],
+          'luxury': ['高級', 'エレガント', '上品', '高価', 'ラグジュアリー'],
+          'business': ['企業', '会社', '信頼', '誠実', 'ビジネス', 'コーポレート'],
+          'pop': ['元気', '明るい', '楽しい', 'ポップ', '子供', 'キッズ'],
+          'minimal': ['ミニマル', '余白', '洗練', '無駄のない', '白'],
+          'dark': ['クール', 'かっこいい', '黒', 'ダーク', '夜', 'テック'],
+          'natural': ['自然', 'オーガニック', '優しい', '緑', 'カフェ', 'ナチュラル'],
+          'japanese': ['和風', '日本', '伝統', '和食', '旅館'],
+          'portfolio': ['写真', '作品', 'ポートフォリオ', 'ギャラリー', 'クリエイター'],
+          'lp': ['販売', '集客', 'ランディング', '訴求', 'コンバージョン']
+        };
+
+        if (keywords[tag]) {
+          keywords[tag].forEach(k => {
+            if (text.includes(k)) scores[t.id] += 1;
+          });
+        }
+      });
+    });
+
+    // スコアが最も高いテンプレートIDを返す
+    const sortedTemplates = Object.entries(scores).sort(([, a], [, b]) => b - a);
+    // スコアが0より大きいものがあればそれを、なければデフォルト(modern)を返す
+    return sortedTemplates[0][1] > 0 ? sortedTemplates[0][0] : templates[0].id;
+  };
+
+  // 顧客選択時にテンプレートを自動選択
+  useEffect(() => {
+    if (selectedCustomer && !selectedCustomer.isTemplate && selectedCustomer.answers) {
+      const recommendedId = autoSelectTemplate(selectedCustomer.answers);
+      setSelectedTemplateId(recommendedId);
+    }
+  }, [selectedCustomerId]);
 
   const handleApplyAiAdjustment = async () => {
     if (!aiInstruction || !selectedCustomer) return;
@@ -82,10 +164,14 @@ export default function PaletteLab() {
       });
 
       const data = await response.json();
-      const cleanedText = (data.text || "").replace(/```html/g, "").replace(/```/g, "").trim();
+      const { html, comment } = extractHtmlAndComment(data.text || "");
 
-      if (cleanedText) {
-        setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, htmlCode: cleanedText } : c));
+      if (html) {
+        setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { 
+          ...c, 
+          htmlCode: html,
+          description: comment || c.description // コメントがあれば更新
+        } : c));
       }
     } catch (error: any) {
       console.error("Gemini Error:", error);
@@ -102,13 +188,32 @@ export default function PaletteLab() {
     try {
       // データが存在しない場合のガード処理を追加
       const answerSummary = (selectedCustomer.answers || []).map(a => `${a.q}: ${a.a}`).join("\n");
-      const baseTemplate = customers.find(c => c.id.startsWith('tpl-'))?.htmlCode || selectedCustomer.htmlCode || "";
+      
+      // 選択されたテンプレートを取得
+      const template = templates.find(t => t.id === selectedTemplateId);
+      const baseHtml = template ? template.html : "";
+
+      const prompt = `
+      あなたはWebデザイナーです。以下の「ヒアリング内容」を元に、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。
+
+      【制約事項】
+      1. **HTML構造（タグの入れ子構造やクラス名）は極力維持**してください。レイアウトを大きく壊さないでください。
+      2. テキストはヒアリング内容に合わせて魅力的なものに変更してください。
+      3. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像、またはUnsplash等の実在するURLに差し替えてください。
+      4. 配色はTailwind CSSのクラスを変更して調整してください（例: bg-indigo-600 -> bg-pink-500 など）。
+
+      【ヒアリング内容】
+      ${answerSummary}
+
+      【ベースHTML】
+      ${baseHtml}
+      `;
 
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `以下の内容でホームページを作ってください。\n${answerSummary}\nベースにするHTML: ${baseTemplate}`,
+          message: prompt,
           history: []
         })
       });
@@ -120,11 +225,11 @@ export default function PaletteLab() {
       }
 
       const data = await response.json();
-      const cleanedText = (data.text || "").replace(/```html/g, "").replace(/```/g, "").trim();
+      const { html, comment } = extractHtmlAndComment(data.text || "");
 
-      if (cleanedText) {
+      if (html) {
         setCustomers(prev => prev.map(c => 
-          c.id === selectedCustomerId ? { ...c, htmlCode: cleanedText, status: 'reviewing' } : c
+          c.id === selectedCustomerId ? { ...c, htmlCode: html, description: comment, status: 'reviewing' } : c
         ));
       }
     } catch (error: any) {
@@ -169,7 +274,10 @@ export default function PaletteLab() {
     let processed = html;
     Object.keys(activeSections).forEach(id => {
       if (!activeSections[id]) {
-        processed = processed.replace(`data-id="${id}"`, `data-id="${id}" style="display: none;"`);
+        // id="sectionId" を検索し、hidden属性とstyleを追加して非表示にする
+        // 既存のstyle属性と競合しないよう、!importantを使用
+        const regex = new RegExp(`id="${id}"`, 'g');
+        processed = processed.replace(regex, `id="${id}" hidden style="display: none !important;"`);
       }
     });
     return processed;
@@ -215,7 +323,7 @@ export default function PaletteLab() {
                 <p className="text-[10px] font-bold uppercase tracking-widest">Loading...</p>
               </div>
             ) : (
-              customers.map(customer => (
+              customers.filter(c => !c.isTemplate).map(customer => (
                 <button 
                   key={customer.id} 
                   onClick={() => {
@@ -238,8 +346,43 @@ export default function PaletteLab() {
         <aside className="w-72 bg-slate-50 border-r border-slate-200 flex flex-col shrink-0 overflow-y-auto p-4 space-y-6">
           {selectedCustomer && (
             <>
-              {/* 【復活】ヒアリング内容セクション */}
+              {/* Section Control */}
               <section className="space-y-4">
+                <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Layout Sections</h2>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.keys(activeSections).map(key => (
+                    <button
+                      key={key}
+                      onClick={() => setActiveSections(prev => ({ ...prev, [key]: !prev[key] }))}
+                      className={`px-3 py-2 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${
+                        activeSections[key] 
+                          ? 'bg-white border-indigo-200 text-indigo-600 shadow-sm' 
+                          : 'bg-slate-100 border-slate-200 text-slate-400'
+                      }`}
+                    >
+                      <span>{key}</span>
+                      <div className={`w-1.5 h-1.5 rounded-full ${activeSections[key] ? 'bg-indigo-500' : 'bg-slate-300'}`} />
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {/* Generation Memo (Hearing Answersの上に配置) */}
+              <section className="space-y-4">
+                <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Generation Memo</h2>
+                <textarea
+                  value={selectedCustomer.description || ""}
+                  onChange={(e) => {
+                    const newDesc = e.target.value;
+                    setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, description: newDesc } : c));
+                  }}
+                  className="w-full h-24 p-3 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500 resize-none shadow-sm text-slate-600"
+                  placeholder="AIからのコメントやメモ..."
+                />
+              </section>
+
+              {/* 【復活】ヒアリング内容セクション */}
+              <section className="space-y-4 pt-4 border-t border-slate-200">
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hearing Answers</h2>
                 <div className="space-y-2 bg-white p-3 rounded-xl border border-slate-200 shadow-sm overflow-hidden max-h-48 overflow-y-auto">
                   {selectedCustomer.answers && selectedCustomer.answers.length > 0 ? (
@@ -257,6 +400,21 @@ export default function PaletteLab() {
 
               <section className="space-y-4 pt-4 border-t border-slate-200">
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Initial Generation</h2>
+                
+                {/* テンプレート選択プルダウン */}
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-500">使用するテンプレート</label>
+                  <select 
+                    value={selectedTemplateId} 
+                    onChange={(e) => setSelectedTemplateId(e.target.value)}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                  >
+                    {templates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <button 
                   onClick={handleInitialGeneration}
                   disabled={isApplying}

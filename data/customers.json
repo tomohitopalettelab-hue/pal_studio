@@ -1,0 +1,323 @@
+[
+  {
+    "name": "おばんざいすみどころ のコピー",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "おばんざいすみどころ"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。屋号は「おばんざいすみどころ」ですね。\n\n次に、業種や具体的なサービス内容（どのようなお料理やお酒を提供されているか、お店の特徴など）について詳しく教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "「おまかせ」とのこと、承知いたしました。プロの視点からご提案させていただきます。\n\nまず、業種・サービス内容についてですが、店名から「旬の食材を活かした手作りのおばんざい（和惣菜）と、厳選したお酒を、落ち着いた空間で楽しむ和食店（居酒屋）」と想定して進めてよろしいでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。サービス内容は「旬の食材を使用したおばんざいとお酒を、落ち着いた空間で楽しめるお店」として構成を進めさせていただきます。\n\n続いて、(3)ターゲット層（どのようなお客様に来ていただきたいか、年齢層や利用シーンなど）について、ご希望やイメージはありますでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。ターゲット層は「お仕事帰りに落ち着いて食事を楽しみたい30代〜50代の大人の男女、または少人数での会食を希望される方」と想定させていただきます。\n\n続いて、(4)サイトの雰囲気・デザインの好みについてお伺いします。落ち着いた「純和風」なデザイン、モダンでスタイリッシュな雰囲気、あるいは温かみのあるアットホームな雰囲気など、ご希望はございますか？（こちらもおまかせであれば、その旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。デザインについても、大人のお客様がゆったりと過ごせるような「上質な和モダン」な雰囲気でご提案させていただきます。\n\n最後になりますが、**(5) 掲載したい主な内容**についてお伺いします。\n一般的には「お料理のこだわり」「お品書き（メニュー）」「店内の雰囲気（お席）」「店舗情報・アクセス」などが挙げられますが、特に載せたい項目やこだわりたいポイントはございますか？こちらも「おまかせ」でよろしいでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "うん！"
+      },
+      {
+        "q": "ai",
+        "a": "すべての項目を「おまかせ」で承りました。ありがとうございます。\n「おばんざいすみどころ」様の魅力を最大限に引き出す、上質な和モダンのサイト構成案（ワイヤーフレーム）を作成いたしました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいすみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }\n        footer { padding: 40px; text-align: center; border-top: 1px solid #eee; font-size: 12px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div>おばんざいすみどころ ロゴ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Hero Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                メインビジュアル（店内の雰囲気や代表的なおばんざいの写真）\n            </div>\n            <h1 class=\"wf-heading\">心尽くしの「おばんざい」と、安らぎのひとときを。</h1>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">こだわり</h2>\n            <p class=\"wf-text\">\n                旬の食材を活かした手作りのおばんざいを中心に、<br>\n                店主が厳選したお酒を取り揃えております。<br>\n                お仕事帰りの一杯や、大切な方との語らいに。\n            </p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu Selection\">\n            <h2 class=\"wf-heading\">お品書き</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節のおばんざい</div>\n                <div class=\"wf-box\">厳選した日本酒</div>\n                <div class=\"wf-box\">本日のおすすめ</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">メニュー詳細を見る</a>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内空間</h2>\n            <div class=\"wf-box\" style=\"height: 200px;\">\n                和モダンで落ち着いたカウンター席・テーブル席の写真\n            </div>\n            <p class=\"wf-text\">都会の喧騒を忘れさせる、静かで温かみのある空間です。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access & Info\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div class=\"wf-grid\" style=\"grid-template-columns: 1fr 1fr;\">\n                <div class=\"wf-box\" style=\"height: 200px;\">Google Maps (店舗所在地)</div>\n                <div style=\"text-align: left; padding: 20px;\">\n                    <p><strong>住所：</strong> 〒000-0000 〇〇県〇〇市...</p>\n                    <p><strong>営業時間：</strong> 17:00 〜 23:00</p>\n                    <p><strong>定休日：</strong> 日曜日・祝日</p>\n                    <p><strong>電話番号：</strong> 00-0000-0000</p>\n                </div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">オンライン予約</a>\n        </section>\n\n        <footer>\n            &copy; おばんざいすみどころ All Rights Reserved.\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "ご提示いただいたワイヤーフレームと、ベースのHTML構造を元に、「おばんざいすみどころ」様の魅力を最大限に引き出す**「上質な和モダン」**なホームページを制作いたしました。\n\n落ち着いた色合い（墨色、生成り、木目調）と、繊細な和のタイポグラフィ（明朝体・縦書き）を取り入れたデザインです。\n\n\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>おばんざいすみどころ | 心尽くしの和食と厳選したお酒</title>\n  <script src=\"https://cdn.tailwindcss.com\"></script>\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n  <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n  <link href=\"https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@400;700&display=swap\" rel=\"stylesheet\">\n  <style>\n    body {\n      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;\n      background-color: #fdfaf5; /* 温かみのある生成り色 */\n    }\n    .vertical-text {\n      writing-mode: vertical-rl;\n      text-orientation: mixed;\n    }\n    .hero-bg {\n      background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1582450871972-ed5a962a5753?q=80&w=2000&auto=format&fit=crop');\n      background-size: cover;\n      background-position: center;\n    }\n    .section-title::after {\n      content: \"\";\n      display: block;\n      width: 40px;\n      height: 1px;\n      background: #4a4a4a;\n      margin: 1.5rem auto 0;\n    }\n  </style>\n</head>\n<body class=\"text-slate-800\">\n\n  <!-- Navigation -->\n  <header class=\"fixed w-full z-50 bg-white/90 backdrop-blur-sm border-b border-stone-200\">\n    <div class=\"max-w-7xl mx-auto px-6 py-4 flex justify-between items-center\">\n      <div class=\"text-2xl font-bold tracking-widest text-stone-900\">\n        おばんざい<span class=\"text-stone-600\">すみどころ</span>\n      </div>\n      <nav class=\"hidden md:flex gap-8 text-sm font-medium tracking-widest\">\n        <a href=\"#concept\" class=\"hover:text-amber-700 transition\">こだわり</a>\n        <a href=\"#menu\" class=\"hover:text-amber-700 transition\">お品書き</a>\n        <a href=\"#space\" class=\"hover:text-amber-700 transition\">店内</a>\n        <a href=\"#access\" class=\"hover:text-amber-700 transition\">店舗情報</a>\n      </nav>\n      <a href=\"#access\" class=\"bg-stone-800 text-white px-5 py-2 text-xs tracking-widest hover:bg-stone-700 transition\">\n        ご予約\n      </a>\n    </div>\n  </header>\n\n  <main>\n    <!-- Hero Section -->\n    <section class=\"relative h-screen flex items-center justify-center hero-bg overflow-hidden\">\n      <div class=\"absolute inset-0 bg-black/20\"></div>\n      <div class=\"relative z-10 text-white text-center\">\n        <div class=\"vertical-text mx-auto text-2xl md:text-4xl tracking-[0.5em] leading-relaxed py-10 border-r border-l border-white/30 px-6\">\n          心に、体に、染み入るおばんざい。\n        </div>\n        <p class=\"mt-8 text-lg md:text-xl tracking-[0.2em] font-light\">旬を慈しみ、日常を忘れるひとときを。</p>\n      </div>\n      <div class=\"absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce\">\n        <div class=\"w-[1px] h-16 bg-white/50 mx-auto\"></div>\n      </div>\n    </section>\n\n    <!-- Concept Section -->\n    <section id=\"concept\" class=\"py-24 px-6 max-w-4xl mx-auto text-center\">\n      <h2 class=\"section-title text-2xl md:text-3xl font-bold mb-12 tracking-widest\">こだわり</h2>\n      <p class=\"text-lg leading-loose text-stone-700 mb-8 italic\">\n        「すみどころ」は、季節が運ぶ旬の素材を<br class=\"hidden md:block\">\n        一番美味しいかたちで提供する小さなお店です。\n      </p>\n      <p class=\"leading-loose text-stone-600 space-y-4\">\n        手間を惜しまず、出汁の香りを大切に仕上げたおばんざい。<br>\n        店主自ら蔵元を訪ねて選んだ、料理に寄り添う日本酒。<br>\n        お仕事帰りの一杯から、大切な方との語らいまで、<br>\n        心落ち着く「すみか」のような場所でありたいと願っております。\n      </p>\n    </section>\n\n    <!-- Menu Section -->\n    <section id=\"menu\" class=\"py-24 bg-stone-100 px-6\">\n      <div class=\"max-w-6xl mx-auto\">\n        <h2 class=\"section-title text-center text-2xl md:text-3xl font-bold mb-16 tracking-widest\">お品書き</h2>\n        <div class=\"grid md:grid-cols-3 gap-12\">\n          <!-- Menu Item 1 -->\n          <div class=\"group cursor-pointer\">\n            <div class=\"overflow-hidden mb-4\">\n              <img src=\"https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?q=80&w=800&auto=format&fit=crop\" alt=\"おばんざい盛り合わせ\" class=\"w-full h-64 object-cover transition duration-500 group-hover:scale-110\">\n            </div>\n            <h3 class=\"text-xl font-bold mb-2 tracking-wide\">季節の五種盛り</h3>\n            <p class=\"text-stone-600 text-sm leading-relaxed\">その日、その時の一番良い素材を使った日替わりのおばんざい。まずはここから。</p>\n          </div>\n          <!-- Menu Item 2 -->\n          <div class=\"group cursor-pointer\">\n            <div class=\"overflow-hidden mb-4\">\n              <img src=\"https://images.unsplash.com/photo-1590377222714-87a387ec423d?q=80&w=800&auto=format&fit=crop\" alt=\"日本酒\" class=\"w-full h-64 object-cover transition duration-500 group-hover:scale-110\">\n            </div>\n            <h3 class=\"text-xl font-bold mb-2 tracking-wide\">厳選 地酒</h3>\n            <p class=\"text-stone-600 text-sm leading-relaxed\">全国の小規模な蔵元から、おばんざいの味を引き立てる辛口を中心に揃えております。</p>\n          </div>\n          <!-- Menu Item 3 -->\n          <div class=\"group cursor-pointer\">\n            <div class=\"overflow-hidden mb-4\">\n              <img src=\"https://images.unsplash.com/photo-1617196034183-421b4917c92d?q=80&w=800&auto=format&fit=crop\" alt=\"炭火焼き\" class=\"w-full h-64 object-cover transition duration-500 group-hover:scale-110\">\n            </div>\n            <h3 class=\"text-xl font-bold mb-2 tracking-wide\">本日のおすすめ</h3>\n            <p class=\"text-stone-600 text-sm leading-relaxed\">市場直送の鮮魚や、炭火でじっくり焼き上げた季節の野菜など、その日の逸品を。</p>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- Space Section -->\n    <section id=\"space\" class=\"py-24 px-6\">\n      <div class=\"max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12\">\n        <div class=\"md:w-1/2\">\n          <img src=\"https://images.unsplash.com/photo-1559329007-40df8a9345d8?q=80&w=1200&auto=format&fit=crop\" alt=\"店内の様子\" class=\"shadow-2xl shadow-stone-300\">\n        </div>\n        <div class=\"md:w-1/2\">\n          <h2 class=\"text-2xl font-bold mb-6 tracking-widest text-stone-800\">落ち着きの和モダン空間</h2>\n          <p class=\"leading-loose text-stone-600 mb-6\">\n            木の温もりを感じるカウンター席は、お一人様でも気兼ねなくお過ごしいただけます。\n            控えめな照明が照らす落ち着いた店内で、日常の喧騒を離れ、上質な時間をお愉しみください。\n          </p>\n          <div class=\"grid grid-cols-2 gap-4 text-sm text-stone-500\">\n            <p>カウンター：8席</p>\n            <p>テーブル：2名掛け×3卓</p>\n            <p>貸切：10名様〜相談可</p>\n            <p>全席禁煙</p>\n          </div>\n        </div>\n      </div>\n    </section>\n\n    <!-- Access Section -->\n    <section id=\"access\" class=\"py-24 bg-stone-900 text-stone-200 px-6\">\n      <div class=\"max-w-6xl mx-auto\">\n        <h2 class=\"section-title text-center text-2xl md:text-3xl font-bold mb-16 tracking-widest after:bg-stone-500\">店舗情報</h2>\n        <div class=\"grid md:grid-cols-2 gap-12\">\n          <div class=\"bg-stone-800 h-80 flex items-center justify-center text-stone-500 italic\">\n            <!-- Google Map Placeholder -->\n            [ Google Maps 読み込みエリア ]\n          </div>\n          <div class=\"space-y-6\">\n            <div>\n              <h4 class=\"text-stone-400 text-xs tracking-widest mb-2 uppercase\">Address</h4>\n              <p class=\"text-lg\">〒000-0000 〇〇県〇〇市〇〇町1-2-3</p>\n              <p class=\"text-stone-400 text-sm mt-1\">〇〇駅 徒歩5分</p>\n            </div>\n            <div>\n              <h4 class=\"text-stone-400 text-xs tracking-widest mb-2 uppercase\">Hours</h4>\n              <p class=\"text-lg\">17:00 〜 23:00 <span class=\"text-sm text-stone-400 ml-2\">(L.O. 22:30)</span></p>\n              <p class=\"text-stone-400 text-sm mt-1\">定休日：日曜日・祝日</p>\n            </div>\n            <div>\n              <h4 class=\"text-stone-400 text-xs tracking-widest mb-2 uppercase\">Contact</h4>\n              <p class=\"text-2xl font-bold tracking-wider\">00-0000-0000</p>\n              <a href=\"#\" class=\"inline-block mt-4 border border-stone-500 px-8 py-3 text-sm tracking-[0.2em] hover:bg-stone-100 hover:text-stone-900 transition\">オンライン予約</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n  </main>\n\n  <footer class=\"bg-stone-950 text-stone-500 py-10 text-center text-xs tracking-[0.2em]\">\n    <div class=\"mb-4 text-stone-300\">おばんざいすみどころ</div>\n    &copy; 2024 Obanzai Sumidokoro. All Rights Reserved.\n  </footer>\n\n</body>\n</html>\n\n\n### こだわったポイント\n1.  **和のタイポグラフィ**: 縦書きのキャッチコピー（Heroセクション）を採用し、一目で「落ち着いた和食店」であることを伝えます。フォントは品のある「しっぽり明朝」を想定しています。\n2.  **カラーパレット**: 真っ白ではなく「生成り（#fdfaf5）」をベースに、墨色（#1a1a1b）を合わせることで、高級感と温かみを両立させました。\n3.  **情緒的な文章**: 「おまかせ」いただいた内容から、30代〜50代の大人が「自分の居場所（すみか）」と感じられるような、物語性のあるテキストを作成しました。\n4.  **レスポンシブ対応**: スマートフォンでも読みやすく、画像が美しく表示されるよう設計しています。\n\nこちらでホームページの完成となります！修正や追加したい情報があればいつでもお知らせください。",
+    "id": "data-1772249937794",
+    "updatedAt": "2026-02-28T03:38:57.826Z",
+    "status": "reviewing"
+  },
+  {
+    "name": "おばんざいすみどころ",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "おばんざいすみどころ"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。屋号は「おばんざいすみどころ」ですね。\n\n次に、業種や具体的なサービス内容（どのようなお料理やお酒を提供されているか、お店の特徴など）について詳しく教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "「おまかせ」とのこと、承知いたしました。プロの視点からご提案させていただきます。\n\nまず、業種・サービス内容についてですが、店名から「旬の食材を活かした手作りのおばんざい（和惣菜）と、厳選したお酒を、落ち着いた空間で楽しむ和食店（居酒屋）」と想定して進めてよろしいでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。サービス内容は「旬の食材を使用したおばんざいとお酒を、落ち着いた空間で楽しめるお店」として構成を進めさせていただきます。\n\n続いて、(3)ターゲット層（どのようなお客様に来ていただきたいか、年齢層や利用シーンなど）について、ご希望やイメージはありますでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。ターゲット層は「お仕事帰りに落ち着いて食事を楽しみたい30代〜50代の大人の男女、または少人数での会食を希望される方」と想定させていただきます。\n\n続いて、(4)サイトの雰囲気・デザインの好みについてお伺いします。落ち着いた「純和風」なデザイン、モダンでスタイリッシュな雰囲気、あるいは温かみのあるアットホームな雰囲気など、ご希望はございますか？（こちらもおまかせであれば、その旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。デザインについても、大人のお客様がゆったりと過ごせるような「上質な和モダン」な雰囲気でご提案させていただきます。\n\n最後になりますが、**(5) 掲載したい主な内容**についてお伺いします。\n一般的には「お料理のこだわり」「お品書き（メニュー）」「店内の雰囲気（お席）」「店舗情報・アクセス」などが挙げられますが、特に載せたい項目やこだわりたいポイントはございますか？こちらも「おまかせ」でよろしいでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "うん！"
+      },
+      {
+        "q": "ai",
+        "a": "すべての項目を「おまかせ」で承りました。ありがとうございます。\n「おばんざいすみどころ」様の魅力を最大限に引き出す、上質な和モダンのサイト構成案（ワイヤーフレーム）を作成いたしました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいすみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }\n        footer { padding: 40px; text-align: center; border-top: 1px solid #eee; font-size: 12px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div>おばんざいすみどころ ロゴ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Hero Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                メインビジュアル（店内の雰囲気や代表的なおばんざいの写真）\n            </div>\n            <h1 class=\"wf-heading\">心尽くしの「おばんざい」と、安らぎのひとときを。</h1>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">こだわり</h2>\n            <p class=\"wf-text\">\n                旬の食材を活かした手作りのおばんざいを中心に、<br>\n                店主が厳選したお酒を取り揃えております。<br>\n                お仕事帰りの一杯や、大切な方との語らいに。\n            </p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu Selection\">\n            <h2 class=\"wf-heading\">お品書き</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節のおばんざい</div>\n                <div class=\"wf-box\">厳選した日本酒</div>\n                <div class=\"wf-box\">本日のおすすめ</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">メニュー詳細を見る</a>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内空間</h2>\n            <div class=\"wf-box\" style=\"height: 200px;\">\n                和モダンで落ち着いたカウンター席・テーブル席の写真\n            </div>\n            <p class=\"wf-text\">都会の喧騒を忘れさせる、静かで温かみのある空間です。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access & Info\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div class=\"wf-grid\" style=\"grid-template-columns: 1fr 1fr;\">\n                <div class=\"wf-box\" style=\"height: 200px;\">Google Maps (店舗所在地)</div>\n                <div style=\"text-align: left; padding: 20px;\">\n                    <p><strong>住所：</strong> 〒000-0000 〇〇県〇〇市...</p>\n                    <p><strong>営業時間：</strong> 17:00 〜 23:00</p>\n                    <p><strong>定休日：</strong> 日曜日・祝日</p>\n                    <p><strong>電話番号：</strong> 00-0000-0000</p>\n                </div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">オンライン予約</a>\n        </section>\n\n        <footer>\n            &copy; おばんざいすみどころ All Rights Reserved.\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいすみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }\n        footer { padding: 40px; text-align: center; border-top: 1px solid #eee; font-size: 12px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div>おばんざいすみどころ ロゴ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Hero Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                メインビジュアル（店内の雰囲気や代表的なおばんざいの写真）\n            </div>\n            <h1 class=\"wf-heading\">心尽くしの「おばんざい」と、安らぎのひとときを。</h1>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">こだわり</h2>\n            <p class=\"wf-text\">\n                旬の食材を活かした手作りのおばんざいを中心に、<br>\n                店主が厳選したお酒を取り揃えております。<br>\n                お仕事帰りの一杯や、大切な方との語らいに。\n            </p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu Selection\">\n            <h2 class=\"wf-heading\">お品書き</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節のおばんざい</div>\n                <div class=\"wf-box\">厳選した日本酒</div>\n                <div class=\"wf-box\">本日のおすすめ</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">メニュー詳細を見る</a>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内空間</h2>\n            <div class=\"wf-box\" style=\"height: 200px;\">\n                和モダンで落ち着いたカウンター席・テーブル席の写真\n            </div>\n            <p class=\"wf-text\">都会の喧騒を忘れさせる、静かで温かみのある空間です。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access & Info\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div class=\"wf-grid\" style=\"grid-template-columns: 1fr 1fr;\">\n                <div class=\"wf-box\" style=\"height: 200px;\">Google Maps (店舗所在地)</div>\n                <div style=\"text-align: left; padding: 20px;\">\n                    <p><strong>住所：</strong> 〒000-0000 〇〇県〇〇市...</p>\n                    <p><strong>営業時間：</strong> 17:00 〜 23:00</p>\n                    <p><strong>定休日：</strong> 日曜日・祝日</p>\n                    <p><strong>電話番号：</strong> 00-0000-0000</p>\n                </div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">オンライン予約</a>\n        </section>\n\n        <footer>\n            &copy; おばんざいすみどころ All Rights Reserved.\n        </footer>\n    </div>\n</body>\n</html>",
+    "id": "cust-1772249698432",
+    "updatedAt": "2026-02-28T03:34:58.432Z",
+    "status": "hearing"
+  },
+  {
+    "name": "sumie",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "sumie"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。屋号は「sumie」ですね。\n\n次に、(2) 業種や具体的なサービス内容について教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "ハウスクリーニング"
+      },
+      {
+        "q": "ai",
+        "a": "ハウスクリーニングですね、承知いたしました。\n\n続いて、(3) **ターゲット層**（どのようなお客様に利用してほしいか、例：共働き世代、高齢者の方、マンションオーナー様など）について教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "共働き世代"
+      },
+      {
+        "q": "ai",
+        "a": "共働き世代をターゲットにするのですね。お忙しい皆様に信頼感や安らぎを与えるデザインが良さそうです。\n\n続いて、(4) **サイトの雰囲気やデザインの好み**（例：清潔感のある、シンプルでモダンな、親しみやすい、など）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "清潔感のあるシンプルなサイト"
+      },
+      {
+        "q": "ai",
+        "a": "清潔感のあるシンプルなデザインですね。承知いたしました。共働き世代の皆様に安心感を与える、スッキリとした構成を検討いたします。\n\n最後に、(5) **サイトに掲載したい主な内容**を教えていただけますか？\n（例：メニュー・料金表、ビフォーアフター、お客様の声、よくある質問、お問い合わせフォームなど）"
+      },
+      {
+        "q": "user",
+        "a": "料金表"
+      },
+      {
+        "q": "ai",
+        "a": "ヒアリングにご協力いただきありがとうございました。\n「sumie」様のハウスクリーニングサービスの構成案（ワイヤーフレーム）を作成いたしました。共働き世代の皆様に向けた、清潔感のあるシンプルな構成となっております。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>sumie</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <!-- ヘッダー -->\n        <header class=\"wf-section\" data-label=\"Header\">\n            <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n                <div style=\"font-size: 24px; font-weight: bold;\">sumie</div>\n                <nav>MENU ｜ MENU ｜ MENU</nav>\n            </div>\n        </header>\n\n        <!-- メインビジュアル -->\n        <section class=\"wf-section\" data-label=\"Hero Section\">\n            <div class=\"wf-box\" style=\"height: 300px;\">\n                <div>\n                    <h1 class=\"wf-heading\">忙しい毎日に、プロの輝きと安らぎを。</h1>\n                    <p class=\"wf-text\">共働き世代のためのハウスクリーニング sumie</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- サービス紹介/コンセプト -->\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">sumieのこだわり</h2>\n            <p class=\"wf-text\">清潔感あふれる空間で、家族との時間をより豊かに。<br>シンプルでわかりやすいサービスを提供します。</p>\n        </section>\n\n        <!-- 料金表 -->\n        <section class=\"wf-section\" data-label=\"Pricing (料金表)\">\n            <h2 class=\"wf-heading\">料金表</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n                    <strong>エアコン掃除</strong>\n                    <p>¥12,000 〜</p>\n                </div>\n                <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n                    <strong>水回りパック</strong>\n                    <p>¥25,000 〜</p>\n                </div>\n                <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n                    <strong>キッチン清掃</strong>\n                    <p>¥15,000 〜</p>\n                </div>\n            </div>\n            <p class=\"wf-text\" style=\"margin-top: 20px;\">※上記は目安です。お見積もりは無料で承ります。</p>\n        </section>\n\n        <!-- コンタクト -->\n        <section class=\"wf-section\" data-label=\"Contact\">\n            <h2 class=\"wf-heading\">お問い合わせ</h2>\n            <p class=\"wf-text\">ご依頼・ご相談はお気軽にご連絡ください。</p>\n            <div class=\"wf-btn\">WEB予約・お問い合わせはこちら</div>\n        </section>\n\n        <!-- フッター -->\n        <footer class=\"wf-section\" data-label=\"Footer\">\n            <p>&copy; 2023 sumie All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>sumie</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <!-- ヘッダー -->\n        <header class=\"wf-section\" data-label=\"Header\">\n            <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n                <div style=\"font-size: 24px; font-weight: bold;\">sumie</div>\n                <nav>MENU ｜ MENU ｜ MENU</nav>\n            </div>\n        </header>\n\n        <!-- メインビジュアル -->\n        <section class=\"wf-section\" data-label=\"Hero Section\">\n            <div class=\"wf-box\" style=\"height: 300px;\">\n                <div>\n                    <h1 class=\"wf-heading\">忙しい毎日に、プロの輝きと安らぎを。</h1>\n                    <p class=\"wf-text\">共働き世代のためのハウスクリーニング sumie</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- サービス紹介/コンセプト -->\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">sumieのこだわり</h2>\n            <p class=\"wf-text\">清潔感あふれる空間で、家族との時間をより豊かに。<br>シンプルでわかりやすいサービスを提供します。</p>\n        </section>\n\n        <!-- 料金表 -->\n        <section class=\"wf-section\" data-label=\"Pricing (料金表)\">\n            <h2 class=\"wf-heading\">料金表</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n                    <strong>エアコン掃除</strong>\n                    <p>¥12,000 〜</p>\n                </div>\n                <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n                    <strong>水回りパック</strong>\n                    <p>¥25,000 〜</p>\n                </div>\n                <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n                    <strong>キッチン清掃</strong>\n                    <p>¥15,000 〜</p>\n                </div>\n            </div>\n            <p class=\"wf-text\" style=\"margin-top: 20px;\">※上記は目安です。お見積もりは無料で承ります。</p>\n        </section>\n\n        <!-- コンタクト -->\n        <section class=\"wf-section\" data-label=\"Contact\">\n            <h2 class=\"wf-heading\">お問い合わせ</h2>\n            <p class=\"wf-text\">ご依頼・ご相談はお気軽にご連絡ください。</p>\n            <div class=\"wf-btn\">WEB予約・お問い合わせはこちら</div>\n        </section>\n\n        <!-- フッター -->\n        <footer class=\"wf-section\" data-label=\"Footer\">\n            <p>&copy; 2023 sumie All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>",
+    "id": "cust-1772244554187",
+    "updatedAt": "2026-02-28T02:09:14.187Z",
+    "status": "hearing"
+  },
+  {
+    "name": "おばんざいすみどころ",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "おばんざいすみどころ"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。屋号は「おばんざいすみどころ」様ですね。\n\n次に、**(2) 業種・サービス内容**について詳しく教えていただけますか？（例：京都のおばんざいを提供する居酒屋、お惣菜のテイクアウト専門店など）"
+      },
+      {
+        "q": "user",
+        "a": "飲食店"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。飲食店（おばんざい）とのこと、承知いたしました。\n\n次に、**(3) ターゲット層**について教えてください。どのようなお客様にメインで利用していただきたいですか？（例：30代〜50代の落ち着いた大人の方、仕事帰りの会社員、地元のファミリー層など）"
+      },
+      {
+        "q": "user",
+        "a": "仕事帰りの会社員"
+      },
+      {
+        "q": "ai",
+        "a": "仕事帰りの会社員の皆様をターゲットにされるのですね。承知いたしました。\n\n次に、**(4) サイトの雰囲気・デザインの好み**について教えてください。\n（例：落ち着いた和モダン、仕事の疲れを癒やす温かみのある雰囲気、シンプルで清潔感のあるデザインなど、イメージされているものはありますか？）"
+      },
+      {
+        "q": "user",
+        "a": "温かみのある雰囲気"
+      },
+      {
+        "q": "ai",
+        "a": "温かみのある雰囲気ですね、承知いたしました。お仕事帰りにほっと一息つけるような、居心地の良いイメージで構成を考えさせていただきます。\n\nそれでは最後に、**(5) 掲載したい主な内容**について教えていただけますか？\n（例：おばんざいのメニュー紹介、こだわりの日本酒、店内の様子、アクセス情報、店主からのメッセージなど）"
+      },
+      {
+        "q": "user",
+        "a": "任せます"
+      },
+      {
+        "q": "ai",
+        "a": "「掲載内容は任せる」とのこと、承知いたしました。\nお仕事帰りの会社員の方が、一日の疲れを癒せるような「温かみのある雰囲気」を重視した構成案（ワイヤーフレーム）を作成しました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいすみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { border-bottom: 1px solid #ccc; padding: 20px; display: flex; justify-content: space-between; align-items: center; }\n        footer { padding: 40px; text-align: center; border-top: 1px solid #ccc; margin-top: 40px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div style=\"font-weight: bold; font-size: 20px;\">おばんざいすみどころ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Main Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">「おかえりなさい」が聞こえる、<br>心温まる一皿を。</h1>\n                    <p class=\"wf-text\">仕事帰りにふらりと立ち寄れる、家庭的なおばんざいのお店</p>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">当店について</h2>\n            <p class=\"wf-text\">毎日頑張る会社員の皆様が、ホッと一息つける場所を目指しています。<br>旬の食材を活かした温かいおばんざいとお酒をご用意しております。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu\">\n            <h2 class=\"wf-heading\">本日のおばんざい</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節の煮物</div>\n                <div class=\"wf-box\">出汁巻き卵</div>\n                <div class=\"wf-box\">日替わりのおばんざい</div>\n            </div>\n            <div class=\"wf-btn\">お品書きを見る</div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内の雰囲気</h2>\n            <div class=\"wf-box\" style=\"height: 200px;\">木のぬくもりを感じるカウンター席の写真</div>\n            <p class=\"wf-text\">お一人様でも気兼ねなく過ごせる落ち着いたカウンター席です。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access\">\n            <h2 class=\"wf-heading\">アクセス</h2>\n            <div class=\"wf-box\" style=\"height: 150px;\">Google Map エリア</div>\n            <p class=\"wf-text\">最寄り駅から徒歩5分<br>営業時間：17:00 〜 23:00</p>\n        </section>\n\n        <footer>\n            <p>&copy; おばんざいすみどころ All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいすみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { border-bottom: 1px solid #ccc; padding: 20px; display: flex; justify-content: space-between; align-items: center; }\n        footer { padding: 40px; text-align: center; border-top: 1px solid #ccc; margin-top: 40px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div style=\"font-weight: bold; font-size: 20px;\">おばんざいすみどころ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Main Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">「おかえりなさい」が聞こえる、<br>心温まる一皿を。</h1>\n                    <p class=\"wf-text\">仕事帰りにふらりと立ち寄れる、家庭的なおばんざいのお店</p>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">当店について</h2>\n            <p class=\"wf-text\">毎日頑張る会社員の皆様が、ホッと一息つける場所を目指しています。<br>旬の食材を活かした温かいおばんざいとお酒をご用意しております。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu\">\n            <h2 class=\"wf-heading\">本日のおばんざい</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節の煮物</div>\n                <div class=\"wf-box\">出汁巻き卵</div>\n                <div class=\"wf-box\">日替わりのおばんざい</div>\n            </div>\n            <div class=\"wf-btn\">お品書きを見る</div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内の雰囲気</h2>\n            <div class=\"wf-box\" style=\"height: 200px;\">木のぬくもりを感じるカウンター席の写真</div>\n            <p class=\"wf-text\">お一人様でも気兼ねなく過ごせる落ち着いたカウンター席です。</p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access\">\n            <h2 class=\"wf-heading\">アクセス</h2>\n            <div class=\"wf-box\" style=\"height: 150px;\">Google Map エリア</div>\n            <p class=\"wf-text\">最寄り駅から徒歩5分<br>営業時間：17:00 〜 23:00</p>\n        </section>\n\n        <footer>\n            <p>&copy; おばんざいすみどころ All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>",
+    "id": "cust-1772242806642",
+    "updatedAt": "2026-02-28T01:40:06.643Z",
+    "status": "hearing"
+  },
+  {
+    "name": "おばんざいどこすみえ",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "おばんざいどこすみえ"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。屋号は「おばんざいどこすみえ」様ですね。\n\n次に、業種や具体的なサービス内容について教えていただけますか？（例：家庭料理を提供する居酒屋、お惣菜のテイクアウト、ランチ営業の有無など）"
+      },
+      {
+        "q": "user",
+        "a": "飲食店"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。おばんざいを提供する飲食店とのこと、承知いたしました。\n\n次に、ターゲットとなるお客様の層（例：仕事帰りの30〜50代、近隣にお住まいのファミリー層、落ち着いた空間を求める大人の方など）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "仕事帰りの会社員"
+      },
+      {
+        "q": "ai",
+        "a": "ターゲットは仕事帰りの会社員の方々ですね。承知いたしました。\n\n次に、サイトの全体的な雰囲気やデザインの好みについて教えていただけますか？（例：落ち着いた和風、モダンでスタイリッシュ、温かみのあるアットホームな感じ、など）"
+      },
+      {
+        "q": "user",
+        "a": "温かみのあるアットホーム"
+      },
+      {
+        "q": "ai",
+        "a": "「温かみのあるアットホーム」な雰囲気ですね。お仕事帰りの方々がホッと一息つけるようなイメージで構成を考えていきます。\n\n最後になりますが、サイトに掲載したい主な内容（コンテンツ）を教えていただけますか？\n（例：お品書き（メニュー）、店主のこだわり、店内の様子、営業時間・地図、お知らせ、など）"
+      },
+      {
+        "q": "user",
+        "a": "おまかせ"
+      },
+      {
+        "q": "ai",
+        "a": "内容をおまかせいただき、ありがとうございます。\n「おばんざいどこすみえ」様の、温かみのあるアットホームな雰囲気を大切にし、仕事帰りの会社員の方が立ち寄りたくなるような構成案（ワイヤーフレーム）を作成しました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいどこすみえ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { border-bottom: 1px solid #ccc; padding: 20px; display: flex; justify-content: space-between; align-items: center; }\n        footer { border-top: 1px solid #ccc; padding: 20px; text-align: center; margin-top: 40px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div>おばんざいどこすみえ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Hero Section\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">「ただいま」と言いたくなる、<br>心温まるおばんざい。</h1>\n                    <p class=\"wf-text\">仕事帰りに、ホッと一息つける場所。</p>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">すみえのこだわり</h2>\n            <p class=\"wf-text\">\n                季節の野菜をふんだんに使った手作りのおばんざいと、<br>\n                アットホームな空間で、一日の疲れを癒します。<br>\n                お一人様でもお気軽にどうぞ。\n            </p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu\">\n            <h2 class=\"wf-heading\">本日のおばんざい</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節の小鉢</div>\n                <div class=\"wf-box\">日替わり主菜</div>\n                <div class=\"wf-box\">厳選した地酒</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">お品書きを見る</a>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内の様子</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\" style=\"height: 150px;\">カウンター席</div>\n                <div class=\"wf-box\" style=\"height: 150px;\">ゆったりテーブル席</div>\n                <div class=\"wf-box\" style=\"height: 150px;\">温かみのある照明</div>\n            </div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access / Info\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div class=\"wf-grid\" style=\"grid-template-columns: 1fr 1fr;\">\n                <div class=\"wf-box\">地図（Google Maps）</div>\n                <div style=\"text-align: left; padding: 10px;\">\n                    <p><strong>営業時間：</strong>17:00 〜 23:00</p>\n                    <p><strong>定休日：</strong>日曜日・祝日</p>\n                    <p><strong>住所：</strong>〇〇県〇〇市〇〇町1-2-3</p>\n                    <p><strong>電話：</strong>00-0000-0000</p>\n                </div>\n            </div>\n        </section>\n\n        <footer>\n            <p>&copy; おばんざいどこすみえ All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>おばんざいどこすみえ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        header { border-bottom: 1px solid #ccc; padding: 20px; display: flex; justify-content: space-between; align-items: center; }\n        footer { border-top: 1px solid #ccc; padding: 20px; text-align: center; margin-top: 40px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <header>\n            <div>おばんざいどこすみえ</div>\n            <nav>Menu / Concept / Access</nav>\n        </header>\n\n        <section class=\"wf-section\" data-label=\"Hero Section\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">「ただいま」と言いたくなる、<br>心温まるおばんざい。</h1>\n                    <p class=\"wf-text\">仕事帰りに、ホッと一息つける場所。</p>\n                </div>\n            </div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">すみえのこだわり</h2>\n            <p class=\"wf-text\">\n                季節の野菜をふんだんに使った手作りのおばんざいと、<br>\n                アットホームな空間で、一日の疲れを癒します。<br>\n                お一人様でもお気軽にどうぞ。\n            </p>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Menu\">\n            <h2 class=\"wf-heading\">本日のおばんざい</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">季節の小鉢</div>\n                <div class=\"wf-box\">日替わり主菜</div>\n                <div class=\"wf-box\">厳選した地酒</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">お品書きを見る</a>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Atmosphere\">\n            <h2 class=\"wf-heading\">店内の様子</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\" style=\"height: 150px;\">カウンター席</div>\n                <div class=\"wf-box\" style=\"height: 150px;\">ゆったりテーブル席</div>\n                <div class=\"wf-box\" style=\"height: 150px;\">温かみのある照明</div>\n            </div>\n        </section>\n\n        <section class=\"wf-section\" data-label=\"Access / Info\">\n            <h2 class=\"wf-heading\">店舗情報</h2>\n            <div class=\"wf-grid\" style=\"grid-template-columns: 1fr 1fr;\">\n                <div class=\"wf-box\">地図（Google Maps）</div>\n                <div style=\"text-align: left; padding: 10px;\">\n                    <p><strong>営業時間：</strong>17:00 〜 23:00</p>\n                    <p><strong>定休日：</strong>日曜日・祝日</p>\n                    <p><strong>住所：</strong>〇〇県〇〇市〇〇町1-2-3</p>\n                    <p><strong>電話：</strong>00-0000-0000</p>\n                </div>\n            </div>\n        </section>\n\n        <footer>\n            <p>&copy; おばんざいどこすみえ All Rights Reserved.</p>\n        </footer>\n    </div>\n</body>\n</html>",
+    "id": "cust-1772242079453",
+    "updatedAt": "2026-02-28T01:27:59.453Z",
+    "status": "hearing"
+  }
+]

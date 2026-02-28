@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Layout, MessageSquare, Sparkles, User, Box, PenLine, RefreshCw, BellRing } from 'lucide-react';
+import { TEMPLATES } from '../lib/templates';
 
 export default function PaletteDesign() {
   const [activeTab, setActiveTab] = useState<'chat' | 'preview'>('chat');
@@ -46,7 +47,9 @@ export default function PaletteDesign() {
 
     try {
       // 本番デザインの場合のみ、ここから下の保存処理が実行される
-      const customerName = currentMessages.find(m => m.role === 'user')?.content || "新規顧客";
+      // HTML内のtitleタグから屋号を取得し、なければ最初のユーザー発言、それもなければデフォルト値を使用
+      const titleMatch = code.match(/<title>(.*?)<\/title>/);
+      const customerName = titleMatch ? titleMatch[1] : (currentMessages.find(m => m.role === 'user')?.content || "新規顧客");
       
       const payload = {
         name: customerName,
@@ -72,6 +75,34 @@ export default function PaletteDesign() {
     }
   };
 
+  // 明示的に保存を行う関数
+  const saveToLab = async (currentMessages: any[], html: string) => {
+    if (!html) {
+      console.error("保存するHTMLがありません");
+      return;
+    }
+    try {
+      const titleMatch = html.match(/<title>(.*?)<\/title>/);
+      const customerName = titleMatch ? titleMatch[1] : "新規プロジェクト";
+      
+      const payload = {
+        name: customerName,
+        answers: currentMessages.map(m => ({ q: m.role, a: m.content })),
+        htmlCode: html
+      };
+
+      await fetch('/api/save-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("Labへの保存が完了しました");
+    } catch (err) {
+      console.error("保存エラー:", err);
+    }
+  };
+
   const handleSend = async (overrideText?: string, e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
     const messageToSend = overrideText || inputText;
@@ -83,12 +114,33 @@ export default function PaletteDesign() {
     setInputText("");
     setIsLoading(true);
 
+    // テンプレート情報をAIへの隠し指示として付与
+    const systemContext = `
+    【システム指示】
+    あなたはプロのWebデザイナーです。ユーザーからヒアリングを行い、Webサイトの構成案（ワイヤーフレーム）を作成します。
+
+    【進行ルール】
+    1. **必ず1問1答形式**で進めてください。一度に複数の質問をしないでください。
+    2. 以下の項目を順番にヒアリングしてください。
+       (1) 屋号・法人名（必須）
+       (2) 業種・サービス内容
+       (3) ターゲット層
+       (4) サイトの雰囲気・デザインの好み
+       (5) 掲載したい主な内容
+    3. ヒアリングが一通り完了したら、内容をまとめた**ワイヤーフレーム（HTML）**を作成して提示し、「この構成でよろしいでしょうか？」と確認してください。
+    4. ユーザーから「OK」や「承認」が得られたら、**HTMLコードは出力せず**、「ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。」とだけ伝えて会話を終了してください。
+    
+    【重要】
+    - ワイヤーフレームを出力する際は、必ず \`\`\`html ... \`\`\` の形式でコードを囲ってください。
+    - ワイヤーフレームの \`<title>\` タグには、必ずヒアリングした「屋号・法人名」を設定してください。
+    `;
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: messageToSend,
+          message: `${messageToSend}\n\n${systemContext}`,
           history: messages.map(m => ({
             role: m.role === 'ai' ? 'ai' : 'user', 
             content: m.content 
@@ -102,6 +154,12 @@ export default function PaletteDesign() {
         const newMessages = [...updatedMessages, { role: 'ai', content: aiText }];
         setMessages(newMessages);
         extractCode(aiText, newMessages);
+
+        // AIが保存完了メッセージを出した場合、フロントエンド側で保存処理を実行
+        if (aiText.includes("Labに保存しました") || aiText.includes("保存しました")) {
+          // generatedCodeステートは更新前かもしれないので、現在のstateまたは履歴からHTMLを探す
+          saveToLab(newMessages, generatedCode);
+        }
       } else {
         setMessages(prev => [...prev, { role: 'ai', content: "すみません、エラーが起きてしまいました。" }]);
       }

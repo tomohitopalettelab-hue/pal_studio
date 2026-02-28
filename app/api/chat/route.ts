@@ -13,44 +13,9 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { message, history } = body;
 
-    // 1. ユーザーの承諾（OKなど）を判定
-    const isApproved = /OK|いいよ|進めて|お願い|完璧|確定/.test(message);
-
-    // --- ★【lab連携：データ保存ロジックの復元】 ---
-    if (isApproved) {
-      try {
-        // ヒアリング内容を answers 配列の形式に整形
-        const answers = (history || [])
-          .filter((m: any) => m.role === 'user')
-          .map((m: any) => ({
-            q: "ヒアリング要望",
-            a: m.content
-          }));
-        
-        // 最後のユーザーメッセージも追加
-        answers.push({ q: "確定時メッセージ", a: message });
-
-        // 顧客名（とりあえずプロジェクト名として生成）
-        const projectName = `Project_${new Date().toLocaleDateString('ja-JP')}_${Math.floor(Math.random() * 1000)}`;
-
-        // すでにある save-customer API を叩く
-        const origin = new URL(req.url).origin;
-        await fetch(`${origin}/api/save-customer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: projectName,
-            answers: answers,
-            htmlCode: "" // 初期生成はlab画面側のボタンで行うため、まずは空で保存
-          })
-        });
-        
-        console.log("Lab（DB）への保存に成功しました");
-      } catch (dbError) {
-        console.error("Lab保存中の通信エラー:", dbError);
-      }
-    }
-    // ---------------------------------------------
+    // --- 修正点1: 判定の厳格化 ---
+    // 文中にOKが含まれるだけで反応しないよう、完全一致に近い判定に変更
+    const isApproved = /^(OK|いいよ|進めて|お願い|完璧|確定|大丈夫です)$/i.test(message.trim());
 
     const wireframeStyle = `
       <style>
@@ -65,12 +30,14 @@ export async function POST(req: Request) {
       </style>
     `;
 
+    // --- 修正点2: プロンプトの受け渡し ---
+    // フロント側から届く message (systemContext) を AI への命令として優先的に組み込む
     const systemInstruction = isApproved 
       ? `あなたはディレクターです。以下の案内メッセージのみを、HTMLを含めずプレーンテキストで返してください。
-         「ありがとうございます！ヒアリング内容を承りました。
-         それでは、5営業日以内にヒアリング内容を元に制作担当が初稿を制作いたします！
-         今しばらくお待ちくださいませ。」`
-      : `あなたは超一流のWebディレクターです。構造的で美しいワイヤーフレームをHTMLで作成してください。
+          「ありがとうございます！ヒアリング内容をLabに保存しました。管理画面で確認できます。」`
+      : `${message}
+
+         あなたは超一流のWebディレクターです。構造的で美しいワイヤーフレームをHTMLで作成してください。
          【ルール】
          1. 以下のスタイルガイド（${wireframeStyle}）を必ず含め、classを利用して構成してください。
          2. 色は使わず、グレー・白・黒・点線・実線のみで設計図として美しく表現してください。

@@ -1,29 +1,56 @@
-import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const { name, answers, htmlCode } = await request.json();
+    const body = await req.json();
+    
+    // データ保存用ディレクトリとファイルパス
+    const dataDir = path.join(process.cwd(), 'data');
+    const filePath = path.join(dataDir, 'customers.json');
 
-    // 顧客IDをランダムに生成（例: C-12345）
-    const customerId = `C-${Math.floor(10000 + Math.random() * 90000)}`;
+    // ディレクトリがなければ作成
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
 
-    // データベースに保存
-    const result = await sql`
-      INSERT INTO customers (customer_id, name, status, answers, html_code)
-      VALUES (${customerId}, ${name}, 'hearing', ${JSON.stringify(answers)}, ${htmlCode})
-      ON CONFLICT (customer_id) DO UPDATE SET
-        name = EXCLUDED.name,
-        answers = EXCLUDED.answers,
-        html_code = EXCLUDED.html_code,
-        updated_at = CURRENT_TIMESTAMP
-      RETURNING *;
-    `;
+    // 既存データを読み込み
+    let customers = [];
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      try {
+        customers = JSON.parse(fileContent);
+      } catch (e) {
+        console.error("JSON parse error", e);
+        customers = [];
+      }
+    }
 
-    console.log("DB保存成功:", result.rows[0]);
-    return NextResponse.json({ success: true, data: result.rows[0] });
-  } catch (error: any) {
-    console.error("DB保存エラー詳細:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    // 新規データか更新か
+    // IDがない場合は新規作成とみなす
+    const newCustomer = {
+      ...body,
+      id: body.id || `cust-${Date.now()}`,
+      updatedAt: new Date().toISOString(),
+      status: body.status || 'hearing',
+    };
+
+    // IDで検索して更新、なければ追加
+    const existingIndex = customers.findIndex((c: any) => c.id === newCustomer.id);
+    if (existingIndex >= 0) {
+      customers[existingIndex] = { ...customers[existingIndex], ...newCustomer };
+    } else {
+      // 新しいものを先頭に
+      customers.unshift(newCustomer);
+    }
+
+    // 保存
+    fs.writeFileSync(filePath, JSON.stringify(customers, null, 2), 'utf-8');
+
+    return NextResponse.json({ success: true, customer: newCustomer });
+  } catch (error) {
+    console.error('Save API Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

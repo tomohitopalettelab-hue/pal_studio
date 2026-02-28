@@ -1,5 +1,188 @@
 [
   {
+    "name": "株式会社東建ライフサービス",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "株式会社東建ライフサービス"
+      },
+      {
+        "q": "ai",
+        "a": "「株式会社東建ライフサービス」様ですね、承知いたしました。\n\n次に、**業種や具体的なサービス内容**について教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "生産設計図（施工図）作図事業\n仮設計画図（施工計画図）作図事業"
+      },
+      {
+        "q": "ai",
+        "a": "生産設計図（施工図）や仮設計画図（施工計画図）の作図を専門とされているのですね。承知いたしました。\n\n続いて、今回のWebサイトで想定している**ターゲット層（どのような悩みを持つ、どのような企業・担当者に見てもらいたいか）**を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "建築施工図、仮設計画図に関することでお悩みの方"
+      },
+      {
+        "q": "ai",
+        "a": "建築施工図や仮設計画図にお困りの現場担当者様や企業様がターゲットですね。承知いたしました。\n\n続いて、**サイトの雰囲気やデザインのご希望**はありますか？（例：信頼感のある硬めのデザイン、清潔感のあるシンプルなデザイン、先進的なイメージ、など）"
+      },
+      {
+        "q": "user",
+        "a": "信頼感のある硬めのデザイン"
+      },
+      {
+        "q": "ai",
+        "a": "「信頼感のある硬めのデザイン」ですね。技術力の高さや堅実さが伝わるような構成を検討させていただきます。\n\nヒアリングの最後として、**サイトに掲載したい主な内容（コンテンツ）**を教えていただけますか？\n（例：事業紹介、実績紹介、会社概要、お問い合わせフォーム、代表挨拶など）"
+      },
+      {
+        "q": "user",
+        "a": "事業紹介・企業情報・採用情報・問い合わせ"
+      },
+      {
+        "q": "ai",
+        "a": "ヒアリングにご協力いただきありがとうございました。\nこれまでの内容を踏まえ、株式会社東建ライフサービス様の信頼感と技術力を伝えるワイヤーフレームを作成いたしました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>株式会社東建ライフサービス</title>\n  <style>\n    .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 20px; }\n    .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n    .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n    .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n    .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n    .wf-text { color: #666; max-width: 800px; margin: 0 auto; }\n    .wf-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }\n    .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n    header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #eee; }\n    nav span { margin-left: 20px; font-size: 14px; font-weight: bold; }\n  </style>\n</head>\n<body>\n  <div class=\"wf-container\">\n    <!-- ヘッダー -->\n    <header>\n      <div style=\"font-size: 20px; font-weight: bold;\">株式会社東建ライフサービス</div>\n      <nav>\n        <span>事業紹介</span>\n        <span>企業情報</span>\n        <span>採用情報</span>\n        <span>お問い合わせ</span>\n      </nav>\n    </header>\n\n    <!-- メインビジュアル -->\n    <section class=\"wf-section\" data-label=\"Hero Section\">\n      <div class=\"wf-box\" style=\"height: 300px;\">\n        <div>\n          <h1 style=\"font-size: 32px;\">確かな技術で、建設の未来を支える。</h1>\n          <p class=\"wf-text\">生産設計図・仮設計画図作図のスペシャリスト集団</p>\n        </div>\n      </div>\n    </section>\n\n    <!-- 事業紹介 -->\n    <section class=\"wf-section\" data-label=\"Service\">\n      <div class=\"wf-heading\">事業紹介</div>\n      <p class=\"wf-text\">建築施工図・仮設計画図に関するあらゆる課題を解決いたします。</p>\n      <div class=\"wf-grid\">\n        <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n          <strong>生産設計図（施工図）作図事業</strong>\n          <p style=\"font-size: 13px; color: #666;\">正確かつ効率的な施工を実現するための高品質な図面を提供。</p>\n        </div>\n        <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n          <strong>仮設計画図（施工計画図）作図事業</strong>\n          <p style=\"font-size: 13px; color: #666;\">安全性を第一に考えた、現場環境に最適な仮設計画を提案。</p>\n        </div>\n      </div>\n    </section>\n\n    <!-- 企業情報 -->\n    <section class=\"wf-section\" data-label=\"Company Info\">\n      <div class=\"wf-heading\">企業情報</div>\n      <div class=\"wf-box\" style=\"max-width: 600px; margin: 20px auto;\">\n        <table style=\"width: 100%; text-align: left; padding: 20px;\">\n          <tr><th style=\"padding: 10px; border-bottom: 1px solid #ccc;\">社名</th><td style=\"padding: 10px; border-bottom: 1px solid #ccc;\">株式会社東建ライフサービス</td></tr>\n          <tr><th style=\"padding: 10px; border-bottom: 1px solid #ccc;\">所在地</th><td style=\"padding: 10px; border-bottom: 1px solid #ccc;\">（住所情報が入ります）</td></tr>\n          <tr><th style=\"padding: 10px; border-bottom: 1px solid #ccc;\">代表者</th><td style=\"padding: 10px; border-bottom: 1px solid #ccc;\">（代表者名が入ります）</td></tr>\n        </table>\n      </div>\n    </section>\n\n    <!-- 採用情報 -->\n    <section class=\"wf-section\" data-label=\"Recruitment\">\n      <div class=\"wf-heading\">採用情報</div>\n      <p class=\"wf-text\">私たちは、共に技術を磨き、建設業界を支える仲間を募集しています。</p>\n      <div class=\"wf-box\" style=\"height: 150px;\">採用に関するメッセージ・募集要項リンク</div>\n      <a href=\"#\" class=\"wf-btn\">採用詳細を見る</a>\n    </section>\n\n    <!-- お問い合わせ -->\n    <section class=\"wf-section\" data-label=\"Contact\">\n      <div class=\"wf-heading\">お問い合わせ</div>\n      <p class=\"wf-text\">図面作成の依頼やご相談など、お気軽にお問い合わせください。</p>\n      <div class=\"wf-box\" style=\"max-width: 500px; height: 200px; margin: 20px auto;\">\n        お問い合わせフォーム（名前・メール・内容入力欄）\n      </div>\n      <a href=\"#\" class=\"wf-btn\">送信する</a>\n    </section>\n\n    <!-- フッター -->\n    <footer style=\"text-align: center; padding: 40px; color: #999; font-size: 12px;\">\n      &copy; 株式会社東建ライフサービス All Rights Reserved.\n    </footer>\n  </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>株式会社東建ライフサービス</title>\n  <style>\n    .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 20px; }\n    .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n    .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n    .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n    .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n    .wf-text { color: #666; max-width: 800px; margin: 0 auto; }\n    .wf-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }\n    .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n    header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #eee; }\n    nav span { margin-left: 20px; font-size: 14px; font-weight: bold; }\n  </style>\n</head>\n<body>\n  <div class=\"wf-container\">\n    <!-- ヘッダー -->\n    <header>\n      <div style=\"font-size: 20px; font-weight: bold;\">株式会社東建ライフサービス</div>\n      <nav>\n        <span>事業紹介</span>\n        <span>企業情報</span>\n        <span>採用情報</span>\n        <span>お問い合わせ</span>\n      </nav>\n    </header>\n\n    <!-- メインビジュアル -->\n    <section class=\"wf-section\" data-label=\"Hero Section\">\n      <div class=\"wf-box\" style=\"height: 300px;\">\n        <div>\n          <h1 style=\"font-size: 32px;\">確かな技術で、建設の未来を支える。</h1>\n          <p class=\"wf-text\">生産設計図・仮設計画図作図のスペシャリスト集団</p>\n        </div>\n      </div>\n    </section>\n\n    <!-- 事業紹介 -->\n    <section class=\"wf-section\" data-label=\"Service\">\n      <div class=\"wf-heading\">事業紹介</div>\n      <p class=\"wf-text\">建築施工図・仮設計画図に関するあらゆる課題を解決いたします。</p>\n      <div class=\"wf-grid\">\n        <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n          <strong>生産設計図（施工図）作図事業</strong>\n          <p style=\"font-size: 13px; color: #666;\">正確かつ効率的な施工を実現するための高品質な図面を提供。</p>\n        </div>\n        <div class=\"wf-box\" style=\"flex-direction: column; padding: 20px;\">\n          <strong>仮設計画図（施工計画図）作図事業</strong>\n          <p style=\"font-size: 13px; color: #666;\">安全性を第一に考えた、現場環境に最適な仮設計画を提案。</p>\n        </div>\n      </div>\n    </section>\n\n    <!-- 企業情報 -->\n    <section class=\"wf-section\" data-label=\"Company Info\">\n      <div class=\"wf-heading\">企業情報</div>\n      <div class=\"wf-box\" style=\"max-width: 600px; margin: 20px auto;\">\n        <table style=\"width: 100%; text-align: left; padding: 20px;\">\n          <tr><th style=\"padding: 10px; border-bottom: 1px solid #ccc;\">社名</th><td style=\"padding: 10px; border-bottom: 1px solid #ccc;\">株式会社東建ライフサービス</td></tr>\n          <tr><th style=\"padding: 10px; border-bottom: 1px solid #ccc;\">所在地</th><td style=\"padding: 10px; border-bottom: 1px solid #ccc;\">（住所情報が入ります）</td></tr>\n          <tr><th style=\"padding: 10px; border-bottom: 1px solid #ccc;\">代表者</th><td style=\"padding: 10px; border-bottom: 1px solid #ccc;\">（代表者名が入ります）</td></tr>\n        </table>\n      </div>\n    </section>\n\n    <!-- 採用情報 -->\n    <section class=\"wf-section\" data-label=\"Recruitment\">\n      <div class=\"wf-heading\">採用情報</div>\n      <p class=\"wf-text\">私たちは、共に技術を磨き、建設業界を支える仲間を募集しています。</p>\n      <div class=\"wf-box\" style=\"height: 150px;\">採用に関するメッセージ・募集要項リンク</div>\n      <a href=\"#\" class=\"wf-btn\">採用詳細を見る</a>\n    </section>\n\n    <!-- お問い合わせ -->\n    <section class=\"wf-section\" data-label=\"Contact\">\n      <div class=\"wf-heading\">お問い合わせ</div>\n      <p class=\"wf-text\">図面作成の依頼やご相談など、お気軽にお問い合わせください。</p>\n      <div class=\"wf-box\" style=\"max-width: 500px; height: 200px; margin: 20px auto;\">\n        お問い合わせフォーム（名前・メール・内容入力欄）\n      </div>\n      <a href=\"#\" class=\"wf-btn\">送信する</a>\n    </section>\n\n    <!-- フッター -->\n    <footer style=\"text-align: center; padding: 40px; color: #999; font-size: 12px;\">\n      &copy; 株式会社東建ライフサービス All Rights Reserved.\n    </footer>\n  </div>\n</body>\n</html>",
+    "id": "cust-1772262208796",
+    "updatedAt": "2026-02-28T07:03:28.796Z",
+    "status": "hearing"
+  },
+  {
+    "name": "Palette Lab",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "Palette Lab"
+      },
+      {
+        "q": "ai",
+        "a": "承知いたしました。屋号は「Palette Lab」ですね。\n\n次に、**(2) 業種や具体的なサービス内容**について教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "WEBマーケティング"
+      },
+      {
+        "q": "ai",
+        "a": "Webマーケティング事業ですね、承知いたしました。\n\n次に、**(3) ターゲット層**（どのような悩みを持つ、どのような方々に届けたいか）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "WEB集客でお困りの方"
+      },
+      {
+        "q": "ai",
+        "a": "WEB集客でお困りの方々をターゲットにするとのこと、承知いたしました。\n\n次に、**(4) サイトの雰囲気やデザインのご希望**はありますか？（例：信頼感のあるシンプル、洗練されたモダン、親しみやすい雰囲気など）"
+      },
+      {
+        "q": "user",
+        "a": "信頼感とスマートな感じ"
+      },
+      {
+        "q": "ai",
+        "a": "「信頼感とスマートな感じ」ですね。誠実さと高い技術力が伝わるようなデザインを意識します。\n\n最後に、**(5) サイトに掲載したい主な内容**を教えていただけますか？\n（例：サービス内容の詳細、選ばれる理由、過去の実績、お客様の声、会社概要、お問い合わせなど）"
+      },
+      {
+        "q": "user",
+        "a": "サービス内容、会社概要、問い合わせ"
+      },
+      {
+        "q": "ai",
+        "a": "ヒアリングにご協力いただきありがとうございました。\nこれまでの内容を元に、信頼感とスマートさを兼ね備えたWebサイトの構成案（ワイヤーフレーム）を作成しました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Palette Lab</title>\n  <style>\n    .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 0 20px; }\n    .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n    .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n    .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; flex-direction: column; padding: 20px; }\n    .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n    .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n    .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n    .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n    header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #eee; }\n    .logo { font-size: 20px; font-weight: bold; }\n    nav span { margin-left: 20px; font-size: 14px; }\n  </style>\n</head>\n<body class=\"wf-container\">\n\n  <header>\n    <div class=\"logo\">Palette Lab</div>\n    <nav>\n      <span>Service</span>\n      <span>About</span>\n      <span>Contact</span>\n    </nav>\n  </header>\n\n  <div class=\"wf-section\" data-label=\"Hero Section\">\n    <h1 class=\"wf-heading\">WEB集客を、もっとスマートに。</h1>\n    <p class=\"wf-text\">Palette Labは、データに基づいた最適なWEBマーケティングを提供し、お客様のビジネス成長を支えます。</p>\n    <a href=\"#\" class=\"wf-btn\">詳しく見る</a>\n  </div>\n\n  <div class=\"wf-section\" data-label=\"Service Section\">\n    <h2 class=\"wf-heading\">サービス内容</h2>\n    <p class=\"wf-text\">WEB集客にお困りの方へ、多角的なソリューションを提案します。</p>\n    <div class=\"wf-grid\">\n      <div class=\"wf-box\">\n        <strong>WEBコンサルティング</strong>\n        <p style=\"font-size: 12px; margin-top: 10px;\">戦略立案から伴走支援まで</p>\n      </div>\n      <div class=\"wf-box\">\n        <strong>広告運用代行</strong>\n        <p style=\"font-size: 12px; margin-top: 10px;\">効果的な流入を最大化</p>\n      </div>\n      <div class=\"wf-box\">\n        <strong>SEO対策</strong>\n        <p style=\"font-size: 12px; margin-top: 10px;\">検索上位表示で安定集客</p>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"wf-section\" data-label=\"Company Section\">\n    <h2 class=\"wf-heading\">会社概要</h2>\n    <div class=\"wf-box\" style=\"text-align: left; align-items: flex-start; max-width: 600px;\">\n      <p><strong>屋号:</strong> Palette Lab</p>\n      <p><strong>事業内容:</strong> WEBマーケティング支援・コンサルティング</p>\n      <p><strong>ミッション:</strong> デジタルの力でビジネスの可能性を広げる</p>\n    </div>\n  </div>\n\n  <div class=\"wf-section\" data-label=\"Contact Section\">\n    <h2 class=\"wf-heading\">お問い合わせ</h2>\n    <p class=\"wf-text\">集客に関するお悩みやご相談など、お気軽にお問い合わせください。</p>\n    <div class=\"wf-box\">\n      <p>お問い合わせフォーム（入力項目：名前、メール、内容）</p>\n    </div>\n    <a href=\"#\" class=\"wf-btn\">送信する</a>\n  </div>\n\n  <footer style=\"text-align: center; padding: 40px; color: #999; font-size: 12px;\">\n    &copy; Palette Lab All Rights Reserved.\n  </footer>\n\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Palette Lab</title>\n  <style>\n    .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 0 20px; }\n    .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n    .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n    .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; flex-direction: column; padding: 20px; }\n    .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n    .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n    .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n    .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n    header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #eee; }\n    .logo { font-size: 20px; font-weight: bold; }\n    nav span { margin-left: 20px; font-size: 14px; }\n  </style>\n</head>\n<body class=\"wf-container\">\n\n  <header>\n    <div class=\"logo\">Palette Lab</div>\n    <nav>\n      <span>Service</span>\n      <span>About</span>\n      <span>Contact</span>\n    </nav>\n  </header>\n\n  <div class=\"wf-section\" data-label=\"Hero Section\">\n    <h1 class=\"wf-heading\">WEB集客を、もっとスマートに。</h1>\n    <p class=\"wf-text\">Palette Labは、データに基づいた最適なWEBマーケティングを提供し、お客様のビジネス成長を支えます。</p>\n    <a href=\"#\" class=\"wf-btn\">詳しく見る</a>\n  </div>\n\n  <div class=\"wf-section\" data-label=\"Service Section\">\n    <h2 class=\"wf-heading\">サービス内容</h2>\n    <p class=\"wf-text\">WEB集客にお困りの方へ、多角的なソリューションを提案します。</p>\n    <div class=\"wf-grid\">\n      <div class=\"wf-box\">\n        <strong>WEBコンサルティング</strong>\n        <p style=\"font-size: 12px; margin-top: 10px;\">戦略立案から伴走支援まで</p>\n      </div>\n      <div class=\"wf-box\">\n        <strong>広告運用代行</strong>\n        <p style=\"font-size: 12px; margin-top: 10px;\">効果的な流入を最大化</p>\n      </div>\n      <div class=\"wf-box\">\n        <strong>SEO対策</strong>\n        <p style=\"font-size: 12px; margin-top: 10px;\">検索上位表示で安定集客</p>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"wf-section\" data-label=\"Company Section\">\n    <h2 class=\"wf-heading\">会社概要</h2>\n    <div class=\"wf-box\" style=\"text-align: left; align-items: flex-start; max-width: 600px;\">\n      <p><strong>屋号:</strong> Palette Lab</p>\n      <p><strong>事業内容:</strong> WEBマーケティング支援・コンサルティング</p>\n      <p><strong>ミッション:</strong> デジタルの力でビジネスの可能性を広げる</p>\n    </div>\n  </div>\n\n  <div class=\"wf-section\" data-label=\"Contact Section\">\n    <h2 class=\"wf-heading\">お問い合わせ</h2>\n    <p class=\"wf-text\">集客に関するお悩みやご相談など、お気軽にお問い合わせください。</p>\n    <div class=\"wf-box\">\n      <p>お問い合わせフォーム（入力項目：名前、メール、内容）</p>\n    </div>\n    <a href=\"#\" class=\"wf-btn\">送信する</a>\n  </div>\n\n  <footer style=\"text-align: center; padding: 40px; color: #999; font-size: 12px;\">\n    &copy; Palette Lab All Rights Reserved.\n  </footer>\n\n</body>\n</html>",
+    "id": "cust-1772260858215",
+    "updatedAt": "2026-02-28T06:40:58.215Z",
+    "status": "hearing"
+  },
+  {
+    "name": "すみどころ",
+    "answers": [
+      {
+        "q": "ai",
+        "a": "こんにちは！Palette AIです。素敵なホームページを作るために、いくつか質問をさせていただきますね。まず、お名前や屋号（サービス名）を教えていただけますか？"
+      },
+      {
+        "q": "user",
+        "a": "すみどころ"
+      },
+      {
+        "q": "ai",
+        "a": "「すみどころ」様ですね。承知いたしました。\n\n続いて、**（2）業種やサービス内容**について詳しく教えていただけますか？（例：不動産業、シェアハウス運営、カフェ、宿泊施設など）"
+      },
+      {
+        "q": "user",
+        "a": "エステサロン"
+      },
+      {
+        "q": "ai",
+        "a": "エステサロンですね。承知いたしました。\n\n次に、**(3) ターゲット層**（どのようなお客様に来ていただきたいか、年齢層や抱えているお悩みなど）について教えていただけますでしょうか？"
+      },
+      {
+        "q": "user",
+        "a": "若い女"
+      },
+      {
+        "q": "ai",
+        "a": "若い女性がターゲットのエステサロンですね。承知いたしました。\n\n次に、**(4) サイトの雰囲気やデザインの好み**を教えていただけますか？\n（例：シンプルで清潔感がある、韓国風で可愛い、落ち着いた高級感がある、など）"
+      },
+      {
+        "q": "user",
+        "a": "韓国風でかわいい"
+      },
+      {
+        "q": "ai",
+        "a": "「韓国風でかわいい」デザインですね、承知いたしました！ニュアンスカラーやトレンド感を取り入れた、おしゃれな雰囲気になるよう進めさせていただきます。\n\nそれでは最後に、**(5) 掲載したい主な内容**を教えていただけますか？\n（例：施術メニュー、ビフォーアフター、スタッフ紹介、アクセス、インスタグラムの連携など）"
+      },
+      {
+        "q": "user",
+        "a": "施術メニューとビフォーアフター、インスタと連携もいいね"
+      },
+      {
+        "q": "ai",
+        "a": "ヒアリングへのご協力ありがとうございました。\nこれまでの内容を元に、韓国風でかわいい雰囲気を意識した「すみどころ」様のWebサイト構成案（ワイヤーフレーム）を作成いたしました。\n\n```html\n<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>すみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        .wf-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #ddd; }\n        .wf-footer { padding: 40px 20px; background: #f0f0f0; text-align: center; font-size: 12px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <!-- ヘッダー -->\n        <header class=\"wf-header\">\n            <div style=\"font-size: 20px; font-weight: bold;\">すみどころ</div>\n            <nav>MENU / BEFORE&AFTER / INSTAGRAM / ACCESS</nav>\n        </header>\n\n        <!-- メインビジュアル -->\n        <section class=\"wf-section\" data-label=\"Main Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">韓国風かわいいを叶えるエステ</h1>\n                    <p class=\"wf-text\">〜自分史上最高の「かわいい」を、ここから〜</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- コンセプト -->\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">Concept</h2>\n            <p class=\"wf-text\">トレンドに敏感な若い女性のための、居心地の良い韓国風空間。最新の技術であなたの美しさを引き出します。</p>\n        </section>\n\n        <!-- 施術メニュー -->\n        <section class=\"wf-section\" data-label=\"Menu\">\n            <h2 class=\"wf-heading\">Menu</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">メニュー A<br>¥0,000</div>\n                <div class=\"wf-box\">メニュー B<br>¥0,000</div>\n                <div class=\"wf-box\">メニュー C<br>¥0,000</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">すべてのメニューを見る</a>\n        </section>\n\n        <!-- ビフォーアフター -->\n        <section class=\"wf-section\" data-label=\"Before & After\">\n            <h2 class=\"wf-heading\">Before & After</h2>\n            <div class=\"wf-grid\">\n                <div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (Before)</div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (After)</div>\n                </div>\n                <div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (Before)</div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (After)</div>\n                </div>\n                <div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (Before)</div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (After)</div>\n                </div>\n            </div>\n        </section>\n\n        <!-- インスタグラム連携 -->\n        <section class=\"wf-section\" data-label=\"Instagram\">\n            <h2 class=\"wf-heading\">Instagram</h2>\n            <div class=\"wf-text\">@sumidokoro_official</div>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 1</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 2</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 3</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 4</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 5</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 6</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">Follow Us</a>\n        </section>\n\n        <!-- アクセス・予約 -->\n        <section class=\"wf-section\" data-label=\"Access & Reservation\">\n            <h2 class=\"wf-heading\">Access</h2>\n            <div class=\"wf-box\" style=\"height: 200px; background: #e0e0e0;\">Google Maps Placeholder</div>\n            <p class=\"wf-text\">住所：東京都〇〇区...<br>営業時間：11:00 〜 20:00</p>\n            <a href=\"#\" class=\"wf-btn\" style=\"background: #333; color: #fff;\">ご予約はこちら</a>\n        </section>\n\n        <!-- フッター -->\n        <footer class=\"wf-footer\">\n            © 2023 すみどころ All Rights Reserved.\n        </footer>\n    </div>\n</body>\n</html>\n```\n\nこちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）"
+      },
+      {
+        "q": "user",
+        "a": "OK"
+      },
+      {
+        "q": "ai",
+        "a": "ありがとうございます。ヒアリング内容をLabに保存しました。5営業日程で制作が完了しますので、少々お待ちください。"
+      }
+    ],
+    "htmlCode": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>すみどころ</title>\n    <style>\n        .wf-container { font-family: 'Inter', sans-serif; color: #333; background: #fff; line-height: 1.6; max-width: 1200px; margin: 0 auto; }\n        .wf-section { border: 2px dashed #ccc; margin: 20px 0; padding: 40px 20px; text-align: center; background: #f9f9f9; position: relative; }\n        .wf-section::before { content: attr(data-label); position: absolute; top: 5px; left: 10px; font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; }\n        .wf-box { border: 1px solid #ddd; background: #eee; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 10px auto; }\n        .wf-heading { font-size: 24px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }\n        .wf-text { color: #666; max-width: 600px; margin: 0 auto; }\n        .wf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }\n        .wf-btn { border: 2px solid #333; padding: 10px 20px; display: inline-block; font-weight: bold; margin-top: 15px; text-decoration: none; color: #333; }\n        .wf-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #ddd; }\n        .wf-footer { padding: 40px 20px; background: #f0f0f0; text-align: center; font-size: 12px; }\n    </style>\n</head>\n<body>\n    <div class=\"wf-container\">\n        <!-- ヘッダー -->\n        <header class=\"wf-header\">\n            <div style=\"font-size: 20px; font-weight: bold;\">すみどころ</div>\n            <nav>MENU / BEFORE&AFTER / INSTAGRAM / ACCESS</nav>\n        </header>\n\n        <!-- メインビジュアル -->\n        <section class=\"wf-section\" data-label=\"Main Visual\">\n            <div class=\"wf-box\" style=\"height: 400px;\">\n                <div>\n                    <h1 class=\"wf-heading\">韓国風かわいいを叶えるエステ</h1>\n                    <p class=\"wf-text\">〜自分史上最高の「かわいい」を、ここから〜</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- コンセプト -->\n        <section class=\"wf-section\" data-label=\"Concept\">\n            <h2 class=\"wf-heading\">Concept</h2>\n            <p class=\"wf-text\">トレンドに敏感な若い女性のための、居心地の良い韓国風空間。最新の技術であなたの美しさを引き出します。</p>\n        </section>\n\n        <!-- 施術メニュー -->\n        <section class=\"wf-section\" data-label=\"Menu\">\n            <h2 class=\"wf-heading\">Menu</h2>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\">メニュー A<br>¥0,000</div>\n                <div class=\"wf-box\">メニュー B<br>¥0,000</div>\n                <div class=\"wf-box\">メニュー C<br>¥0,000</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">すべてのメニューを見る</a>\n        </section>\n\n        <!-- ビフォーアフター -->\n        <section class=\"wf-section\" data-label=\"Before & After\">\n            <h2 class=\"wf-heading\">Before & After</h2>\n            <div class=\"wf-grid\">\n                <div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (Before)</div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (After)</div>\n                </div>\n                <div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (Before)</div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (After)</div>\n                </div>\n                <div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (Before)</div>\n                    <div class=\"wf-box\" style=\"height: 150px;\">IMAGE (After)</div>\n                </div>\n            </div>\n        </section>\n\n        <!-- インスタグラム連携 -->\n        <section class=\"wf-section\" data-label=\"Instagram\">\n            <h2 class=\"wf-heading\">Instagram</h2>\n            <div class=\"wf-text\">@sumidokoro_official</div>\n            <div class=\"wf-grid\">\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 1</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 2</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 3</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 4</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 5</div>\n                <div class=\"wf-box\" style=\"aspect-ratio: 1/1;\">Feed 6</div>\n            </div>\n            <a href=\"#\" class=\"wf-btn\">Follow Us</a>\n        </section>\n\n        <!-- アクセス・予約 -->\n        <section class=\"wf-section\" data-label=\"Access & Reservation\">\n            <h2 class=\"wf-heading\">Access</h2>\n            <div class=\"wf-box\" style=\"height: 200px; background: #e0e0e0;\">Google Maps Placeholder</div>\n            <p class=\"wf-text\">住所：東京都〇〇区...<br>営業時間：11:00 〜 20:00</p>\n            <a href=\"#\" class=\"wf-btn\" style=\"background: #333; color: #fff;\">ご予約はこちら</a>\n        </section>\n\n        <!-- フッター -->\n        <footer class=\"wf-footer\">\n            © 2023 すみどころ All Rights Reserved.\n        </footer>\n    </div>\n</body>\n</html>",
+    "id": "cust-1772258861163",
+    "updatedAt": "2026-02-28T06:07:41.163Z",
+    "status": "hearing"
+  },
+  {
     "name": "すみどころ",
     "answers": [
       {

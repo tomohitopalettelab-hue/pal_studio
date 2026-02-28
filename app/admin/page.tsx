@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Layout, Check, RotateCcw, Monitor, Smartphone, Search, Eye, EyeOff, Plus, Sparkles, Loader2, Grid } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Layout, Check, RotateCcw, Monitor, Smartphone, Search, Eye, EyeOff, Plus, Sparkles, Loader2, Grid, Image as ImageIcon, Upload, Wand2, X } from 'lucide-react';
 import { templates, Template } from './templates';
 
 type Customer = {
@@ -47,6 +47,14 @@ export default function PaletteLab() {
   const [aiInstruction, setAiInstruction] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  
+  // 画像編集用ステート
+  const [editingImage, setEditingImage] = useState<{ pid: string, src: string, alt: string } | null>(null);
+  const [imageSearchQuery, setImageSearchQuery] = useState("");
+  const [searchedImages, setSearchedImages] = useState<any[]>([]);
+  const [isSearchingImage, setIsSearchingImage] = useState(false);
+  const [imageTab, setImageTab] = useState<'upload' | 'search' | 'generate'>('search');
+  const [generatedImageUrl, setGeneratedImageUrl] = useState("");
   
   const [activeSections, setActiveSections] = useState<{ [key: string]: boolean }>({
     "top": true,
@@ -95,6 +103,18 @@ export default function PaletteLab() {
 
   useEffect(() => {
     refreshCustomers();
+  }, []);
+
+  // iframeからのメッセージ受信（画像クリック検知）
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (event.data.type === 'IMAGE_CLICK') {
+        setEditingImage(event.data);
+        setImageSearchQuery(event.data.alt || "business"); // altを初期キーワードにする
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
   }, []);
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
@@ -269,22 +289,208 @@ export default function PaletteLab() {
     }
   };
 
-  const getProcessedHtml = (html: string) => {
+  // 画像検索ハンドラ
+  const handleImageSearch = async () => {
+    if (!imageSearchQuery) return;
+    setIsSearchingImage(true);
+    try {
+      const res = await fetch('/api/search-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: imageSearchQuery })
+      });
+      const data = await res.json();
+      setSearchedImages(data.images || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSearchingImage(false);
+    }
+  };
+
+  // 画像適用ハンドラ
+  const applyNewImage = (newSrc: string) => {
+    if (!selectedCustomer || !editingImage) return;
+
+    // pidからインデックスを抽出 (例: "img-0" -> 0)
+    const indexMatch = editingImage.pid.match(/img-(\d+)/);
+    if (!indexMatch) return;
+    const targetIndex = parseInt(indexMatch[1], 10);
+
+    let currentIndex = 0;
+    // imgタグを検索して、targetIndex番目のものを置換
+    const updatedHtml = selectedCustomer.htmlCode.replace(/<img\s+([^>]*?)>/gi, (match) => {
+      if (currentIndex === targetIndex) {
+        // src属性を置換
+        return match.replace(/src="[^"]*"/, `src="${newSrc}"`);
+      }
+      currentIndex++;
+      return match;
+    });
+
+    setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, htmlCode: updatedHtml } : c));
+    setEditingImage(null); // モーダルを閉じる
+  };
+
+  // ファイルアップロードハンドラ
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        applyNewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getProcessedHtml = (html: string, enableEdit: boolean = true) => {
     if (!html) return "";
     let processed = html;
+    
     Object.keys(activeSections).forEach(id => {
       if (!activeSections[id]) {
-        // id="sectionId" を検索し、hidden属性とstyleを追加して非表示にする
-        // 既存のstyle属性と競合しないよう、!importantを使用
         const regex = new RegExp(`id="${id}"`, 'g');
         processed = processed.replace(regex, `id="${id}" hidden style="display: none !important;"`);
       }
     });
+
+    if (enableEdit) {
+      // imgタグにユニークID (data-pid) を付与し、クリックイベント用のスタイルを追加
+      let imgIndex = 0;
+      // 既存のdata-pidがない場合のみ付与
+      processed = processed.replace(/<img\s+([^>]*?)>/gi, (match, attrs) => {
+        if (attrs.includes('data-pid')) return match;
+        const pid = `img-${imgIndex}`;
+        imgIndex++;
+        return `<img data-pid="${pid}" ${attrs} style="cursor: pointer; transition: 0.2s; outline: 2px solid transparent;" onmouseover="this.style.outline='4px solid #4f46e5'; this.style.zIndex='100';" onmouseout="this.style.outline='2px solid transparent'">`;
+      });
+
+      // クリックイベントを親ウィンドウに送信するスクリプトを注入
+      processed += `
+        <script>
+          document.body.addEventListener('click', function(e) {
+            if (e.target.tagName === 'IMG') {
+              e.preventDefault();
+              e.stopPropagation();
+              window.parent.postMessage({ type: 'IMAGE_CLICK', pid: e.target.getAttribute('data-pid'), src: e.target.src, alt: e.target.alt }, '*');
+            }
+          }, true);
+        </script>
+      `;
+    }
+
     return processed;
   };
 
   return (
     <div className="h-screen w-full flex flex-col bg-[#F0F2F5] overflow-hidden text-slate-800 font-sans">
+      {/* 画像編集モーダル */}
+      {editingImage && (
+        <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[80vh]">
+            <div className="p-4 border-b flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                <ImageIcon className="w-4 h-4" /> 画像を変更
+              </h3>
+              <button onClick={() => setEditingImage(null)} className="p-1 hover:bg-slate-200 rounded-full"><X className="w-5 h-5" /></button>
+            </div>
+            
+            <div className="flex border-b">
+              <button onClick={() => setImageTab('search')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${imageTab === 'search' ? 'border-b-2 border-indigo-500 text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50'}`}>
+                <Search className="w-4 h-4" /> 素材検索 (無料)
+              </button>
+              <button onClick={() => setImageTab('upload')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${imageTab === 'upload' ? 'border-b-2 border-indigo-500 text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50'}`}>
+                <Upload className="w-4 h-4" /> アップロード
+              </button>
+              <button onClick={() => setImageTab('generate')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${imageTab === 'generate' ? 'border-b-2 border-indigo-500 text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50'}`}>
+                <Wand2 className="w-4 h-4" /> AI生成
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 bg-slate-50">
+              {imageTab === 'search' && (
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={imageSearchQuery} 
+                      onChange={(e) => setImageSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleImageSearch()}
+                      placeholder="キーワード (例: cafe, office, nature)" 
+                      className="flex-1 p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <button onClick={handleImageSearch} disabled={isSearchingImage} className="px-6 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-700">
+                      {isSearchingImage ? 'Searching...' : 'Search'}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {searchedImages.map((img) => (
+                      <button key={img.id} onClick={() => applyNewImage(img.url)} className="group relative aspect-video bg-slate-200 rounded-lg overflow-hidden hover:ring-2 ring-indigo-500 transition-all">
+                        <img src={img.thumb} alt={img.alt} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                        <p className="absolute bottom-1 left-1 text-[8px] text-white opacity-0 group-hover:opacity-100 truncate w-full px-1">{img.photographer}</p>
+                      </button>
+                    ))}
+                  </div>
+                  {searchedImages.length === 0 && !isSearchingImage && (
+                    <p className="text-center text-slate-400 text-xs py-8">キーワードを入力して検索してください</p>
+                  )}
+                </div>
+              )}
+
+              {imageTab === 'upload' && (
+                <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-slate-300 rounded-2xl bg-white hover:bg-slate-50 transition-colors relative">
+                  <input type="file" accept="image/*" onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                  <Upload className="w-12 h-12 text-slate-300 mb-4" />
+                  <p className="text-sm font-bold text-slate-500">クリックして画像を選択</p>
+                  <p className="text-xs text-slate-400 mt-2">またはドラッグ＆ドロップ</p>
+                </div>
+              )}
+
+              {imageTab === 'generate' && (
+                <div className="space-y-4">
+                  <p className="text-xs text-slate-500 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <strong>AI生成 (Beta):</strong> 理想の画像が見つからない場合に利用してください。プロンプトに基づいて画像を生成します。
+                  </p>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={imageSearchQuery} 
+                      onChange={(e) => setImageSearchQuery(e.target.value)}
+                      placeholder="どんな画像を作りますか？ (例: futuristic city with neon lights)" 
+                      className="flex-1 p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <button 
+                      onClick={() => {
+                        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(imageSearchQuery)}`;
+                        setGeneratedImageUrl(url);
+                      }}
+                      className="px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90"
+                    >
+                      Generate
+                    </button>
+                  </div>
+                  {generatedImageUrl && (
+                    <div className="mt-4">
+                      <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden relative group">
+                        <img src={generatedImageUrl} className="w-full h-full object-cover" />
+                        <button 
+                          onClick={() => applyNewImage(generatedImageUrl)}
+                          className="absolute bottom-4 right-4 px-6 py-2 bg-white text-slate-900 rounded-full font-bold text-xs shadow-lg hover:scale-105 transition-transform"
+                        >
+                          この画像を使用する
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="h-14 w-full bg-slate-900 text-white flex items-center justify-between px-6 shrink-0 z-50">
         <div className="flex items-center gap-3">
           <div className="bg-indigo-500 p-1 rounded-lg"><Layout className="w-5 h-5" /></div>
@@ -390,6 +596,13 @@ export default function PaletteLab() {
                       <div key={i} className="mb-2 last:mb-0">
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Q: {ans.q}</p>
                         <p className="text-[11px] font-medium text-slate-700 leading-tight">{ans.a}</p>
+                        {ans.a?.startsWith('data:image') ? (
+                          <div className="mt-1">
+                            <img src={ans.a} alt="Answer Image" className="max-w-full h-auto rounded-lg border border-slate-200 max-h-40 object-contain" />
+                          </div>
+                        ) : (
+                          <p className="text-[11px] font-medium text-slate-700 leading-tight">{ans.a}</p>
+                        )}
                       </div>
                     ))
                   ) : (

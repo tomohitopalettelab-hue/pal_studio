@@ -29,9 +29,13 @@ export async function POST(req: Request) {
 
     // 新規データか更新か
     // IDがない場合は新規作成とみなす
+
+    // `customer_id` は外部の "customers サーバー" が発行する識別子として
+    // body から渡される想定。なければ内部生成しておく。
     const newCustomer = {
       ...body,
       id: body.id || `cust-${Date.now()}`,
+      customer_id: body.customer_id || `custsrv-${Date.now()}`,
       updatedAt: new Date().toISOString(),
       status: body.status || 'hearing',
     };

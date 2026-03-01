@@ -231,17 +231,29 @@ export default function PaletteLab() {
       ${baseHtml}
       `;
 
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: prompt,
-          history: []
-        })
-      });
+      // 高負荷や503エラーに備えてリトライを行う
+      let response: Response;
+      let attempt = 0;
+      const maxAttempts = 3;
+      while (true) {
+        attempt++;
+        response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: prompt,
+            history: []
+          })
+        });
 
-      // サーバーエラーの場合の処理を追加
-      if (!response.ok) {
+        if (response.ok) break;
+
+        if (response.status === 503 && attempt < maxAttempts) {
+          console.warn(`AIモデル高負荷: ${attempt}/${maxAttempts} リトライ中...`);
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+          continue;
+        }
+
         const errorData = await response.json().catch(() => ({ text: response.statusText }));
         throw new Error(errorData.text || `Server error: ${response.status}`);
       }
@@ -286,6 +298,60 @@ export default function PaletteLab() {
       }
     } catch (error) {
       alert("保存に失敗しました。");
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!selectedCustomer) return;
+
+    if (!selectedCustomer.htmlCode) {
+      alert("公開するHTMLがありません。編集またはAI生成を行ってください。");
+      return;
+    }
+
+    if (!confirm("現在の内容で公開ページを作成しますか？")) return;
+
+    setIsLoadingData(true);
+    try {
+      // 常に新しい公開ページを発行したいので、
+      // 既存の ID を破棄してバックエンド側に新規生成させる。
+      // 通常はテンプレートから公開する場合のみ生成していたが、
+      // 何度公開しても同じ URL になってしまう問題を防ぐため。
+      const payload = {
+        ...selectedCustomer,
+        updatedAt: new Date().toISOString(),
+      } as any;
+
+      // ID およびテンプレートフラグは送信しない（必ず新規作成）
+      delete payload.id;
+      delete payload.isTemplate;
+
+      const response = await fetch('/api/save-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        // 保存処理が完了したら一覧を更新してから URL を組み立て
+        const { customer: savedCustomer } = await response.json();
+        await refreshCustomers();
+        setSelectedCustomerId(savedCustomer.id);
+
+        // customers サーバーから発行される ID があれば優先して使用
+        const identifier = savedCustomer.customer_id || savedCustomer.id;
+        const publicUrl = `${window.location.origin}/${identifier}/pages`;
+        if (confirm(`公開しました！\nURL: ${publicUrl}\n\nページを開きますか？`)) {
+          window.open(publicUrl, '_blank');
+        }
+      } else {
+        alert("保存に失敗しました。");
+      }
+    } catch (error) {
+      console.error("Publish Error:", error);
+      alert("エラーが発生しました。");
     } finally {
       setIsLoadingData(false);
     }
@@ -539,7 +605,7 @@ export default function PaletteLab() {
           <button onClick={handleSaveAsTemplate} className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95">
             <Plus className="w-4 h-4" /> 保存
           </button>
-          <button className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95"><Check className="w-4 h-4" /> 送信</button>
+          <button onClick={handlePublish} className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95"><Check className="w-4 h-4" /> 送信</button>
         </div>
       </header>
 

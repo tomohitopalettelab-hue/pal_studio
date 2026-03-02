@@ -172,7 +172,8 @@ export default function PaletteDesign() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          message: `${messageToSend}\n\n${systemContext}`,
+          message: messageToSend,
+          system: systemContext,
           history: messages.map(m => ({
             role: m.role === 'ai' ? 'ai' : 'user', 
             content: m.content 
@@ -202,10 +203,16 @@ export default function PaletteDesign() {
   };
 
   // 確認ボタンが押されたとき
-  const handleConfirmSave = () => {
+  const handleConfirmSave = async () => {
     setShowConfirmSave(false);
-    saveToLab(confirmMessages, generatedCode);
-    handleSend("OK");
+    await saveToLab(confirmMessages, generatedCode);
+    setMessages(prev => [
+      ...prev,
+      {
+        role: 'ai',
+        content: 'ありがとうございました！\nこの構成を参考に制作させていただきます。\n３～５営業日以内に担当よりご連絡いたします。\n楽しみにお待ちください☺'
+      }
+    ]);
     setConversationEnded(true);
   };
 
@@ -248,17 +255,35 @@ export default function PaletteDesign() {
 
           <main className="flex-1 overflow-y-auto pr-1 space-y-6 custom-scrollbar flex flex-col pb-4 touch-auto">
             {messages.map((msg, index) => (
-              <div key={index} className={`flex gap-3 items-start ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                <div className="w-8 h-8 rounded-xl shadow-neu-flat bg-white/80 flex items-center justify-center shrink-0 border border-white">
-                  {msg.role === 'ai' ? <Sparkles className="w-4 h-4 text-indigo-500" /> : <User className="w-4 h-4 text-slate-400" />}
-                </div>
-                <div className={`p-4 rounded-[22px] max-w-[85%] ${msg.role === 'ai' ? 'rounded-tl-none shadow-neu-inset bg-white/20' : 'rounded-tr-none shadow-neu-flat bg-white/80'} text-sm text-slate-600 font-medium whitespace-pre-wrap leading-relaxed`}>
-                  {msg.role === 'ai' 
-                    ? msg.content.replace(/```html[\s\S]*?```/g, '').trim() || "プレビューを生成しました！"
-                    : msg.content
-                  }
-                </div>
-              </div>
+              (() => {
+                const isCompletionMessage =
+                  msg.role === 'ai' &&
+                  typeof msg.content === 'string' &&
+                  msg.content.startsWith('ありがとうございました！');
+
+                return (
+                  <div key={index} className={`flex gap-3 items-start ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                    <div className={`w-8 h-8 rounded-xl shadow-neu-flat flex items-center justify-center shrink-0 border ${isCompletionMessage ? 'bg-violet-50 border-violet-200' : 'bg-white/80 border-white'}`}>
+                      {msg.role === 'ai' ? (
+                        isCompletionMessage ? <BellRing className="w-4 h-4 text-violet-500" /> : <Sparkles className="w-4 h-4 text-indigo-500" />
+                      ) : (
+                        <User className="w-4 h-4 text-slate-400" />
+                      )}
+                    </div>
+                    <div className={`p-4 rounded-[22px] max-w-[85%] text-sm font-medium whitespace-pre-wrap leading-relaxed ${
+                      msg.role === 'ai'
+                        ? isCompletionMessage
+                          ? 'rounded-tl-none bg-gradient-to-r from-violet-50 to-fuchsia-50 border border-violet-200 text-violet-800 shadow-[0_8px_24px_rgba(139,92,246,0.12)]'
+                          : 'rounded-tl-none shadow-neu-inset bg-white/20 text-slate-600'
+                        : 'rounded-tr-none shadow-neu-flat bg-white/80 text-slate-600'
+                    }`}>
+                      {msg.role === 'ai'
+                        ? msg.content.replace(/```html[\s\S]*?```/g, '').trim() || "プレビューを生成しました！"
+                        : msg.content}
+                    </div>
+                  </div>
+                );
+              })()
             ))}
             {isLoading && (
               <div className="flex gap-2 items-center px-10">
@@ -271,6 +296,16 @@ export default function PaletteDesign() {
           </main>
 
           <div className="mt-auto pt-4 pb-2 md:pb-0">
+            {showConfirmSave && !conversationEnded && (
+              <div className="mb-3 rounded-2xl border border-violet-200/70 bg-white/60 backdrop-blur-md p-2.5 shadow-neu-flat flex items-center justify-between gap-2">
+                <button onClick={handleRequestRevision} className="px-4 py-2.5 bg-white text-slate-700 rounded-xl text-xs font-black tracking-wide border border-slate-200 hover:bg-slate-50 transition-all active:scale-95">
+                  修正
+                </button>
+                <button onClick={handleConfirmSave} className="px-5 py-2.5 bg-gradient-to-r from-violet-400 to-fuchsia-400 text-white rounded-xl text-xs font-black tracking-wide shadow-lg hover:from-violet-300 hover:to-fuchsia-300 transition-all active:scale-95">
+                  OK
+                </button>
+              </div>
+            )}
             <div className="p-2 rounded-[30px] shadow-neu-flat bg-white/30 border border-white/50">
               <div className="flex items-end shadow-neu-inset rounded-[24px] bg-[#F0F2F5]/50 px-3 py-1">
                 <textarea 
@@ -293,21 +328,6 @@ export default function PaletteDesign() {
                 </button>
               </div>
             </div>
-            {showConfirmSave && !conversationEnded && (
-              <div className="mt-2 flex gap-2 justify-center">
-                <button onClick={handleConfirmSave} className="px-4 py-2 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-500">
-                  OK
-                </button>
-                <button onClick={handleRequestRevision} className="px-4 py-2 bg-yellow-500 text-white rounded-lg text-xs font-bold hover:bg-yellow-400">
-                  修正
-                </button>
-              </div>
-            )}
-            {conversationEnded && (
-              <div className="mt-4 text-center text-green-600 text-sm font-bold">
-                ヒアリングは完了しました。管理画面で結果を確認できます。
-              </div>
-            )}
           </div>
         </div>
 

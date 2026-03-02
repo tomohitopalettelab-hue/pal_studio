@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
     const ai = new GoogleGenAI({ apiKey });
     const body = await req.json();
-    const { message, history } = body;
+    const { message, history, system } = body;
 
     // --- 修正点1: 判定の厳格化 ---
     // 文中にOKが含まれるだけで反応しないよう、完全一致に近い判定に変更
@@ -32,10 +32,14 @@ export async function POST(req: Request) {
 
     // --- 修正点2: プロンプトの受け渡し ---
     // フロント側から届く message (systemContext) を AI への命令として優先的に組み込む
+    const baseSystem = system && String(system).trim().length > 0
+      ? String(system)
+      : 'あなたはプロのWebデザイナーです。ユーザーの要望を丁寧にヒアリングし、必要に応じてHTMLワイヤーフレームを作成します。';
+
     const systemInstruction = isApproved 
       ? `あなたはディレクターです。以下の案内メッセージのみを、HTMLを含めずプレーンテキストで返してください。
           「ありがとうございます！ヒアリング内容をLabに保存しました。管理画面で確認できます。」`
-      : `${message}
+      : `${baseSystem}
 
          あなたは超一流のWebディレクターです。構造的で美しいワイヤーフレームをHTMLで作成してください。
          【ルール】
@@ -45,20 +49,31 @@ export async function POST(req: Request) {
          4. ヒアリング情報が足りない場合は、絶対にダミーテキストで埋めず、ユーザーに追加で質問してください。
          4. 最後は必ず「こちらの構成でよろしいでしょうか？（OKであればその旨お伝えください）」と質問してください。`;
 
-    // モデルリストを環境変数から取得（カンマ区切り）。先頭が優先。
-    const models = (process.env.CHAT_MODEL_LIST || process.env.CHAT_MODEL || "gemini-3-flash-preview").split(",").map(m => m.trim()).filter(Boolean);
+    // チャット専用モデルリスト（重い場合に自動で軽量モデルへフォールバック）
+    const models = (
+      process.env.CHAT_MODEL_LIST ||
+      process.env.CHAT_MODEL ||
+      "gemini-3-flash-preview,gemini-3-flash,gemini-2.5-flash"
+    )
+      .split(",")
+      .map(m => m.trim())
+      .filter(Boolean);
     let response;
     let lastError: any = null;
 
     // テキスト送信内容を構築。OK承認時は履歴も元のメッセージも含めず、
     // シンプルな「お礼メッセージだけを返す」指示を確実に優先させる。
-    const contentsBase: any[] = [{ role: 'user', parts: [{ text: systemInstruction }] }];
+    const contentsBase: any[] = [];
     if (!isApproved) {
-      contentsBase.push(...(history || []).map((m: any) => ({
-        role: m.role === 'ai' ? 'model' : 'user',
-        parts: [{ text: String(m.content) }],
-      })),
-      { role: 'user', parts: [{ text: String(message) }] });
+      contentsBase.push(
+        ...(history || []).map((m: any) => ({
+          role: m.role === 'ai' ? 'model' : 'user',
+          parts: [{ text: String(m.content) }],
+        })),
+        { role: 'user', parts: [{ text: String(message || '') }] }
+      );
+    } else {
+      contentsBase.push({ role: 'user', parts: [{ text: 'OK' }] });
     }
 
     // 複数モデルで順に試す
@@ -69,6 +84,9 @@ export async function POST(req: Request) {
         try {
           response = await ai.models.generateContent({
             model: mdl,
+            config: {
+              systemInstruction,
+            },
             contents: contentsBase,
           });
           lastError = null;
@@ -80,7 +98,7 @@ export async function POST(req: Request) {
           if (attempt >= maxAttempts) {
             break; // give up on this model, try next
           }
-          await new Promise(r => setTimeout(r, 500 * attempt));
+          await new Promise(r => setTimeout(r, 400 * attempt));
         }
       }
       if (!lastError) break; // succeeded
@@ -88,10 +106,11 @@ export async function POST(req: Request) {
     }
     if (lastError || !response) throw lastError || new Error("Unable to generate response from any model");
 
-    return NextResponse.json({ text: response.text });
+    const text = (response as any).text;
+    return NextResponse.json({ text });
 
   } catch (error: any) {
     console.error("--- Gemini API 実行エラー ---");
-    return NextResponse.json({ text: `エラーが発生しました: ${error.message}` }, { status: 500 });
+    return NextResponse.json({ text: "現在AIが混み合っています。少し時間をおいてもう一度お試しください。" }, { status: 200 });
   }
 }

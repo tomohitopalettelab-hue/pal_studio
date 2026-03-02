@@ -1016,8 +1016,11 @@ ${selectedCustomer.htmlCode}
           <button onClick={handleScreenshot} title="Download Screenshot" className="p-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700">
             <Camera className="w-4 h-4" />
           </button>
-          <button onClick={() => setLabMode('templates')} className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${labMode === 'templates' ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-700 hover:bg-slate-600 text-white'}`}>
-            <Grid className="w-4 h-4" /> Templates
+          <button
+            onClick={() => setLabMode(prev => prev === 'templates' ? 'work' : 'templates')}
+            className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${labMode === 'templates' ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-700 hover:bg-slate-600 text-white'}`}
+          >
+            <Grid className="w-4 h-4" /> {labMode === 'templates' ? 'Back to Work' : 'Templates'}
           </button>
           <button onClick={handleSaveCustomer} disabled={!isDirty} className={`bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95 ${isDirty ? 'ring-2 ring-yellow-400' : 'opacity-50 cursor-not-allowed'}`}>
             <Plus className="w-4 h-4" /> 保存

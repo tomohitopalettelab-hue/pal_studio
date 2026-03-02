@@ -152,20 +152,127 @@ export default function PaletteDesign() {
 
     【進行ルール】
     1. **必ず1問1答形式**で進めてください。一度に複数の質問をしないでください。
-    2. 以下の項目を順番にヒアリングしてください。
-       (1) 屋号・法人名（必須）
-       (2) 業種・サービス内容
-       (3) ターゲット層
-       (4) サイトの雰囲気・デザインの好み
-       (5) 掲載したい主な内容
-    3. ヒアリングが一通り完了したら、内容をまとめた**ワイヤーフレーム（HTML）**を作成して提示し、「この構成でよろしいでしょうか？」と確認してください。
-    4. ユーザーから「OK」や「承認」が得られたら、**HTMLコードは出力せず**、
+     2. 屋号名（会社名・法人名）は**必ず最優先で確認**してください。未確認のまま次に進まないでください。
+     3. 質問数は**最大10問**までです。5問固定ではなく、必要な情報だけを質問してください（10問未満で完了可）。
+     4. ワイヤーフレームに含めるセクションに応じて不足情報を追加ヒアリングしてください。
+       - 会社概要/アクセスを含める場合: 住所・電話・営業時間・定休日など
+       - お問い合わせフォームを含める場合: 必須項目・送信先メール・注意事項
+       - 採用情報を含める場合: 募集職種・雇用形態・勤務地・応募方法
+       - 実績紹介を含める場合: 実績ジャンル・件数感・見せ方
+     5. 不足情報があるままダミー情報で埋めないでください。足りない情報は質問で回収してください。
+     6. ヒアリングが完了したら、内容をまとめた**ワイヤーフレーム（HTML）**を作成して提示し、「この構成でよろしいでしょうか？」と確認してください。
+     7. ユーザーから「OK」や「承認」が得られたら、**HTMLコードは出力せず**、
        「ありがとうございます。ヒアリング内容をLabに保存します。」とだけ伝えて会話を終了してください。
     
     【重要】
     - ワイヤーフレームを出力する際は、必ず \`\`\`html ... \`\`\` の形式でコードを囲ってください。
     - ワイヤーフレームの \`<title>\` タグには、必ずヒアリングした「屋号・法人名」を設定してください。
     `;
+
+    const sanitizeHistoryText = (text: string) => {
+      return String(text || '')
+        .replace(/```html[\s\S]*?```/gi, '[HTML omitted]')
+        .replace(/\s{3,}/g, ' ')
+        .trim();
+    };
+
+    const fieldOrder = [
+      '屋号名・会社名',
+      '業種・サービス',
+      'ターゲット',
+      'デザインの好み',
+      '掲載内容',
+      '実績紹介',
+      '会社概要',
+      'お問い合わせ',
+      '採用情報',
+    ];
+
+    const fieldPatterns: { label: string; pattern: RegExp }[] = [
+      { label: '屋号名・会社名', pattern: /(屋号|会社名|法人名|社名|ブランド名)/i },
+      { label: '業種・サービス', pattern: /(業種|サービス|事業内容|取扱|提供)/i },
+      { label: 'ターゲット', pattern: /(ターゲット|対象|顧客層|ペルソナ)/i },
+      { label: 'デザインの好み', pattern: /(雰囲気|デザイン|テイスト|トーン|色味)/i },
+      { label: '掲載内容', pattern: /(掲載|内容|ページ|必要な項目|構成)/i },
+      { label: '実績紹介', pattern: /(実績|制作実績|事例|ポートフォリオ|ギャラリー)/i },
+      { label: '会社概要', pattern: /(会社概要|アクセス|住所|電話|営業時間|定休日|所在地)/i },
+      { label: 'お問い合わせ', pattern: /(問い合わせ|お問合せ|フォーム|連絡先|メール|電話窓口)/i },
+      { label: '採用情報', pattern: /(採用|求人|募集|雇用形態|職種|応募方法)/i },
+    ];
+
+    const summaryMap = new Map<string, string>();
+    const addSummary = (label: string, value: string) => {
+      if (!summaryMap.has(label) && value.length >= 2) {
+        summaryMap.set(label, value.slice(0, 160));
+      }
+    };
+
+    messages.forEach((msg: any, index: number) => {
+      if (msg.role !== 'user') return;
+      const answer = sanitizeHistoryText(msg.content);
+      if (!answer || /^(ok|了解|承認|お願いします|修正お願いします)$/i.test(answer)) return;
+      const prevAi = messages.slice(0, index).reverse().find((m: any) => m.role === 'ai');
+      const questionText = sanitizeHistoryText(prevAi?.content || '');
+      const matched = fieldPatterns.find(({ pattern }) => pattern.test(questionText));
+      if (matched) {
+        addSummary(matched.label, answer);
+      }
+    });
+
+    if (!summaryMap.has('屋号名・会社名')) {
+      const fallbackCompany = messages
+        .filter((m: any) => m.role === 'user')
+        .map((m: any) => sanitizeHistoryText(m.content))
+        .find((text: string) => /株式会社|有限会社|合同会社|Inc\.|LLC|店|サロン|クリニック|工務店|Studio|スタジオ/i.test(text));
+      if (fallbackCompany) addSummary('屋号名・会社名', fallbackCompany);
+    }
+
+    const summaryLines = fieldOrder
+      .filter((label) => summaryMap.has(label))
+      .map((label) => `- ${label}: ${summaryMap.get(label)}`);
+
+    const summaryPayload = {
+      companyName: summaryMap.get('屋号名・会社名') || null,
+      businessService: summaryMap.get('業種・サービス') || null,
+      target: summaryMap.get('ターゲット') || null,
+      designPreference: summaryMap.get('デザインの好み') || null,
+      contents: summaryMap.get('掲載内容') || null,
+      works: summaryMap.get('実績紹介') || null,
+      companyProfile: summaryMap.get('会社概要') || null,
+      contactForm: summaryMap.get('お問い合わせ') || null,
+      recruiting: summaryMap.get('採用情報') || null,
+    };
+
+    const recentUserFacts = messages
+      .filter((m: any) => m.role === 'user')
+      .map((m: any) => sanitizeHistoryText(m.content))
+      .filter((text: string) => text.length >= 3)
+      .filter((text: string) => !/^(ok|了解|承認|お願いします|修正お願いします)$/i.test(text))
+      .slice(-4)
+      .map((text: string, index: number) => `${index + 1}. ${text.slice(0, 120)}`);
+
+    const summaryContent = summaryLines.length
+      ? `確定事項サマリ(JSON):\n${JSON.stringify(summaryPayload)}\n\n確定事項サマリ（可読）:\n${summaryLines.join('\n')}`
+      : recentUserFacts.length
+        ? `確定事項サマリ（直近回答）:\n${recentUserFacts.join('\n')}`
+        : '';
+
+    const summaryHistory = summaryContent
+      ? [{
+          role: 'user',
+          content: summaryContent,
+        }]
+      : [];
+
+    const recentHistory = messages
+      .slice(-8)
+      .map((m: any) => ({
+        role: m.role === 'ai' ? 'ai' : 'user',
+        content: sanitizeHistoryText(m.content).slice(0, 500),
+      }))
+      .filter((m: any) => m.content.length > 0);
+
+    const compactHistory = [...summaryHistory, ...recentHistory];
 
     try {
       const response = await fetch('/api/chat', {
@@ -174,10 +281,7 @@ export default function PaletteDesign() {
         body: JSON.stringify({ 
           message: messageToSend,
           system: systemContext,
-          history: messages.map(m => ({
-            role: m.role === 'ai' ? 'ai' : 'user', 
-            content: m.content 
-          }))
+          history: compactHistory
         }),
       });
       

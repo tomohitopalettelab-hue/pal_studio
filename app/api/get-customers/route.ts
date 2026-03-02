@@ -3,7 +3,7 @@ import { readCustomers } from '../_lib/customer-store';
 
 export async function GET() {
   try {
-    const customers = readCustomers();
+    const customers = await readCustomers();
     return NextResponse.json(customers);
   } catch (error: any) {
     console.error("取得エラー:", error);

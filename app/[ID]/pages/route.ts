@@ -9,7 +9,7 @@ export async function GET(
   const { ID: id } = params; // rename to keep existing logic
 
   try {
-    const customers = readCustomers();
+    const customers = await readCustomers();
     
     // 顧客データは内部ID（cust-...）または外部発行ID（customer_id / custsrv-...）の
     // どちらかでアクセスされる可能性がある。

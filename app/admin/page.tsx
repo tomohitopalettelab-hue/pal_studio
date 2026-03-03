@@ -156,18 +156,6 @@ export default function PaletteLab() {
     }
   };
 
-  const issueCustomerCredentials = () => {
-    if (!selectedCustomerId) return;
-    const generatedId = `c${Date.now().toString().slice(-6)}`;
-    const generatedPw = Math.random().toString(36).slice(2, 10);
-    setCustomers((prev) =>
-      prev.map((c) =>
-        c.id === selectedCustomerId
-          ? { ...c, loginId: generatedId, loginPassword: generatedPw }
-          : c
-      )
-    );
-  };
 
   // 顧客選択時のみ、dirty判定用のスナップショットを更新
   useEffect(() => {
@@ -1156,39 +1144,6 @@ ${selectedCustomer.htmlCode}
                   </div>
                 )}
               </section>
-
-              {!selectedCustomer.isTemplate && (
-                <section className="space-y-2">
-                  <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer Login</h2>
-                  <input
-                    type="text"
-                    value={selectedCustomer.loginId || ''}
-                    onChange={(e) => {
-                      const nextId = e.target.value;
-                      setCustomers((prev) => prev.map((c) => c.id === selectedCustomerId ? { ...c, loginId: nextId } : c));
-                    }}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
-                    placeholder="customer login id"
-                  />
-                  <input
-                    type="text"
-                    value={selectedCustomer.loginPassword || ''}
-                    onChange={(e) => {
-                      const nextPw = e.target.value;
-                      setCustomers((prev) => prev.map((c) => c.id === selectedCustomerId ? { ...c, loginPassword: nextPw } : c));
-                    }}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
-                    placeholder="customer password"
-                  />
-                  <button
-                    onClick={issueCustomerCredentials}
-                    className="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold hover:bg-indigo-100"
-                  >
-                    ID/PWを自動発行
-                  </button>
-                  <p className="text-[10px] text-slate-400">※入力後に「保存」を押すと反映されます</p>
-                </section>
-              )}
 
               {/* Section Control */}
               <section className="space-y-4">

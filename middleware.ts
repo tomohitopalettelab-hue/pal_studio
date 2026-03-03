@@ -9,7 +9,6 @@ const redirectToLogin = (req: NextRequest) => {
 };
 
 export function middleware(req: NextRequest) {
-  const pathname = req.nextUrl.pathname;
   const cookieValue = req.cookies.get(SESSION_COOKIE_NAME)?.value;
   const session = parseSessionValue(cookieValue);
 
@@ -19,40 +18,13 @@ export function middleware(req: NextRequest) {
     return res;
   }
 
-  if (pathname.startsWith('/admin')) {
-    if (session.role !== 'admin') {
-      return redirectToLogin(req);
-    }
-    return NextResponse.next();
-  }
-
-  if (pathname.startsWith('/main')) {
-    if (session.role === 'admin') {
-      return NextResponse.next();
-    }
-
-    const cid = req.nextUrl.searchParams.get('cid')?.trim();
-    const myCid = session.customerId?.trim();
-    if (!myCid) return redirectToLogin(req);
-
-    if (!cid) {
-      const url = req.nextUrl.clone();
-      url.searchParams.set('cid', myCid);
-      return NextResponse.redirect(url);
-    }
-
-    if (cid !== myCid) {
-      const url = req.nextUrl.clone();
-      url.searchParams.set('cid', myCid);
-      return NextResponse.redirect(url);
-    }
-
-    return NextResponse.next();
+  if (session.role !== 'admin') {
+    return redirectToLogin(req);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/main', '/main/:path*'],
+  matcher: ['/admin/:path*'],
 };

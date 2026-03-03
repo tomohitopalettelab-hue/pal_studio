@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [role, setRole] = useState<'admin' | 'customer'>('customer');
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,14 +21,14 @@ function LoginPageInner() {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, id, password, next }),
+        body: JSON.stringify({ role: 'admin', id, password, next }),
       });
       const data = await res.json();
       if (!res.ok || !data?.success) {
         setError(data?.error || 'ログインに失敗しました。');
         return;
       }
-      router.push(data.redirectTo || (role === 'admin' ? '/admin' : '/main'));
+      router.push(data.redirectTo || '/admin');
       router.refresh();
     } catch {
       setError('通信エラーが発生しました。');
@@ -42,24 +41,7 @@ function LoginPageInner() {
     <main className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
         <h1 className="text-xl font-black text-slate-800 mb-1">Palette Login</h1>
-        <p className="text-xs text-slate-500 mb-5">管理者またはお客様としてログインしてください</p>
-
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setRole('customer')}
-            className={`py-2 text-xs font-bold rounded-lg border ${role === 'customer' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-300'}`}
-          >
-            Customer
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('admin')}
-            className={`py-2 text-xs font-bold rounded-lg border ${role === 'admin' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-300'}`}
-          >
-            Admin
-          </button>
-        </div>
+        <p className="text-xs text-slate-500 mb-5">管理者ログイン</p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
@@ -68,7 +50,7 @@ function LoginPageInner() {
               value={id}
               onChange={(e) => setId(e.target.value)}
               className="w-full p-2.5 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder={role === 'admin' ? 'admin id' : 'customer id'}
+              placeholder="admin id"
             />
           </div>
 

@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Send, Layout, MessageSquare, Sparkles, User, Box, PenLine, RefreshCw, BellRing } from 'lucide-react';
 
 export default function PaletteDesign() {
+  const searchParams = useSearchParams();
+  const queryCid = searchParams.get('cid')?.trim();
   const [activeTab, setActiveTab] = useState<'chat' | 'preview'>('chat');
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +19,7 @@ export default function PaletteDesign() {
   const [aiExplanation, setAiExplanation] = useState(""); // AI の意思決定・方針を保存
   const [conversationEnded, setConversationEnded] = useState(false); // ヒアリング完了フラグ
   const [sessionCustomerId] = useState(
-    () => `cust-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    () => queryCid || `cust-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
   );
 
   const scrollEndRef = useRef<HTMLDivElement>(null);

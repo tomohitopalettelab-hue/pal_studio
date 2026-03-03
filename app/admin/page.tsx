@@ -7,6 +7,7 @@ import { templates, Template } from './templates';
 
 type Customer = {
   id: string;
+  customer_id?: string;
   name: string;
   status: 'hearing' | 'reviewing' | 'completed';
   answers: { q: string, a: string }[];
@@ -132,6 +133,26 @@ export default function PaletteLab() {
   }, []);
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
+
+  const getCustomerMainPath = (customer?: Customer | null) => {
+    if (!customer) return '';
+    const identifier = customer.customer_id || customer.id;
+    if (!identifier) return '';
+    return `/main?cid=${encodeURIComponent(identifier)}`;
+  };
+
+  const copyCustomerMainUrl = async (customer?: Customer | null) => {
+    if (!customer || typeof window === 'undefined') return;
+    const path = getCustomerMainPath(customer);
+    if (!path) return;
+    const fullUrl = `${window.location.origin}${path}`;
+    try {
+      await navigator.clipboard.writeText(fullUrl);
+      alert('お客様用 main URL をコピーしました。');
+    } catch {
+      prompt('コピーしてください', fullUrl);
+    }
+  };
 
   // 顧客選択時のみ、dirty判定用のスナップショットを更新
   useEffect(() => {
@@ -1091,6 +1112,25 @@ ${selectedCustomer.htmlCode}
                 <div className="text-[10px]">
                   ステータス: <span className="font-bold uppercase">{selectedCustomer.status}</span>
                 </div>
+                {!selectedCustomer.isTemplate && (
+                  <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2.5 space-y-1.5">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer Main URL</p>
+                    <a
+                      href={getCustomerMainPath(selectedCustomer)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block text-[11px] text-indigo-600 break-all hover:underline"
+                    >
+                      {getCustomerMainPath(selectedCustomer)}
+                    </a>
+                    <button
+                      onClick={() => copyCustomerMainUrl(selectedCustomer)}
+                      className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 hover:bg-slate-200 transition"
+                    >
+                      URLをコピー
+                    </button>
+                  </div>
+                )}
               </section>
 
               {/* Section Control */}

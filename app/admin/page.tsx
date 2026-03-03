@@ -544,8 +544,9 @@ ${selectedCustomer.htmlCode}
         updatedAt: new Date().toISOString(),
       } as any;
 
-      // ID およびテンプレートフラグは送信しない（必ず新規作成）
+      // ID / 公開ID / テンプレートフラグは送信しない（必ず新規作成）
       delete payload.id;
+      delete payload.customer_id;
       delete payload.isTemplate;
 
       const response = await fetch('/api/save-customer', {

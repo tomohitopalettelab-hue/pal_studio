@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ ID: string }> }

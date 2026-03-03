@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     const models = (
       process.env.CHAT_MODEL_LIST ||
       process.env.CHAT_MODEL ||
-      "gemini-3-flash-preview,gemini-3-flash,gemini-2.5-flash"
+      "gemini-2.5-flash-lite,gemini-2.5-flash"
     )
       .split(",")
       .map(m => m.trim())
@@ -81,30 +81,21 @@ export async function POST(req: Request) {
       contentsBase.push({ role: 'user', parts: [{ text: 'OK' }] });
     }
 
-    // 複数モデルで順に試す
+    // 複数モデルで順に試す（速度優先のため各モデル1回のみ）
     for (const mdl of models) {
-      let attempt = 0;
-      const maxAttempts = 2; // 各モデルあたり2回リトライ
-      while (true) {
-        try {
-          response = await ai.models.generateContent({
-            model: mdl,
-            config: {
-              systemInstruction,
-            },
-            contents: contentsBase,
-          });
-          lastError = null;
-          break; // success with this model
-        } catch (err: any) {
-          attempt++;
-          lastError = err;
-          console.warn(`chat generate model ${mdl} attempt ${attempt} failed`, err.message || err);
-          if (attempt >= maxAttempts) {
-            break; // give up on this model, try next
-          }
-          await new Promise(r => setTimeout(r, 400 * attempt));
-        }
+      try {
+        response = await ai.models.generateContent({
+          model: mdl,
+          config: {
+            systemInstruction,
+          },
+          contents: contentsBase,
+        });
+        lastError = null;
+        break; // success with this model
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`chat generate model ${mdl} failed`, err?.message || err);
       }
       if (!lastError) break; // succeeded
       // else try next model

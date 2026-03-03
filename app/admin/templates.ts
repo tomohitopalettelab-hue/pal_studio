@@ -13,178 +13,174 @@ export const templates: Template[] = [
     tags: ['simple', 'clean', 'business', 'startup'],
     description: '汎用性の高いモダンでクリーンなデザイン。セクション固定構成に対応。',
     html: `
-<div class="template-root" style="--main-color: #4f46e5; --main-dark: #3730a3; --accent-color: #f8fafc; --text-color: #0f172a; --text-light: #64748b; --bg-color: #ffffff;">
-  <div class="min-h-screen font-sans text-[var(--text-color)] bg-[var(--bg-color)] selection:bg-[var(--main-color)] selection:text-white">
+<div class="template-root" style="--main-color: #000000; --main-dark: #1a1a1a; --accent-color: #6366f1; --text-color: #0a0a0a; --text-light: #666666; --bg-color: #ffffff; --section-gap: 10rem;">
+  <div class="min-h-screen font-sans text-[var(--text-color)] bg-[var(--bg-color)] selection:bg-[var(--accent-color)] selection:text-white antialiased">
     
-    <header class="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-100/50">
-      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-[var(--main-color)] rounded-lg flex items-center justify-center text-white font-black italic">M</div>
-          <h1 class="text-xl font-bold tracking-tighter text-[var(--text-color)]">Modern<span class="text-[var(--main-color)]">Corp</span></h1>
+    <header class="fixed w-full z-[100] transition-all duration-500">
+      <div class="max-w-[1400px] mx-auto px-8 h-24 flex items-center justify-between">
+        <div class="flex items-center gap-3 group cursor-pointer">
+          <div class="w-10 h-10 bg-[var(--main-color)] rounded-full flex items-center justify-center text-white font-bold transition-transform group-hover:rotate-180 duration-500">M</div>
+          <h1 class="text-2xl font-black tracking-tighter uppercase">Studio<span class="text-[var(--accent-color)]">.</span></h1>
         </div>
-        <nav class="hidden md:flex items-center gap-8 text-[13px] font-bold uppercase tracking-widest text-[var(--text-light)]">
-          <a href="#concept" class="hover:text-[var(--main-color)] transition-colors">Concept</a>
-          <a href="#features" class="hover:text-[var(--main-color)] transition-colors">Features</a>
-          <a href="#service" class="hover:text-[var(--main-color)] transition-colors">Service</a>
-          <a href="#contact" class="ml-4 px-6 py-2.5 bg-[var(--text-color)] text-white rounded-full hover:bg-[var(--main-color)] transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-md">Contact</a>
+        <nav class="hidden md:flex items-center gap-12 text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--text-color)]">
+          <a href="#concept" class="hover:text-[var(--accent-color)] transition-all">Concept</a>
+          <a href="#features" class="hover:text-[var(--accent-color)] transition-all">Features</a>
+          <a href="#service" class="hover:text-[var(--accent-color)] transition-all">Service</a>
+          <a href="#works" class="hover:text-[var(--accent-color)] transition-all">Works</a>
+          <a href="#contact" class="px-8 py-3 bg-[var(--main-color)] text-white rounded-full hover:bg-[var(--accent-color)] transition-all shadow-lg hover:shadow-[var(--accent-color)]/20">Get in touch</a>
         </nav>
       </div>
     </header>
 
     <main>
-      <section id="top" class="relative pt-48 pb-32 px-6 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-10 pointer-events-none">
-          <div class="absolute top-20 left-1/4 w-64 h-64 bg-[var(--main-color)] rounded-full blur-[100px]"></div>
+      <section id="top" class="section-hero relative min-h-screen flex items-center justify-center px-8 overflow-hidden bg-[#fafafa]">
+        <div class="absolute inset-0 z-0">
+          <div class="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-[var(--accent-color)]/5 rounded-full blur-[120px]"></div>
+          <div class="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-blue-400/5 rounded-full blur-[100px]"></div>
         </div>
         
-        <div class="relative max-w-5xl mx-auto text-center">
-          <span class="inline-block px-4 py-1.5 mb-6 text-[12px] font-bold tracking-[0.2em] text-[var(--main-color)] bg-[var(--main-color)]/10 rounded-full uppercase">Innovation & Design</span>
-          <h2 class="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
-            Create the <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--main-color)] to-[#818cf8]">Next Standard.</span>
+        <div class="relative z-10 max-w-7xl mx-auto text-center">
+          <p class="inline-block mb-8 text-[12px] font-bold tracking-[0.5em] text-[var(--accent-color)] uppercase animate-fade-in">Established 2026</p>
+          <h2 class="text-[clamp(3rem,10vw,8rem)] font-black tracking-tighter leading-[0.85] mb-12 uppercase">
+            Define the <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--main-color)] via-[var(--accent-color)] to-[var(--main-color)]">New Era.</span>
           </h2>
-          <p class="text-xl text-[var(--text-light)] mb-12 max-w-2xl mx-auto leading-relaxed">
-            私たちは、複雑な課題をシンプルなデザインで解決し、<br class="hidden md:block" />ビジネスの未来を書き換えるクリエイティブパートナーです。
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button class="px-10 py-5 bg-[var(--main-color)] text-white rounded-2xl font-bold shadow-xl shadow-indigo-200 hover:shadow-2xl hover:bg-[var(--main-dark)] transition-all transform hover:-translate-y-1">プロジェクトを始める</button>
-            <button class="px-10 py-5 bg-white text-[var(--text-color)] border border-slate-200 rounded-2xl font-bold hover:bg-slate-50 transition-all">資料をダウンロード</button>
+          <div class="flex flex-col items-center">
+            <p class="text-xl md:text-2xl text-[var(--text-light)] mb-12 max-w-2xl font-medium leading-relaxed">
+              私たちは、既成概念を壊し、<br/>デザインでビジネスに「鼓動」を宿します。
+            </p>
+            <div class="w-[1px] h-24 bg-gradient-to-b from-[var(--main-color)] to-transparent opacity-20"></div>
           </div>
         </div>
       </section>
 
-      <section id="concept" class="py-32 px-6 max-w-6xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-16 items-center">
-          <div>
-            <h3 class="text-sm font-bold tracking-[0.3em] text-[var(--main-color)] uppercase mb-4">Our Concept</h3>
-            <h4 class="text-4xl font-bold mb-8 leading-snug">デザインの力で、<br/>本質的な価値を可視化する。</h4>
-          </div>
-          <div class="text-lg leading-loose text-[var(--text-light)]">
-            <p>情報の海の中で、本当に伝えたいメッセージを届けるために。私たちは表面的な美しさだけでなく、ビジネスの構造から深く理解し、最適なカタチを導き出します。クライアントの想いに伴走し、共に成長し続けることが私たちの使命です。</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" class="py-32 px-6 bg-slate-50">
+      <section id="concept" class="section-concept py-[var(--section-gap)] px-8">
         <div class="max-w-7xl mx-auto">
-          <div class="grid md:grid-cols-3 gap-10">
-            <div class="group p-10 bg-white rounded-[32px] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500">
-              <div class="w-14 h-14 bg-indigo-50 text-[var(--main-color)] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[var(--main-color)] group-hover:text-white transition-colors duration-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-              </div>
-              <h4 class="text-xl font-bold mb-4 italic">01. Speed</h4>
-              <p class="text-[var(--text-light)] leading-relaxed">市場の変化に即座に対応。アイデアを形にするまでのタイムラグを最小限に抑え、機会損失を防ぎます。</p>
+          <div class="grid lg:grid-cols-12 gap-16 items-start">
+            <div class="lg:col-span-5">
+              <h3 class="text-[12px] font-bold tracking-[0.4em] text-[var(--accent-color)] uppercase mb-6">Philosophy</h3>
+              <h4 class="text-5xl font-bold leading-tight tracking-tight">「意味」を<br/>デザインする。</h4>
             </div>
-            <div class="group p-10 bg-white rounded-[32px] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500">
-              <div class="w-14 h-14 bg-indigo-50 text-[var(--main-color)] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[var(--main-color)] group-hover:text-white transition-colors duration-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
-              <h4 class="text-xl font-bold mb-4 italic">02. Quality</h4>
-              <p class="text-[var(--text-light)] leading-relaxed">ピクセル単位のこだわり。ユーザー体験を第一に考え、長く愛される高品質なアウトプットを約束します。</p>
-            </div>
-            <div class="group p-10 bg-white rounded-[32px] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500">
-              <div class="w-14 h-14 bg-indigo-50 text-[var(--main-color)] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[var(--main-color)] group-hover:text-white transition-colors duration-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-              </div>
-              <h4 class="text-xl font-bold mb-4 italic">03. Support</h4>
-              <p class="text-[var(--text-light)] leading-relaxed">作って終わりにしない。リリース後のデータ分析や改善案の提示など、成長のための伴走を続けます。</p>
+            <div class="lg:col-span-7">
+              <p class="text-2xl leading-relaxed text-[var(--text-light)] font-light">
+                単なる見た目の美しさを超え、ブランドの根底にあるストーリーを形にします。情報は整理されるだけでなく、感情を揺さぶる体験へと昇華されるべきです。私たちはその「問い」から始めます。
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="service" class="py-32 px-6 bg-white">
-        <div class="max-w-4xl mx-auto">
-          <div class="text-center mb-16">
-            <h3 class="text-3xl font-bold mb-4 text-[var(--text-color)]">Service Plan</h3>
-            <p class="text-[var(--text-light)]">プロジェクトの規模に合わせた最適なプランをご提案します</p>
+      <section id="features" class="section-features py-[var(--section-gap)] px-8 bg-[#0a0a0a] text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+          <div class="grid md:grid-cols-3 gap-1">
+            <div class="group p-12 border border-white/10 hover:bg-white/5 transition-all duration-700">
+              <span class="text-[var(--accent-color)] font-mono text-lg mb-8 block">/ 01</span>
+              <h4 class="text-3xl font-bold mb-6 italic tracking-tight">Avant-Garde</h4>
+              <p class="text-white/50 leading-relaxed font-light">最先端のテクノロジーと芸術性を融合。他社が決して真似できない、独自のブランドプレゼンスを構築します。</p>
+            </div>
+            <div class="group p-12 border border-white/10 hover:bg-white/5 transition-all duration-700 md:translate-y-12">
+              <span class="text-[var(--accent-color)] font-mono text-lg mb-8 block">/ 02</span>
+              <h4 class="text-3xl font-bold mb-6 italic tracking-tight">Precision</h4>
+              <p class="text-white/50 leading-relaxed font-light">1ピクセルの妥協も許さない、圧倒的な品質管理。細部へのこだわりが、顧客への信頼へと直結します。</p>
+            </div>
+            <div class="group p-12 border border-white/10 hover:bg-white/5 transition-all duration-700">
+              <span class="text-[var(--accent-color)] font-mono text-lg mb-8 block">/ 03</span>
+              <h4 class="text-3xl font-bold mb-6 italic tracking-tight">Evolution</h4>
+              <p class="text-white/50 leading-relaxed font-light">納品はスタートに過ぎません。データに基づいた持続的なアップデートで、ビジネスの成長を加速させます。</p>
+            </div>
           </div>
-          <div class="space-y-4">
-            <div class="group bg-slate-50 p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center border border-transparent hover:border-[var(--main-color)]/20 hover:bg-white hover:shadow-xl transition-all duration-300">
-              <div class="text-center md:text-left mb-4 md:mb-0">
-                <h4 class="text-xl font-bold group-hover:text-[var(--main-color)] transition-colors">Standard Plan</h4>
-                <p class="text-sm text-[var(--text-light)] mt-1 font-medium">スタートアップや中小企業に最適なフルパッケージ</p>
+        </div>
+      </section>
+
+      <section id="service" class="section-service py-[var(--section-gap)] px-8">
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center mb-24">
+            <h3 class="text-4xl font-bold tracking-tighter mb-4">Service Package</h3>
+            <div class="w-12 h-1 bg-[var(--accent-color)] mx-auto"></div>
+          </div>
+          <div class="space-y-6">
+            <div class="group bg-[#f8f9fa] p-10 rounded-[40px] flex flex-col md:flex-row justify-between items-center transition-all duration-500 hover:scale-[1.02] hover:bg-white hover:shadow-2xl">
+              <div class="text-center md:text-left mb-8 md:mb-0">
+                <span class="text-[10px] font-black uppercase tracking-widest text-[var(--accent-color)]">High-End Solution</span>
+                <h4 class="text-3xl font-bold mt-2">Executive Brand Package</h4>
+                <p class="text-[var(--text-light)] mt-4">ブランディングからフルカスタマイズサイト制作まで</p>
               </div>
-              <div class="flex items-center gap-6">
-                <span class="text-[var(--text-color)] font-black text-3xl italic">¥298,000<span class="text-sm font-normal not-italic text-slate-400">〜</span></span>
-                <div class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:border-transparent group-hover:text-white transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+              <div class="text-right flex flex-col items-center md:items-end">
+                <span class="text-5xl font-black tracking-tighter italic">¥800,000<span class="text-lg not-italic text-slate-400">~</span></span>
+                <button class="mt-6 px-8 py-3 bg-[var(--main-color)] text-white text-xs font-bold uppercase tracking-widest rounded-full group-hover:bg-[var(--accent-color)] transition-colors">Select Plan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="works" class="section-works py-[var(--section-gap)] px-8 bg-white">
+        <div class="max-w-[1600px] mx-auto">
+          <div class="flex justify-between items-end mb-16 px-4">
+            <h3 class="text-6xl font-black tracking-tighter uppercase leading-none">Selected<br/><span class="text-outline text-transparent" style="-webkit-text-stroke: 1px var(--text-color);">Archive</span></h3>
+            <p class="text-[var(--text-light)] font-bold tracking-widest uppercase text-xs">View all cases (12)</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <div class="group cursor-pointer">
+              <div class="aspect-[4/5] bg-slate-100 overflow-hidden relative mb-6">
+                <div class="absolute inset-0 bg-[var(--main-color)] translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out"></div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
+                  <span class="text-white font-bold tracking-[0.5em] uppercase text-sm">View Project</span>
                 </div>
               </div>
+              <h5 class="text-xl font-bold">Aether Dynamic</h5>
+              <p class="text-sm text-[var(--text-light)] mt-2 font-medium uppercase tracking-wider">Visual Identity / Web Design</p>
+            </div>
+            <div class="group cursor-pointer md:mt-24">
+              <div class="aspect-[4/5] bg-slate-100 overflow-hidden relative mb-6">
+                 <div class="absolute inset-0 bg-[var(--accent-color)] translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out"></div>
+                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
+                  <span class="text-white font-bold tracking-[0.5em] uppercase text-sm">View Project</span>
+                </div>
+              </div>
+              <h5 class="text-xl font-bold">Neo Genesis</h5>
+              <p class="text-sm text-[var(--text-light)] mt-2 font-medium uppercase tracking-wider">UI/UX Strategy</p>
+            </div>
+            <div class="group cursor-pointer">
+              <div class="aspect-[4/5] bg-slate-100 overflow-hidden relative mb-6">
+                 <div class="absolute inset-0 bg-[var(--main-color)] translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out"></div>
+                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
+                  <span class="text-white font-bold tracking-[0.5em] uppercase text-sm">View Project</span>
+                </div>
+              </div>
+              <h5 class="text-xl font-bold">Lumina Systems</h5>
+              <p class="text-sm text-[var(--text-light)] mt-2 font-medium uppercase tracking-wider">E-Commerce Solution</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="works" class="py-32 px-6 bg-slate-900 text-white overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-          <div class="flex justify-between items-end mb-16">
-            <div>
-              <h3 class="text-sm font-bold tracking-[0.3em] text-[var(--main-color)] uppercase mb-4">Selected Works</h3>
-              <h4 class="text-4xl font-bold">実績紹介</h4>
+      <section id="company" class="section-company py-[var(--section-gap)] px-8 border-t border-slate-100">
+        <div class="max-w-4xl mx-auto">
+          <h3 class="text-center text-xs font-black tracking-[0.6em] uppercase mb-20 text-[var(--text-light)]">Corporate Profile</h3>
+          <div class="space-y-0 border-y border-[var(--text-color)]">
+            <div class="grid grid-cols-1 md:grid-cols-4 py-12 group hover:bg-[var(--main-color)] hover:text-white transition-all px-8">
+              <dt class="font-bold text-[10px] uppercase tracking-[0.3em] self-center mb-2 md:mb-0">Name</dt>
+              <dd class="md:col-span-3 text-2xl font-bold tracking-tight">MODERN DESIGN STUDIO INC.</dd>
             </div>
-            <a href="#" class="text-sm font-bold border-b border-white/20 pb-1 hover:border-[var(--main-color)] transition-colors">View All</a>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden relative group cursor-pointer shadow-2xl">
-              <div class="absolute inset-0 bg-[var(--main-color)]/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                <p class="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">Branding</p>
-                <p class="font-bold">Project Alpha</p>
-              </div>
-            </div>
-            <div class="aspect-[3/4] bg-slate-800 rounded-3xl mt-12 overflow-hidden relative group cursor-pointer shadow-2xl">
-              <div class="absolute inset-0 bg-[var(--main-color)]/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                <p class="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">UI/UX</p>
-                <p class="font-bold">Beta App</p>
-              </div>
-            </div>
-            <div class="aspect-[3/4] bg-slate-800 rounded-3xl overflow-hidden relative group cursor-pointer shadow-2xl">
-              <div class="absolute inset-0 bg-[var(--main-color)]/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                <p class="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">Web Design</p>
-                <p class="font-bold">Gamma Site</p>
-              </div>
-            </div>
-            <div class="aspect-[3/4] bg-slate-800 rounded-3xl mt-12 overflow-hidden relative group cursor-pointer shadow-2xl">
-              <div class="absolute inset-0 bg-[var(--main-color)]/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                <p class="text-xs font-bold uppercase tracking-widest text-white/70 mb-1">Graphic</p>
-                <p class="font-bold">Delta Poster</p>
-              </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 py-12 group hover:bg-[var(--main-color)] hover:text-white transition-all px-8">
+              <dt class="font-bold text-[10px] uppercase tracking-[0.3em] self-center mb-2 md:mb-0">Office</dt>
+              <dd class="md:col-span-3 text-2xl font-bold tracking-tight">SHIBUYA, TOKYO / ONLINE ANYWHERE</dd>
             </div>
           </div>
         </div>
-      </section>
-
-      <section id="company" class="py-32 px-6 max-w-4xl mx-auto">
-        <h3 class="text-center text-3xl font-bold mb-16">Company Profile</h3>
-        <dl class="divide-y divide-slate-100">
-          <div class="grid grid-cols-3 py-8 items-center">
-            <dt class="font-bold text-sm text-[var(--main-color)] uppercase tracking-widest">Company</dt>
-            <dd class="col-span-2 text-lg">Modern Design Inc.</dd>
-          </div>
-          <div class="grid grid-cols-3 py-8 items-center">
-            <dt class="font-bold text-sm text-[var(--main-color)] uppercase tracking-widest">Address</dt>
-            <dd class="col-span-2 text-lg text-[var(--text-light)]">東京都渋谷区桜丘町 123-45<br/>Modern Bldg. 4F</dd>
-          </div>
-          <div class="grid grid-cols-3 py-8 items-center">
-            <dt class="font-bold text-sm text-[var(--main-color)] uppercase tracking-widest">Founded</dt>
-            <dd class="col-span-2 text-lg text-[var(--text-light)]">2026年 2月</dd>
-          </div>
-        </dl>
       </section>
     </main>
 
-    <footer class="py-16 bg-white border-t border-slate-100">
-      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-        <div class="flex items-center gap-2">
-          <div class="w-6 h-6 bg-[var(--main-color)] rounded flex items-center justify-center text-white font-black text-[10px]">M</div>
-          <p class="font-bold text-sm">ModernCorp</p>
+    <footer class="py-20 bg-[var(--main-color)] text-white px-8">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12">
+        <div>
+          <h2 class="text-7xl font-black tracking-tighter mb-8 italic">Let's talk.</h2>
+          <p class="text-white/40 text-xs font-bold tracking-[0.4em] uppercase">© 2026 Studio Modern. Built for Excellence.</p>
         </div>
-        <p class="text-xs text-slate-400 font-medium tracking-widest">&copy; 2026 MODERN DESIGN INC. ALL RIGHTS RESERVED.</p>
-        <div class="flex gap-6">
-          <a href="#" class="text-slate-400 hover:text-[var(--main-color)] transition-colors"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+        <div class="flex gap-12 text-xs font-bold uppercase tracking-widest">
+          <a href="#" class="hover:text-[var(--accent-color)] transition-colors">Instagram</a>
+          <a href="#" class="hover:text-[var(--accent-color)] transition-colors">Twitter (X)</a>
+          <a href="#" class="hover:text-[var(--accent-color)] transition-colors">LinkedIn</a>
         </div>
       </div>
     </footer>

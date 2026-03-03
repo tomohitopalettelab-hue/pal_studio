@@ -49,6 +49,8 @@ ADMIN_USERNAME=your_name
 ADMIN_PASSWORD=very_strong_password
 ```
 
+Access `/login` and choose `Admin` to sign in.
+
 ## Customer-specific main URL
 
 Use customer-specific main links in this format:
@@ -56,3 +58,9 @@ Use customer-specific main links in this format:
 `/main?cid=<customer_id>`
 
 You can copy this URL from the customer panel in `/admin`.
+
+## Customer Login
+
+- In `/admin`, set each customer's `loginId` and `loginPassword`.
+- Customers sign in from `/login` with `Customer` selected.
+- After login, they are redirected to their own `/main?cid=<customer_id>`.

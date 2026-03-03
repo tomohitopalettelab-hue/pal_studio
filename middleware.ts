@@ -1,53 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isExpired, parseSessionValue, SESSION_COOKIE_NAME } from './lib/auth-session';
 
-const unauthorized = () =>
-  new NextResponse('Authentication required', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Palette Admin"',
-      'Cache-Control': 'no-store',
-    },
-  });
+const redirectToLogin = (req: NextRequest) => {
+  const loginUrl = req.nextUrl.clone();
+  loginUrl.pathname = '/login';
+  loginUrl.searchParams.set('next', `${req.nextUrl.pathname}${req.nextUrl.search}`);
+  return NextResponse.redirect(loginUrl);
+};
 
 export function middleware(req: NextRequest) {
-  const username = process.env.ADMIN_USERNAME?.trim() || process.env.ADMIN_USER?.trim();
-  const password = process.env.ADMIN_PASSWORD?.trim();
+  const pathname = req.nextUrl.pathname;
+  const cookieValue = req.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const session = parseSessionValue(cookieValue);
 
-  if (!username || !password) {
-    return new NextResponse('Admin auth is not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD.', {
-      status: 500,
-      headers: { 'Cache-Control': 'no-store' },
-    });
+  if (!session || isExpired(session)) {
+    const res = redirectToLogin(req);
+    res.cookies.set({ name: SESSION_COOKIE_NAME, value: '', path: '/', maxAge: 0 });
+    return res;
   }
 
-  const authHeader = req.headers.get('authorization');
-  if (!authHeader?.startsWith('Basic ')) {
-    return unauthorized();
+  if (pathname.startsWith('/admin')) {
+    if (session.role !== 'admin') {
+      return redirectToLogin(req);
+    }
+    return NextResponse.next();
   }
 
-  const encoded = authHeader.slice(6).trim();
-  let decoded = '';
-  try {
-    decoded = Buffer.from(encoded, 'base64').toString('utf-8');
-  } catch {
-    return unauthorized();
-  }
+  if (pathname.startsWith('/main')) {
+    if (session.role === 'admin') {
+      return NextResponse.next();
+    }
 
-  const separatorIndex = decoded.indexOf(':');
-  if (separatorIndex < 0) {
-    return unauthorized();
-  }
+    const cid = req.nextUrl.searchParams.get('cid')?.trim();
+    const myCid = session.customerId?.trim();
+    if (!myCid) return redirectToLogin(req);
 
-  const user = decoded.slice(0, separatorIndex);
-  const pass = decoded.slice(separatorIndex + 1);
+    if (!cid) {
+      const url = req.nextUrl.clone();
+      url.searchParams.set('cid', myCid);
+      return NextResponse.redirect(url);
+    }
 
-  if (user !== username || pass !== password) {
-    return unauthorized();
+    if (cid !== myCid) {
+      const url = req.nextUrl.clone();
+      url.searchParams.set('cid', myCid);
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/main', '/main/:path*'],
 };

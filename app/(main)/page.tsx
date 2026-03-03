@@ -15,6 +15,9 @@ export default function PaletteDesign() {
   const [confirmMessages, setConfirmMessages] = useState<any[]>([]);
   const [aiExplanation, setAiExplanation] = useState(""); // AI の意思決定・方針を保存
   const [conversationEnded, setConversationEnded] = useState(false); // ヒアリング完了フラグ
+  const [sessionCustomerId] = useState(
+    () => `cust-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  );
 
   const scrollEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -71,6 +74,53 @@ export default function PaletteDesign() {
     }
   };
 
+  const buildUserAnswers = (currentMessages: any[]) => {
+    const userAnswers: { q: string, a: string }[] = [];
+    for (let i = 0; i < currentMessages.length; i++) {
+      const msg = currentMessages[i];
+      if (msg.role !== 'user') continue;
+      const prevAiMsg = currentMessages
+        .slice(0, i)
+        .reverse()
+        .find((m: any) => m.role === 'ai');
+      userAnswers.push({
+        q: prevAiMsg?.content || '質問',
+        a: String(msg.content || ''),
+      });
+    }
+    return userAnswers;
+  };
+
+  const saveDraftToLab = async (currentMessages: any[], status: 'hearing' | 'reviewing' | 'completed' = 'hearing') => {
+    try {
+      const firstUserMessage = currentMessages.find((m: any) => m.role === 'user')?.content || '新規顧客';
+      const userAnswers = buildUserAnswers(currentMessages);
+
+      const payload = {
+        id: sessionCustomerId,
+        customer_id: sessionCustomerId,
+        name: String(firstUserMessage).slice(0, 80) || '新規顧客',
+        answers: userAnswers,
+        description: aiExplanation || 'ヒアリング中',
+        htmlCode: generatedCode || '',
+        status,
+      };
+
+      const response = await fetch('/api/save-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err?.error || `保存に失敗しました (${response.status})`);
+      }
+    } catch (err) {
+      console.error('下書き保存エラー:', err);
+    }
+  };
+
   // 明示的に保存を行う関数
   const saveToLab = async (currentMessages: any[], html: string) => {
     if (!html) {
@@ -80,45 +130,37 @@ export default function PaletteDesign() {
     try {
       const titleMatch = html.match(/<title>(.*?)<\/title>/);
       let customerName = titleMatch ? titleMatch[1] : (currentMessages.find(m => m.role === 'user')?.content || "新規顧客");
-      // デフォルト名が単純すぎる場合はタイムスタンプを付加
       if (!titleMatch) {
         customerName += ` (${new Date().toLocaleTimeString()})`;
       }
-      
-      // ユーザーの回答のみを抽出（AI メッセージは除外）
-      const userAnswers: { q: string, a: string }[] = [];
-      console.log("=== saveToLab: currentMessages ===", currentMessages);
-      for (const msg of currentMessages) {
-        console.log(`Message: role=${msg.role}, content=${msg.content?.substring(0, 50)}...`);
-        if (msg.role === 'user') {
-          // ユーザーメッセージの前のAIメッセージを質問として使用
-          const prevAiMsg = currentMessages.slice(0, currentMessages.indexOf(msg)).reverse().find(m => m.role === 'ai');
-          userAnswers.push({
-            q: prevAiMsg?.content || "質問",
-            a: msg.content
-          });
-        }
-      }
-      console.log("=== userAnswers ===", userAnswers);
+
+      const userAnswers = buildUserAnswers(currentMessages);
 
       const payload = {
+        id: sessionCustomerId,
+        customer_id: sessionCustomerId,
         name: customerName,
         answers: userAnswers,
-        // 管理画面のGeneration Memoに AI の意思決定・方針を表示
         description: aiExplanation || "デザイン方針の詳細記録なし",
-        htmlCode: html
+        htmlCode: html,
+        status: 'reviewing',
       };
-      console.log("=== payload ===", payload);
 
-      await fetch('/api/save-customer', {
+      const response = await fetch('/api/save-customer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err?.error || `保存に失敗しました (${response.status})`);
+      }
+
       console.log("Labへの保存が完了しました");
     } catch (err) {
       console.error("保存エラー:", err);
+      alert('保存に失敗しました。環境変数やDB接続を確認してください。');
     }
   };
 
@@ -142,6 +184,7 @@ export default function PaletteDesign() {
     const userMessage = { role: 'user', content: messageToSend };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
+    await saveDraftToLab(updatedMessages, 'hearing');
     setInputText("");
     setIsLoading(true);
 
@@ -291,6 +334,7 @@ export default function PaletteDesign() {
         const newMessages = [...updatedMessages, { role: 'ai', content: aiText }];
         setMessages(newMessages);
         extractCode(aiText, newMessages);
+        await saveDraftToLab(newMessages, /よろしいでしょうか|OKであれば|確認してください/.test(aiText) ? 'reviewing' : 'hearing');
         // AIが構成確認の文言を含んでいたらボタン表示
         if (/よろしいでしょうか|OKであれば|確認してください/.test(aiText)) {
           setShowConfirmSave(true);

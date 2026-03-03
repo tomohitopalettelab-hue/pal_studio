@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, customer: saved });
   } catch (error) {
     console.error('Save API Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

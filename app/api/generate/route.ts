@@ -31,10 +31,14 @@ const extractErrorMessage = (error: unknown): string => {
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    const apiKey =
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+      process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_API_KEY ||
+      '';
 
     if (!apiKey) {
-      return NextResponse.json({ text: "Gemini APIキーが設定されていません。" }, { status: 500 });
+      return NextResponse.json({ text: "Gemini APIキーが設定されていません。（GOOGLE_GENERATIVE_AI_API_KEY または GEMINI_API_KEY）" }, { status: 500 });
     }
 
     const ai = new GoogleGenAI({ apiKey });

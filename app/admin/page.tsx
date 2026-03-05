@@ -89,6 +89,38 @@ export default function PaletteLab() {
   const [isDirty, setIsDirty] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0].id);
 
+  const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/i;
+
+  const normalizeAnswerValue = (value: string): string => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    const arrow = raw.match(/(?:->|→)\s*(.+)$/);
+    const candidate = (arrow?.[1] || raw).trim();
+    return candidate.replace(/^\d+\.\s*/, '').trim();
+  };
+
+  const deriveNameFromAnswers = (answers?: { q: string; a: string }[]): string => {
+    const list = Array.isArray(answers) ? answers : [];
+    const companyQ = list.find((item) => /(屋号|会社名|法人名|ブランド名|サービス名)/.test(String(item?.q || '')));
+    if (companyQ) {
+      const val = normalizeAnswerValue(companyQ.a || '');
+      if (val && !PALETTE_ID_PATTERN.test(val)) return val;
+    }
+    const fallback = list
+      .map((item) => normalizeAnswerValue(item?.a || ''))
+      .find((value) => value && !PALETTE_ID_PATTERN.test(value) && value.length <= 64);
+    return fallback || '';
+  };
+
+  const resolveCustomerDisplayName = (customer?: Customer | null): string => {
+    if (!customer) return '名称未設定';
+    const raw = String(customer.name || '').trim();
+    if (raw && !PALETTE_ID_PATTERN.test(raw)) return raw;
+    const fromAnswers = deriveNameFromAnswers(customer.answers);
+    if (fromAnswers) return fromAnswers;
+    return raw || String(customer.customer_id || customer.id || '名称未設定');
+  };
+
   const refreshCustomers = async () => {
     try {
       const [response, accountResponse] = await Promise.all([
@@ -107,11 +139,16 @@ export default function PaletteLab() {
         .map((customer: Customer) => {
         const paletteId = customer.customer_id || customer.id;
         const account = accountMap.get(paletteId);
-        if (!account) return customer;
+        if (!account) {
+          return {
+            ...customer,
+            name: resolveCustomerDisplayName(customer),
+          };
+        }
         return {
           ...customer,
           customer_id: paletteId,
-          name: account.name || customer.name,
+          name: String(account.name || '').trim() || resolveCustomerDisplayName(customer),
         };
       })
         .filter((customer: Customer) => {
@@ -621,9 +658,8 @@ ${selectedCustomer.htmlCode}
         updatedAt: new Date().toISOString(),
       } as any;
 
-      // ID / 公開ID / テンプレートフラグは送信しない（必ず新規作成）
+      // ID は新規採番させるが、customer_id は契約判定に必要なので保持する。
       delete payload.id;
-      delete payload.customer_id;
       delete payload.isTemplate;
 
       const response = await fetch('/api/save-customer', {
@@ -645,7 +681,8 @@ ${selectedCustomer.htmlCode}
           window.open(publicUrl, '_blank');
         }
       } else {
-        alert("保存に失敗しました。");
+        const err = await response.json().catch(() => ({}));
+        alert(`保存に失敗しました: ${String((err as { error?: string }).error || 'unknown error')}`);
       }
     } catch (error) {
       console.error("Publish Error:", error);
@@ -1145,7 +1182,7 @@ ${selectedCustomer.htmlCode}
                   }} 
                   className={`w-full p-4 flex items-center justify-between border-b border-slate-50 transition-all ${selectedCustomerId === customer.id ? 'bg-indigo-50 border-r-4 border-r-indigo-500' : 'hover:bg-slate-50'}`}>
                   <div className="text-left">
-                    <p className="font-bold text-sm truncate w-40">{customer.name}</p>
+                    <p className="font-bold text-sm truncate w-40">{resolveCustomerDisplayName(customer)}</p>
                     {!customer.id.startsWith('tpl-') && (
                       <p className="text-[10px] uppercase font-bold text-slate-400">{customer.status}</p>
                     )}
@@ -1271,17 +1308,17 @@ ${selectedCustomer.htmlCode}
                   <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hearing Answers</h2>
                   <button onClick={() => setShowHearingChat(true)} className="text-xs text-indigo-600 font-bold">チャット表示</button>
                 </div>
-                <div className="space-y-2 bg-white p-3 rounded-xl border border-slate-200 shadow-sm overflow-hidden max-h-48 overflow-y-auto">
+                <div className="space-y-2 bg-white p-3 rounded-xl border border-slate-200 shadow-sm overflow-hidden max-h-[55vh] overflow-y-auto">
                   {selectedCustomer.answers && selectedCustomer.answers.length > 0 ? (
                     selectedCustomer.answers.map((ans, i) => (
                       <div key={i} className="mb-2 last:mb-0">
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Q: {ans.q}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter whitespace-pre-wrap break-words">Q: {ans.q}</p>
                         {ans.a?.startsWith('data:image') ? (
                           <div className="mt-1">
                             <img src={ans.a} alt="Answer Image" className="max-w-full h-auto rounded-lg border border-slate-200 max-h-40 object-contain" />
                           </div>
                         ) : (
-                          <p className="text-[11px] font-medium text-slate-700 leading-tight">{ans.a}</p>
+                          <p className="text-[11px] font-medium text-slate-700 leading-relaxed whitespace-pre-wrap break-words">{ans.a}</p>
                         )}
                       </div>
                     ))

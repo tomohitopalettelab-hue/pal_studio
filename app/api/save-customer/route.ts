@@ -3,10 +3,19 @@ import { upsertCustomer } from '../_lib/customer-store';
 import { findPalStudioAccountByPaletteId } from '../_lib/pal-studio-accounts';
 import { palDbPost } from '../_lib/pal-db-client';
 
+const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/;
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const paletteId = String(body?.customer_id || body?.id || '').trim().toUpperCase();
+    const explicitPaletteId = String(body?.customer_id || body?.paletteId || '').trim().toUpperCase();
+    const fallbackId = String(body?.id || '').trim().toUpperCase();
+    const paletteId = explicitPaletteId || (PALETTE_ID_PATTERN.test(fallbackId) ? fallbackId : '');
+
+    if (!paletteId) {
+      return NextResponse.json({ success: false, error: 'customer_id（Palette ID）が必要です。' }, { status: 400 });
+    }
+
     const studioAccount = await findPalStudioAccountByPaletteId(paletteId);
 
     if (!studioAccount) {

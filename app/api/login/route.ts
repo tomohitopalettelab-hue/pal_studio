@@ -30,10 +30,23 @@ export async function POST(req: Request) {
     let redirectTo = '/admin';
 
     if (role === 'admin') {
-      const adminUser = process.env.ADMIN_USERNAME?.trim() || process.env.ADMIN_USER?.trim();
-      const adminPass = process.env.ADMIN_PASSWORD?.trim();
+      const adminUser =
+        process.env.ADMIN_USERNAME?.trim() ||
+        process.env.ADMIN_USER?.trim() ||
+        process.env.PLATFORM_ADMIN_USERNAME?.trim() ||
+        'tomohito0108';
+      const adminPass =
+        process.env.ADMIN_PASSWORD?.trim() ||
+        process.env.PLATFORM_ADMIN_PASSWORD?.trim() ||
+        process.env.NEXT_PUBLIC_ADMIN_PASSWORD?.trim();
       if (!adminUser || !adminPass) {
-        return NextResponse.json({ success: false, error: '管理者ログイン設定が未構成です。' }, { status: 500 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: '管理者ログイン設定が未構成です。ADMIN_PASSWORD もしくは PLATFORM_ADMIN_PASSWORD を設定してください。',
+          },
+          { status: 500 },
+        );
       }
       if (id !== adminUser || password !== adminPass) {
         return NextResponse.json({ success: false, error: 'IDまたはパスワードが違います。' }, { status: 401 });

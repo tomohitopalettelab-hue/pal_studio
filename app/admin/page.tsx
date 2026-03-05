@@ -126,6 +126,13 @@ export default function PaletteLab() {
       : '名称未設定';
   };
 
+  const toDateLabel = (raw?: string | null): string => {
+    if (!raw) return '未設定';
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return String(raw);
+    return date.toLocaleDateString('ja-JP');
+  };
+
   const refreshCustomers = async () => {
     try {
       const [response, accountResponse] = await Promise.all([

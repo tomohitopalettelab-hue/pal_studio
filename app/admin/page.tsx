@@ -3,7 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Layout, Check, RotateCcw, Monitor, Smartphone, Search, Eye, EyeOff, Plus, Sparkles, Loader2, Grid, Image as ImageIcon, Upload, Wand2, X, Camera, Copy } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { templates, Template } from './templates';
+import {
+  templates,
+  Template,
+  TEMPLATE_DEFAULT_ID,
+  getTemplateById,
+  hasTemplateId,
+} from './templates';
 
 type Customer = {
   id: string;
@@ -90,7 +96,7 @@ export default function PaletteLab() {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [originalCustomer, setOriginalCustomer] = useState<Customer | null>(null); // server copy for dirty check
   const [isDirty, setIsDirty] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0].id);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(TEMPLATE_DEFAULT_ID);
 
   const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/i;
 
@@ -332,7 +338,7 @@ export default function PaletteLab() {
 
   // テンプレート自動選択ロジック
   const autoSelectTemplate = (answers: { q: string, a: string }[]) => {
-    if (!answers || answers.length === 0) return templates[0].id;
+    if (!answers || answers.length === 0) return TEMPLATE_DEFAULT_ID;
 
     const text = answers.map(a => a.a).join(" ").toLowerCase();
     const scores: { [key: string]: number } = {};
@@ -368,7 +374,7 @@ export default function PaletteLab() {
     // スコアが最も高いテンプレートIDを返す
     const sortedTemplates = Object.entries(scores).sort(([, a], [, b]) => b - a);
     // スコアが0より大きいものがあればそれを、なければデフォルト(modern)を返す
-    return sortedTemplates[0][1] > 0 ? sortedTemplates[0][0] : templates[0].id;
+    return sortedTemplates[0][1] > 0 ? sortedTemplates[0][0] : TEMPLATE_DEFAULT_ID;
   };
 
   // 顧客選択時にテンプレートを自動選択
@@ -377,7 +383,7 @@ export default function PaletteLab() {
       const explicitTemplateId = String(
         (selectedCustomer as any).selectedTemplateId || (selectedCustomer as any).templateId || '',
       ).trim();
-      if (explicitTemplateId && templates.some((template) => template.id === explicitTemplateId)) {
+      if (hasTemplateId(explicitTemplateId)) {
         setSelectedTemplateId(explicitTemplateId);
       } else {
         const recommendedId = autoSelectTemplate(selectedCustomer.answers);
@@ -511,20 +517,17 @@ ${selectedCustomer.htmlCode}
         : '';
 
       let recommendedTemplateId: string;
-      if (templates.some(t => t.id === selectedTemplateId)) {
+      if (hasTemplateId(selectedTemplateId)) {
         // 常にプルダウン選択を最優先
         recommendedTemplateId = selectedTemplateId;
-      } else if (templateIdFromTemplateRecord && templates.some(t => t.id === templateIdFromTemplateRecord)) {
+      } else if (hasTemplateId(templateIdFromTemplateRecord)) {
         recommendedTemplateId = templateIdFromTemplateRecord;
       } else {
         recommendedTemplateId = autoSelectTemplate(templateSelectionAnswers);
       }
 
-      let template = templates.find(t => t.id === recommendedTemplateId);
-      if (!template) {
-        template = templates[0];
-        recommendedTemplateId = template.id;
-      }
+      const template = getTemplateById(recommendedTemplateId);
+      recommendedTemplateId = template.id;
 
       const baseHtml = template.html;
       setSelectedTemplateId(recommendedTemplateId);

@@ -25,7 +25,9 @@ const normalize = (value: string | null | undefined) => String(value || '').trim
 
 const isPalStudioPlanCode = (code: string): boolean => {
   const normalized = normalize(code).replace(/-/g, '_');
-  return normalized.includes('pal_studio') || normalized === 'studio' || normalized.startsWith('studio_');
+  return normalized === 'pal_studio_lite'
+    || normalized === 'pal_studio_standard'
+    || normalized === 'pal_studio_pro';
 };
 
 const todayYmd = (): string => {

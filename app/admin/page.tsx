@@ -15,6 +15,7 @@ type Customer = {
   answers: { q: string, a: string }[];
   htmlCode: string;
   updatedAt: string;
+  selectedTemplateId?: string;
   description?: string;
   isTemplate?: boolean;
 };
@@ -366,8 +367,15 @@ export default function PaletteLab() {
   // 顧客選択時にテンプレートを自動選択
   useEffect(() => {
     if (selectedCustomer && !selectedCustomer.isTemplate && selectedCustomer.answers) {
-      const recommendedId = autoSelectTemplate(selectedCustomer.answers);
-      setSelectedTemplateId(recommendedId);
+      const explicitTemplateId = String(
+        (selectedCustomer as any).selectedTemplateId || (selectedCustomer as any).templateId || '',
+      ).trim();
+      if (explicitTemplateId && templates.some((template) => template.id === explicitTemplateId)) {
+        setSelectedTemplateId(explicitTemplateId);
+      } else {
+        const recommendedId = autoSelectTemplate(selectedCustomer.answers);
+        setSelectedTemplateId(recommendedId);
+      }
     }
   }, [selectedCustomerId]);
 
@@ -581,12 +589,16 @@ ${selectedCustomer.htmlCode}
       // HTML のみを抽出（テキストは除去）
       if (/<[^>]+>/.test(normalized)) {
         setCustomers(prev => prev.map(c => 
-          c.id === selectedCustomerId ? { ...c, htmlCode: html, description: memo, status: 'reviewing' } : c
+          c.id === selectedCustomerId
+            ? { ...c, htmlCode: html, description: memo, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
+            : c
         ));
       } else {
         // HTML を得られなかった場合は memo を更新せず、元の説明を残す
         setCustomers(prev => prev.map(c => 
-          c.id === selectedCustomerId ? { ...c, status: 'reviewing' } : c
+          c.id === selectedCustomerId
+            ? { ...c, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
+            : c
         ));
       }
     } catch (error: any) {
@@ -727,7 +739,12 @@ ${selectedCustomer.htmlCode}
   // 共通: 顧客情報をサーバーへ保存して一覧を更新するユーティリティ
   const updateCustomer = async (updates: Partial<Customer>) => {
     if (!selectedCustomer) return;
-    const payload = { ...selectedCustomer, ...updates, updatedAt: new Date().toISOString() } as any;
+    const payload = {
+      ...selectedCustomer,
+      ...updates,
+      selectedTemplateId,
+      updatedAt: new Date().toISOString(),
+    } as any;
     const res = await fetch('/api/save-customer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1263,6 +1280,9 @@ ${selectedCustomer.htmlCode}
                 <div className="text-[10px]">
                   ステータス: <span className="font-bold uppercase">{selectedCustomer.status}</span>
                 </div>
+                <div className="text-[10px]">
+                  最終更新: <span className="font-bold">{toDateLabel(selectedCustomer.updatedAt)}</span>
+                </div>
                 {!selectedCustomer.isTemplate && (
                   <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2.5 space-y-1.5">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer Main URL</p>
@@ -1447,7 +1467,15 @@ ${selectedCustomer.htmlCode}
                   <label className="text-[9px] font-bold text-slate-500">使用するテンプレート</label>
                   <select 
                     value={selectedTemplateId} 
-                    onChange={(e) => setSelectedTemplateId(e.target.value)}
+                    onChange={(e) => {
+                      const nextTemplateId = e.target.value;
+                      setSelectedTemplateId(nextTemplateId);
+                      setCustomers((prev) => prev.map((customer) => (
+                        customer.id === selectedCustomerId
+                          ? { ...customer, selectedTemplateId: nextTemplateId }
+                          : customer
+                      )));
+                    }}
                     className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
                   >
                     {templates.map(t => (

@@ -5,6 +5,16 @@ import { palDbPost } from '../_lib/pal-db-client';
 
 const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/;
 
+const normalizeIncomingName = (raw: unknown): string => String(raw || '').trim();
+
+const isSyntheticName = (name: string, paletteId: string): boolean => {
+  if (!name) return true;
+  if (PALETTE_ID_PATTERN.test(name)) return true;
+  if (name.toUpperCase() === paletteId.toUpperCase()) return true;
+  if (/\(\s*\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?\s*\)$/i.test(name)) return true;
+  return false;
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -22,12 +32,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Pal Studio契約中の顧客IDのみ保存できます。' }, { status: 403 });
     }
 
+    const incomingName = normalizeIncomingName(body?.name);
+    const normalizedAccountName = normalizeIncomingName(studioAccount.name);
+    const effectiveName = isSyntheticName(incomingName, paletteId)
+      ? (normalizedAccountName || '顧客名未設定')
+      : incomingName;
+
     console.log("=== /api/save-customer received ===", JSON.stringify(body, null, 2));
     const newCustomer = {
       ...body,
       id: body.id || `cust-${Date.now()}`,
       customer_id: paletteId || body.customer_id || `custsrv-${Date.now()}`,
-      name: String(body?.name || studioAccount.name || '新規顧客'),
+      name: effectiveName,
       updatedAt: new Date().toISOString(),
       status: body.status || 'hearing',
     };
@@ -37,7 +53,7 @@ export async function POST(req: Request) {
     const syncRes = await palDbPost('/api/accounts', {
       id: studioAccount.id,
       paletteId: studioAccount.paletteId,
-      name: String(saved?.name || studioAccount.name || '顧客名未設定'),
+      name: effectiveName,
       status: studioAccount.status || 'active',
       chatLoginId: studioAccount.chatLoginId || studioAccount.paletteId,
       ...(body?.loginPassword ? { chatPassword: String(body.loginPassword) } : {}),

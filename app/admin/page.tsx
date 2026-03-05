@@ -60,6 +60,14 @@ const extractHtmlAndComment = (text: string) => {
 };
 
 export default function PaletteLab() {
+  const PAGE_TREE = [
+    { key: 'top', label: 'Top', sectionId: 'top' },
+    { key: 'about', label: 'About', sectionId: 'concept' },
+    { key: 'company', label: 'Company', sectionId: 'company' },
+  ] as const;
+
+  type PageTreeKey = (typeof PAGE_TREE)[number]['key'];
+
   const [viewMode, setViewMode] = useState<'pc' | 'mobile'>('pc');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [labMode, setLabMode] = useState<'work' | 'templates'>('work');
@@ -80,6 +88,7 @@ export default function PaletteLab() {
   const [showHearingChat, setShowHearingChat] = useState(false);
   const [editingText, setEditingText] = useState<{ index: number; tag: string; text: string } | null>(null);
   const [textDraft, setTextDraft] = useState("");
+  const [selectedEditPage, setSelectedEditPage] = useState<PageTreeKey>('top');
 
   const TEXT_EDIT_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,small,label,td,th,blockquote';
   
@@ -97,6 +106,14 @@ export default function PaletteLab() {
   const [originalCustomer, setOriginalCustomer] = useState<Customer | null>(null); // server copy for dirty check
   const [isDirty, setIsDirty] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(TEMPLATE_DEFAULT_ID);
+
+  const selectedEditSectionId = PAGE_TREE.find((item) => item.key === selectedEditPage)?.sectionId || 'top';
+
+  const getEditableRoot = (root: ParentNode) => {
+    if (!(root as Document).querySelector) return root;
+    const scoped = (root as Document).querySelector(`#${selectedEditSectionId}`);
+    return scoped ?? root;
+  };
 
   const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/i;
 
@@ -398,6 +415,10 @@ export default function PaletteLab() {
     try {
       const tuningPrompt = `
 あなたはWebデザイナーです。以下の編集指示に従って、現在のHTMLを修正してください。
+
+    【編集対象セクション】
+    id="${selectedEditSectionId}" のセクション（${selectedEditPage.toUpperCase()}ページ相当）
+    他のセクションは必要最小限の変更に留めてください。
 
 【編集指示】
 ${aiInstruction}
@@ -916,7 +937,7 @@ ${selectedCustomer.htmlCode}
     const parser = new DOMParser();
     const sourceHtml = selectedCustomer.htmlCode || '';
     const parsed = parser.parseFromString(sourceHtml, 'text/html');
-    const editable = getEditableTextElements(parsed);
+    const editable = getEditableTextElements(getEditableRoot(parsed));
     const target = editable[editingText.index];
 
     if (!target) {
@@ -1036,7 +1057,12 @@ ${selectedCustomer.htmlCode}
       const textTarget = textDirect || textLayered || null;
       if (!textTarget) return;
 
-      const textElements = getEditableTextElements(doc);
+      const editableRoot = getEditableRoot(doc);
+      if (editableRoot instanceof Element && textTarget && !editableRoot.contains(textTarget)) {
+        return;
+      }
+
+      const textElements = getEditableTextElements(editableRoot);
       const index = textElements.findIndex((el) => el === textTarget);
       if (index < 0) return;
 
@@ -1312,6 +1338,36 @@ ${selectedCustomer.htmlCode}
                     </button>
                   </div>
                 )}
+              </section>
+
+              <section className="space-y-3">
+                <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Page Tree</h2>
+                <div className="space-y-2">
+                  {PAGE_TREE.map((page) => {
+                    const selected = selectedEditPage === page.key;
+                    return (
+                      <button
+                        key={page.key}
+                        onClick={() => {
+                          setSelectedEditPage(page.key);
+                          setEditingText(null);
+                          setTextDraft('');
+                        }}
+                        className={`w-full px-3 py-2 rounded-lg border text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${
+                          selected
+                            ? 'bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                        }`}
+                      >
+                        <span>{page.label}</span>
+                        <span className={`text-[10px] ${selected ? 'text-indigo-500' : 'text-slate-300'}`}>#{page.sectionId}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  選択したページ範囲のみテキスト編集とAI調整の対象になります。
+                </p>
               </section>
 
               {/* Section Control */}

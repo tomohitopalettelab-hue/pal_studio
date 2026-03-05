@@ -68,6 +68,8 @@ export default function PaletteLab() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [imageTab, setImageTab] = useState<'upload' | 'search' | 'generate'>('search');
   const [generatedImageUrl, setGeneratedImageUrl] = useState("");
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [generatedImageError, setGeneratedImageError] = useState("");
   const [showHearingChat, setShowHearingChat] = useState(false);
   const [editingText, setEditingText] = useState<{ index: number; tag: string; text: string } | null>(null);
   const [textDraft, setTextDraft] = useState("");
@@ -118,7 +120,9 @@ export default function PaletteLab() {
     if (raw && !PALETTE_ID_PATTERN.test(raw)) return raw;
     const fromAnswers = deriveNameFromAnswers(customer.answers);
     if (fromAnswers) return fromAnswers;
-    return raw || String(customer.customer_id || customer.id || '名称未設定');
+    return raw && !PALETTE_ID_PATTERN.test(raw)
+      ? raw
+      : '名称未設定';
   };
 
   const refreshCustomers = async () => {
@@ -761,6 +765,44 @@ ${selectedCustomer.htmlCode}
     }
   };
 
+  const handleGenerateImage = async () => {
+    const prompt = String(imageSearchQuery || '').trim();
+    if (!prompt) {
+      setGeneratedImageError('画像生成プロンプトを入力してください。');
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    setGeneratedImageError('');
+    setGeneratedImageUrl('');
+
+    try {
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&nologo=true&seed=${Date.now()}`;
+
+      // 実際に画像が読み込めるかを確認してから表示する。
+      await new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        const timer = window.setTimeout(() => reject(new Error('画像生成がタイムアウトしました。')), 15000);
+        img.onload = () => {
+          window.clearTimeout(timer);
+          resolve();
+        };
+        img.onerror = () => {
+          window.clearTimeout(timer);
+          reject(new Error('画像の取得に失敗しました。'));
+        };
+        img.src = url;
+      });
+
+      setGeneratedImageUrl(url);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '画像生成に失敗しました。';
+      setGeneratedImageError(message);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   const handleScreenshot = async () => {
     if (!iframeRef.current?.contentWindow) {
       alert('プレビューの読み込みが完了していません。');
@@ -1062,19 +1104,21 @@ ${selectedCustomer.htmlCode}
                       type="text" 
                       value={imageSearchQuery} 
                       onChange={(e) => setImageSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleGenerateImage()}
                       placeholder="どんな画像を作りますか？ (例: futuristic city with neon lights)" 
                       className="flex-1 p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                     <button 
-                      onClick={() => {
-                        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(imageSearchQuery)}`;
-                        setGeneratedImageUrl(url);
-                      }}
+                      onClick={handleGenerateImage}
+                      disabled={isGeneratingImage}
                       className="px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90"
                     >
-                      Generate
+                      {isGeneratingImage ? 'Generating...' : 'Generate'}
                     </button>
                   </div>
+                  {generatedImageError && (
+                    <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg p-2">{generatedImageError}</p>
+                  )}
                   {generatedImageUrl && (
                     <div className="mt-4">
                       <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden relative group">

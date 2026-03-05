@@ -19,6 +19,14 @@ type Customer = {
   isTemplate?: boolean;
 };
 
+type PalDbAccount = {
+  id: string;
+  paletteId: string;
+  name: string;
+  status: string;
+  updatedAt?: string;
+};
+
 // AIのレスポンスからHTMLとコメントを分離するヘルパー関数
 const extractHtmlAndComment = (text: string) => {
   const codeBlockRegex = /```html([\s\S]*?)```/;
@@ -83,9 +91,48 @@ export default function PaletteLab() {
 
   const refreshCustomers = async () => {
     try {
-      const response = await fetch('/api/get-customers');
+      const [response, accountResponse] = await Promise.all([
+        fetch('/api/get-customers'),
+        fetch('/api/pal-db/accounts'),
+      ]);
+
       const dbData = await response.json();
       const dbCustomers = Array.isArray(dbData) ? dbData : [];
+      const accountData = await accountResponse.json().catch(() => ({}));
+      const accounts: PalDbAccount[] = Array.isArray(accountData.accounts) ? accountData.accounts : [];
+      const accountMap = new Map(accounts.map((item) => [item.paletteId, item]));
+      const accountPaletteIds = new Set(accounts.map((item) => item.paletteId));
+
+      const mergedCustomers = dbCustomers
+        .map((customer: Customer) => {
+        const paletteId = customer.customer_id || customer.id;
+        const account = accountMap.get(paletteId);
+        if (!account) return customer;
+        return {
+          ...customer,
+          customer_id: paletteId,
+          name: account.name || customer.name,
+        };
+      })
+        .filter((customer: Customer) => {
+          const paletteId = customer.customer_id || customer.id;
+          return accountPaletteIds.has(String(paletteId || ''));
+        });
+
+      const missingCustomers: Customer[] = accounts
+        .filter((account) => !mergedCustomers.some((customer) => (customer.customer_id || customer.id) === account.paletteId))
+        .map((account) => ({
+          id: `acc-${account.id}`,
+          customer_id: account.paletteId,
+          name: account.name || '名称未設定',
+          status: 'hearing',
+          answers: [],
+          htmlCode: '',
+          updatedAt: account.updatedAt || new Date().toISOString(),
+          description: '',
+        }));
+
+      const mergedAndMissing = [...mergedCustomers, ...missingCustomers];
       
       // テンプレートデータをCustomer型に変換
       const templateData: Customer[] = templates.map(t => ({
@@ -99,12 +146,12 @@ export default function PaletteLab() {
         isTemplate: true
       }));
 
-      const combinedData = [...templateData, ...dbCustomers];
+      const combinedData = [...templateData, ...mergedAndMissing];
       setCustomers(combinedData);
       
       if (combinedData.length > 0 && !selectedCustomerId) {
         // 実際の顧客がいればそれを優先的に選択、いなければ最初のテンプレートを選択
-        setSelectedCustomerId(dbCustomers.length > 0 ? dbCustomers[0].id : combinedData[0].id);
+        setSelectedCustomerId(mergedAndMissing.length > 0 ? mergedAndMissing[0].id : combinedData[0].id);
       }
       // reset original when we refresh the list if currently selected exists
       if (selectedCustomerId) {
@@ -135,6 +182,7 @@ export default function PaletteLab() {
   }, []);
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
+  const paletteAiOrigin = (process.env.NEXT_PUBLIC_PALETTE_AI_ORIGIN || '').replace(/\/$/, '');
 
   const getCustomerMainPath = (customer?: Customer | null) => {
     if (!customer) return '';
@@ -143,11 +191,16 @@ export default function PaletteLab() {
     return `/main?cid=${encodeURIComponent(identifier)}`;
   };
 
+  const getCustomerMainUrl = (customer?: Customer | null) => {
+    const path = getCustomerMainPath(customer);
+    if (!path) return '';
+    return paletteAiOrigin ? `${paletteAiOrigin}${path}` : path;
+  };
+
   const copyCustomerMainUrl = async (customer?: Customer | null) => {
     if (!customer || typeof window === 'undefined') return;
-    const path = getCustomerMainPath(customer);
-    if (!path) return;
-    const fullUrl = `${window.location.origin}${path}`;
+    const fullUrl = getCustomerMainUrl(customer);
+    if (!fullUrl) return;
     try {
       await navigator.clipboard.writeText(fullUrl);
       alert('お客様用 main URL をコピーしました。');
@@ -1128,12 +1181,12 @@ ${selectedCustomer.htmlCode}
                   <div className="mt-2 rounded-lg border border-slate-200 bg-white p-2.5 space-y-1.5">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer Main URL</p>
                     <a
-                      href={getCustomerMainPath(selectedCustomer)}
+                      href={getCustomerMainUrl(selectedCustomer)}
                       target="_blank"
                       rel="noreferrer"
                       className="block text-[11px] text-indigo-600 break-all hover:underline"
                     >
-                      {getCustomerMainPath(selectedCustomer)}
+                      {getCustomerMainUrl(selectedCustomer)}
                     </a>
                     <button
                       onClick={() => copyCustomerMainUrl(selectedCustomer)}

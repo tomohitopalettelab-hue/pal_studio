@@ -51,16 +51,48 @@ ADMIN_PASSWORD=very_strong_password
 
 Access `/login` and choose `Admin` to sign in.
 
-## Customer-specific main URL
+## Customer-specific main URL (palette_ai)
 
-Use customer-specific main links in this format:
+`pal_studio` admin copies the customer main URL in this format:
 
 `/main?cid=<customer_id>`
 
-You can copy this URL from the customer panel in `/admin`.
+To point this URL to `palette_ai`, set:
 
-## Customer Login
+```bash
+NEXT_PUBLIC_PALETTE_AI_ORIGIN=https://your-palette-ai-domain
+```
 
-- In `/admin`, set each customer's `loginId` and `loginPassword`.
-- Customers sign in from `/login` with `Customer` selected.
-- After login, they are redirected to their own `/main?cid=<customer_id>`.
+If this variable is not set, the copied URL is relative.
+
+## Route roles
+
+- `palette_ai`: chat entrypoint (`/main`)
+- `pal_studio`: website production/admin (`/admin`)
+
+## E2E smoke test (Playwright)
+
+This test suite validates:
+
+- `palette_ai` chat entry is reachable
+- `pal_studio` admin login flow works
+- customer save/get/public-page flow works in `pal_studio`
+
+Run from `pal_studio`:
+
+```bash
+npm install
+npx playwright install chromium
+npm run test:e2e
+```
+
+Optional environment variables:
+
+```bash
+PALETTE_AI_PORT=3000
+PALETTE_STUDIO_PORT=3001
+PALETTE_AI_ORIGIN=http://127.0.0.1:3000
+PALETTE_STUDIO_ORIGIN=http://127.0.0.1:3001
+ADMIN_USERNAME=studio-admin
+ADMIN_PASSWORD=studio-pass
+```

@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Palette AI",
-  description: "AI Chat Application",
+  title: "Palette Studio",
+  description: "Website production workspace",
 };
 
 // 修正ポイント：iOSの勝手なズームとスクロールを物理的に止める設定（Mainから移動）

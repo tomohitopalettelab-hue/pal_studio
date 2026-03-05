@@ -145,10 +145,13 @@ export default function PaletteLab() {
             name: resolveCustomerDisplayName(customer),
           };
         }
+        const accountName = String(account.name || '').trim();
         return {
           ...customer,
           customer_id: paletteId,
-          name: String(account.name || '').trim() || resolveCustomerDisplayName(customer),
+          name: accountName && !PALETTE_ID_PATTERN.test(accountName)
+            ? accountName
+            : resolveCustomerDisplayName(customer),
         };
       })
         .filter((customer: Customer) => {
@@ -161,7 +164,9 @@ export default function PaletteLab() {
         .map((account) => ({
           id: `acc-${account.id}`,
           customer_id: account.paletteId,
-          name: account.name || '名称未設定',
+          name: (String(account.name || '').trim() && !PALETTE_ID_PATTERN.test(String(account.name || '').trim()))
+            ? String(account.name).trim()
+            : '名称未設定',
           status: 'hearing',
           answers: [],
           htmlCode: '',
@@ -1204,7 +1209,7 @@ ${selectedCustomer.htmlCode}
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">顧客名</h2>
                 <input
                   type="text"
-                  value={selectedCustomer.name}
+                  value={resolveCustomerDisplayName(selectedCustomer)}
                   onChange={(e) => {
                     const newName = e.target.value;
                     setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, name: newName } : c));
@@ -1474,7 +1479,7 @@ ${selectedCustomer.htmlCode}
                   <button onClick={() => setActiveTab('preview')} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${activeTab === 'preview' ? 'bg-slate-800 text-white shadow-lg' : 'bg-white/50 text-slate-500'}`}>Preview</button>
                   <button onClick={() => setActiveTab('code')} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${activeTab === 'code' ? 'bg-slate-800 text-white shadow-lg' : 'bg-white/50 text-slate-500'}`}>Code</button>
                 </div>
-                <div className="text-[10px] font-bold text-slate-400 tracking-widest uppercase italic">{selectedCustomer.name} - {selectedCustomer.id}</div>
+                <div className="text-[10px] font-bold text-slate-400 tracking-widest uppercase italic">{resolveCustomerDisplayName(selectedCustomer)} - {selectedCustomer.id}</div>
               </div>
               <div className="flex-1 w-full flex justify-center items-stretch overflow-hidden bg-slate-300/50 rounded-2xl">
                 {activeTab === 'preview' ? (

@@ -109,6 +109,7 @@ export default function PaletteLab() {
   const [isDirty, setIsDirty] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(TEMPLATE_DEFAULT_ID);
   const [selectedSitePageSlug, setSelectedSitePageSlug] = useState<string>('top');
+  const [selectedNewPageSlug, setSelectedNewPageSlug] = useState<string>('about');
 
 
   const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/i;
@@ -373,6 +374,20 @@ export default function PaletteLab() {
   const activePageVariants = templateVariants.filter(
     (variant) => variant.pageSlug === String(activePage?.slug || ''),
   );
+  const availableSlugOptions = Array.from(new Set([
+    'about',
+    'service',
+    'works',
+    'company',
+    'news',
+    'contact',
+    'faq',
+    'flow',
+    'pricing',
+    'menu',
+    'gallery',
+    ...templateVariants.map((variant) => variant.pageSlug),
+  ])).filter((slug) => slug && slug !== 'top');
 
   const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[]) => { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[]) => {
     setCustomers((prev) => prev.map((customer) => {
@@ -423,9 +438,8 @@ export default function PaletteLab() {
 
   const handleAddSitePage = () => {
     if (!selectedCustomer) return;
-    const raw = prompt('追加するページのslugを入力してください（例: about, service, contact）');
-    if (!raw) return;
-    const slug = normalizePageSlug(raw);
+    const slug = normalizePageSlug(selectedNewPageSlug);
+    if (!slug || slug === 'top') return;
     const pages = getCustomerPages(selectedCustomer);
     if (pages.some((page) => page.slug === slug)) {
       alert('同じslugのページが既にあります。');
@@ -438,11 +452,12 @@ export default function PaletteLab() {
     const topPage = pages.find((page) => page.slug === 'top');
     const seedHtml = String(topPage?.htmlCode || selectedCustomer.htmlCode || '').trim();
     const pageTemplateId = hasTemplateId(selectedTemplateId) ? selectedTemplateId : TEMPLATE_DEFAULT_ID;
+    const defaultVariant = templateVariants.find((variant) => variant.pageSlug === slug);
     updateSelectedCustomerPages((prev) => [...prev, {
       slug,
       title,
-      templateId: pageTemplateId,
-      templateVariantId: '',
+      templateId: defaultVariant?.templateId || pageTemplateId,
+      templateVariantId: defaultVariant?.id || '',
       htmlCode: slug === 'top'
         ? String(selectedCustomer.htmlCode || '')
         : (seedHtml || `<main><section id="top" class="p-8"><h1>${deriveTitleFromSlug(slug)} page</h1><p>このページを編集してください。</p></section></main>`),
@@ -1781,21 +1796,6 @@ ${activePageHtml}
               )}
 
               <section className="space-y-4 pt-4 border-t border-slate-200">
-                <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Initial Generation</h2>
-                <button 
-                  onClick={handleInitialGeneration}
-                  disabled={isApplying}
-                  className="w-full py-6 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white rounded-2xl text-[10px] font-black tracking-widest uppercase shadow-xl transition-all flex flex-col items-center justify-center gap-2 disabled:opacity-50 active:scale-95"
-                >
-                  <Sparkles className="w-6 h-6 text-yellow-300" />
-                  <span>Generate Draft</span>
-                </button>
-                <p className="text-[10px] text-slate-400 leading-relaxed">
-                  上部のPage Templateで選んだテンプレートが使われます。
-                </p>
-              </section>
-
-              <section className="space-y-4 pt-4 border-t border-slate-200">
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">AI Tuning</h2>
                 <textarea 
                   value={aiInstruction}
@@ -1855,14 +1855,34 @@ ${activePageHtml}
                 <div className="text-[10px] font-bold text-slate-400 tracking-widest uppercase italic">{resolveCustomerDisplayName(selectedCustomer)} - {selectedCustomer.id}</div>
               </div>
               <section className="mb-4 px-2 space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Site Pages</h2>
-                  <button
-                    onClick={handleAddSitePage}
-                    className="px-3 py-1.5 rounded-md bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-slate-700"
-                  >
-                    + Add Page
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleInitialGeneration}
+                      disabled={isApplying}
+                      className="px-4 py-2 rounded-md bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white text-[10px] font-black uppercase tracking-wider shadow-lg disabled:opacity-50"
+                    >
+                      Generate Draft
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={selectedNewPageSlug}
+                        onChange={(e) => setSelectedNewPageSlug(e.target.value)}
+                        className="p-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-bold uppercase tracking-wider"
+                      >
+                        {availableSlugOptions.map((slug) => (
+                          <option key={slug} value={slug}>/{slug}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={handleAddSitePage}
+                        className="px-3 py-1.5 rounded-md bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-slate-700"
+                      >
+                        + Add Page
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {selectedCustomerPages.map((page) => {

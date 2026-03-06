@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     }
 
     const client = new OpenAI({ apiKey });
-    const prompt = `あなたは日本語でニュース記事を書く編集者です。\n\n条件:\n- タイプ: ${postType}\n- タイトル: ${title}\n- 概要(抜粋): ${excerpt}\n- 文字数の目安: ${length} 文字\n- 見出しや箇条書きを適度に使う\n- 誇張や断定は避ける\n\n本文のみを書いてください。`;
+    const prompt = `あなたは日本語でニュース記事を書く編集者です。\n\n条件:\n- タイプ: ${postType}\n- タイトル: ${title}\n- 概要(抜粋): ${excerpt}\n- 文字数の目安: ${length} 文字\n- 見出しや箇条書きを適度に使う\n- 誇張や断定は避ける\n- Markdown記法は禁止（** や # や - の記法は使わない）\n\n本文のみを書いてください。`;
 
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL || 'gpt-4o-mini',

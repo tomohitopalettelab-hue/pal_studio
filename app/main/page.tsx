@@ -68,6 +68,41 @@ const createDraftPost = (): PostItem => {
   };
 };
 
+const MainScrollStyles = () => (
+  <style jsx global>{`
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: auto !important;
+      display: block;
+      background-color: #f8fafc;
+    }
+    body {
+      margin: 0;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    html::-webkit-scrollbar-track, body::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+    html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 999px;
+      border: 2px solid #e2e8f0;
+    }
+    html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    html, body {
+      scrollbar-color: #94a3b8 #e2e8f0;
+      scrollbar-width: thin;
+    }
+  `}</style>
+);
+
 export default function MainPage() {
   const [session, setSession] = useState<SessionPayload | null>(null);
   const [posts, setPosts] = useState<PostItem[]>([]);
@@ -224,6 +259,7 @@ export default function MainPage() {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <MainScrollStyles />
         <div className="flex flex-col items-center gap-3 text-slate-500">
           <svg className="animate-spin h-6 w-6 text-indigo-600" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -238,6 +274,7 @@ export default function MainPage() {
   if (!session?.authenticated) {
     return (
       <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans">
+        <MainScrollStyles />
         <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
           <div className="bg-gradient-to-r from-[#0047AB] to-[#4F46E5] h-2 w-full" />
           <div className="p-8 pt-10">
@@ -297,6 +334,7 @@ export default function MainPage() {
 
   return (
     <main className="min-h-screen bg-[#F1F5F9] font-sans">
+      <MainScrollStyles />
       <div className="max-w-7xl mx-auto p-4 md:p-8">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">

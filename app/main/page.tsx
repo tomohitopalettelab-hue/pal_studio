@@ -89,7 +89,24 @@ const htmlToText = (value: string): string => {
   return raw.replace(/\n{3,}/g, '\n\n').trim();
 };
 
-const buildAutoDraft = (customerName: string, title: string, excerpt: string) => {
+const buildSlugFromTypeAndDate = (postType: PostItem['postType'], publishedAt: string) => {
+  const baseDate = publishedAt ? new Date(publishedAt) : new Date();
+  const safeDate = Number.isNaN(baseDate.getTime()) ? new Date() : baseDate;
+  const y = safeDate.getFullYear();
+  const m = String(safeDate.getMonth() + 1).padStart(2, '0');
+  const d = String(safeDate.getDate()).padStart(2, '0');
+  const hh = String(safeDate.getHours()).padStart(2, '0');
+  const mm = String(safeDate.getMinutes()).padStart(2, '0');
+  return `${postType}-${y}${m}${d}-${hh}${mm}`;
+};
+
+const buildAutoDraft = (
+  customerName: string,
+  title: string,
+  excerpt: string,
+  postType: PostItem['postType'],
+  targetLength: number,
+) => {
   const now = new Date();
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -97,14 +114,25 @@ const buildAutoDraft = (customerName: string, title: string, excerpt: string) =>
   const dateLabel = `${y}/${m}/${d}`;
   const headline = title || `${dateLabel}のお知らせ`;
   const summary = excerpt || `${customerName || '当社'}からの最新情報をお届けします。`;
-  const bodyText = [
-    `${customerName || '当社'}からのお知らせです。`,
+  const typeLabel = postType === 'blog' ? 'ブログ' : '最新情報';
+  const chunks = [
+    `${customerName || '当社'}の${typeLabel}をお知らせします。`,
     `${dateLabel}に公開しました。`,
     '概要',
     `・${summary}`,
-    '詳細は以下をご確認ください。',
+    '詳細',
+    `${summary}に関する背景やポイントを簡潔にまとめています。`,
+    'お問い合わせ',
+    'ご不明点がございましたらお気軽にお問い合わせください。',
     '今後ともよろしくお願いいたします。',
-  ].join('\n\n');
+  ];
+
+  let bodyText = chunks.join('\n\n');
+  const numericLength = Number.isFinite(targetLength) ? targetLength : 0;
+  const maxLength = Math.max(200, numericLength || 0);
+  while (bodyText.length < maxLength) {
+    bodyText = `${bodyText}\n\n${summary}`;
+  }
 
   return {
     title: headline,
@@ -164,6 +192,7 @@ export default function MainPage() {
   const loginInFlightRef = useRef(false);
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [showGeneratedToast, setShowGeneratedToast] = useState(false);
+  const [draftLength, setDraftLength] = useState(400);
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === selectedPostId) || null,
@@ -203,6 +232,15 @@ export default function MainPage() {
   useEffect(() => {
     loadSession();
   }, []);
+
+  useEffect(() => {
+    if (!selectedPost) return;
+    if (String(selectedPost.slug || '').trim()) return;
+    const nextSlug = buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt);
+    if (nextSlug) {
+      updatePost(selectedPost.id, { slug: nextSlug });
+    }
+  }, [selectedPostId, selectedPost?.postType, selectedPost?.publishedAt]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -279,11 +317,17 @@ export default function MainPage() {
     setIsGeneratingDraft(true);
 
     await new Promise((resolve) => setTimeout(resolve, 800));
-    const auto = buildAutoDraft(session?.customer?.name || '', title, excerpt);
+    const auto = buildAutoDraft(
+      session?.customer?.name || '',
+      title,
+      excerpt,
+      selectedPost.postType,
+      draftLength,
+    );
     updatePost(selectedPost.id, {
       bodyText: auto.bodyText,
       bodyHtml: auto.bodyHtml,
-      slug: selectedPost.slug || slugify(title),
+      slug: selectedPost.slug || buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt),
     });
     setIsGeneratingDraft(false);
     setShowGeneratedToast(true);
@@ -293,10 +337,15 @@ export default function MainPage() {
   const handleSave = async () => {
     setSaveError('');
 
+    if (!session?.authenticated) {
+      setSaveError('ログインが切れました。再ログインしてください。');
+      return;
+    }
+
     const normalizedPosts = posts.map((post) => {
       const nextSlug = String(post.slug || '').trim().toLowerCase();
       if (nextSlug) return post;
-      const generated = slugify(post.title || '');
+      const generated = buildSlugFromTypeAndDate(post.postType, post.publishedAt);
       return generated ? { ...post, slug: generated } : post;
     });
 
@@ -324,6 +373,10 @@ export default function MainPage() {
         body: JSON.stringify({ posts: normalizedPosts }),
       });
       const data = await res.json();
+      if (res.status === 401) {
+        setSaveError('ログインが切れました。再ログインしてください。');
+        return;
+      }
       if (!res.ok || !data?.success) {
         setSaveError(data?.error || '保存に失敗しました。');
         return;
@@ -554,15 +607,7 @@ export default function MainPage() {
                       <label className="text-[12px] font-bold text-slate-500 ml-1 italic">タイトル</label>
                       <input
                         value={selectedPost.title}
-                        onChange={(event) => {
-                          const nextTitle = event.target.value;
-                          const nextPatch: Partial<PostItem> = { title: nextTitle };
-                          if (!String(selectedPost.slug || '').trim()) {
-                            const generated = slugify(nextTitle);
-                            if (generated) nextPatch.slug = generated;
-                          }
-                          updatePost(selectedPost.id, nextPatch);
-                        }}
+                        onChange={(event) => updatePost(selectedPost.id, { title: event.target.value })}
                         className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-bold text-slate-800 placeholder:font-normal"
                         placeholder="記事のタイトルを入力..."
                       />
@@ -577,7 +622,7 @@ export default function MainPage() {
                           placeholder="news-article-01"
                         />
                         <button
-                          onClick={() => updatePost(selectedPost.id, { slug: slugify(selectedPost.title) })}
+                          onClick={() => updatePost(selectedPost.id, { slug: buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt) })}
                           className="px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-black transition-colors"
                         >
                           再生成
@@ -660,21 +705,6 @@ export default function MainPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between ml-1 gap-3">
                       <label className="text-[12px] font-bold text-slate-500 italic">概要（抜粋）</label>
-                      <button
-                        onClick={handleGenerateDraft}
-                        disabled={isGeneratingDraft}
-                        className="px-3 py-1.5 text-[11px] font-black rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-60"
-                      >
-                        {isGeneratingDraft ? (
-                          <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-3.5 w-3.5 text-indigo-600" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                            生成中...
-                          </span>
-                        ) : '本文を自動生成'}
-                      </button>
                     </div>
                     <textarea
                       value={selectedPost.excerpt}
@@ -686,7 +716,37 @@ export default function MainPage() {
 
                   {/* Body */}
                   <div className="space-y-2">
-                    <label className="text-[12px] font-bold text-slate-500 ml-1 italic">本文</label>
+                    <div className="flex items-center justify-between ml-1 gap-3 flex-wrap">
+                      <label className="text-[12px] font-bold text-slate-500 italic">本文</label>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 rounded-xl bg-slate-100 px-2 py-1">
+                          <span className="text-[10px] font-bold text-slate-500">文字数</span>
+                          <input
+                            type="number"
+                            min={200}
+                            max={2000}
+                            value={draftLength}
+                            onChange={(event) => setDraftLength(Number(event.target.value || 0))}
+                            className="w-20 bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 outline-none"
+                          />
+                        </div>
+                        <button
+                          onClick={handleGenerateDraft}
+                          disabled={isGeneratingDraft}
+                          className="px-3 py-1.5 text-[11px] font-black rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-60"
+                        >
+                          {isGeneratingDraft ? (
+                            <span className="flex items-center gap-2">
+                              <svg className="animate-spin h-3.5 w-3.5 text-indigo-600" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                              </svg>
+                              生成中...
+                            </span>
+                          ) : '本文を自動生成'}
+                        </button>
+                      </div>
+                    </div>
                     <textarea
                       value={selectedPost.bodyText ?? htmlToText(selectedPost.bodyHtml)}
                       onChange={(event) => {

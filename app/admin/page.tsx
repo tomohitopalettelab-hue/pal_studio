@@ -334,7 +334,7 @@ export default function PaletteLab() {
           }))
       : [];
 
-    const unique = new Map<string, { slug: string; title: string; htmlCode: string }>();
+    const unique = new Map<string, { slug: string; title: string; htmlCode: string; templateId?: string }>();
     fromPayload.forEach((page) => {
       if (!unique.has(page.slug)) unique.set(page.slug, page);
     });

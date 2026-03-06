@@ -336,10 +336,12 @@ export default function MainPage() {
 
   const handleSave = async () => {
     setSaveError('');
-
     if (!session?.authenticated) {
-      setSaveError('ログインが切れました。再ログインしてください。');
-      return;
+      const refreshed = await loadSession();
+      if (!refreshed?.authenticated) {
+        setSaveError('ログインが切れました。再ログインしてください。');
+        return;
+      }
     }
 
     const normalizedPosts = posts.map((post) => {

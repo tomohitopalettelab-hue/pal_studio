@@ -1,3 +1,4 @@
+export type { Template } from './types';
 import type { Template } from './types';
 import { modernTemplate } from './modern';
 import { elegantTemplate } from './elegant';

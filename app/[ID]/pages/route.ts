@@ -4,6 +4,30 @@ import { readCustomers } from '../../api/_lib/customer-store';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+const resolvePublishPath = (customer: any) => {
+  const raw = String(customer?.publishPathTemplate || '').trim();
+  if (!raw) return '';
+
+  const identifier = String(customer?.customer_id || customer?.id || '').trim();
+  if (!identifier) return '';
+
+  const replaced = raw
+    .replaceAll('{id}', encodeURIComponent(identifier))
+    .replaceAll('{customer_id}', encodeURIComponent(identifier));
+
+  const fromUrl = /^https?:\/\//i.test(replaced)
+    ? (() => {
+        try {
+          return new URL(replaced).pathname;
+        } catch {
+          return replaced;
+        }
+      })()
+    : replaced;
+
+  return fromUrl.startsWith('/') ? fromUrl : `/${fromUrl}`;
+};
+
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ ID: string }> }
@@ -13,10 +37,14 @@ export async function GET(
 
   try {
     const customers = await readCustomers();
-    
-    // 顧客データは内部ID（cust-...）または外部発行ID（customer_id / custsrv-...）の
-    // どちらかでアクセスされる可能性がある。
-    const customer = customers.find((c: any) => c.id === id || c.customer_id === id);
+    const requestPath = `/${id}/pages`;
+
+    // 顧客データは内部ID/外部IDに加え、送信先パスのカスタムスラッグでも解決する。
+    const customer = customers.find((c: any) => {
+      if (c.id === id || c.customer_id === id) return true;
+      const publishPath = resolvePublishPath(c);
+      return publishPath === requestPath;
+    });
 
     if (!customer || !customer.htmlCode) {
       return new NextResponse('Page not found', { status: 404 });

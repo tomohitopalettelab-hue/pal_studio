@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { readCustomers, upsertCustomer } from '../../_lib/customer-store';
+import { cookies } from 'next/headers';
 import { parseSessionValue, MAIN_SESSION_COOKIE_NAME, SESSION_COOKIE_NAME, isExpired } from '../../../../lib/auth-session';
 
 type PostStatus = 'draft' | 'published';
@@ -43,15 +44,20 @@ const normalizePost = (input: Partial<PostItem>, fallbackId: string): PostItem =
 
 const getSessionCustomer = async (req: Request) => {
   const cookieHeader = req.headers.get('cookie') || '';
-  const parts = cookieHeader.split(';').map((part) => part.trim());
-  const mainMatch = parts.find((part) => part.startsWith(`${MAIN_SESSION_COOKIE_NAME}=`));
-  const legacyMatch = parts.find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`));
-  const value = mainMatch
-    ? mainMatch.split('=').slice(1).join('=')
-    : legacyMatch
-      ? legacyMatch.split('=').slice(1).join('=')
-      : '';
-  const session = parseSessionValue(value);
+  const store = cookies();
+  const mainCookie = store.get(MAIN_SESSION_COOKIE_NAME)?.value;
+  const legacyCookie = store.get(SESSION_COOKIE_NAME)?.value;
+  const fallbackValue = (() => {
+    const parts = cookieHeader.split(';').map((part) => part.trim());
+    const mainMatch = parts.find((part) => part.startsWith(`${MAIN_SESSION_COOKIE_NAME}=`));
+    const legacyMatch = parts.find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`));
+    return mainMatch
+      ? mainMatch.split('=').slice(1).join('=')
+      : legacyMatch
+        ? legacyMatch.split('=').slice(1).join('=')
+        : '';
+  })();
+  const session = parseSessionValue(mainCookie || legacyCookie || fallbackValue);
 
   if (!session || session.role !== 'customer' || isExpired(session)) {
     return null;

@@ -9,10 +9,49 @@ import { darkTemplate } from './dark';
 import { naturalTemplate } from './natural';
 import { japaneseTemplate } from './japanese';
 import { japaneseAboutTemplate } from './japanese/about';
-import { japaneseNewsTemplate } from './japanese/news';
+import { japaneseBlogTemplate } from './japanese/blog';
+import { japaneseBlogPageTemplate } from './japanese/blog-page';
 import { japaneseContactTemplate } from './japanese/contact';
+import { japaneseNewsTemplate } from './japanese/news';
+import { japaneseNewsPageTemplate } from './japanese/news-page';
 import { portfolioTemplate } from './portfolio';
 import { lpTemplate } from './lp';
+import { modernNewsTemplate } from './modern/news';
+import { modernBlogTemplate } from './modern/blog';
+import { modernNewsPageTemplate } from './modern/news-page';
+import { modernBlogPageTemplate } from './modern/blog-page';
+import { elegantNewsTemplate } from './elegant/news';
+import { elegantBlogTemplate } from './elegant/blog';
+import { elegantNewsPageTemplate } from './elegant/news-page';
+import { elegantBlogPageTemplate } from './elegant/blog-page';
+import { corporateNewsTemplate } from './corporate/news';
+import { corporateBlogTemplate } from './corporate/blog';
+import { corporateNewsPageTemplate } from './corporate/news-page';
+import { corporateBlogPageTemplate } from './corporate/blog-page';
+import { popNewsTemplate } from './pop/news';
+import { popBlogTemplate } from './pop/blog';
+import { popNewsPageTemplate } from './pop/news-page';
+import { popBlogPageTemplate } from './pop/blog-page';
+import { minimalNewsTemplate } from './minimal/news';
+import { minimalBlogTemplate } from './minimal/blog';
+import { minimalNewsPageTemplate } from './minimal/news-page';
+import { minimalBlogPageTemplate } from './minimal/blog-page';
+import { darkNewsTemplate } from './dark/news';
+import { darkBlogTemplate } from './dark/blog';
+import { darkNewsPageTemplate } from './dark/news-page';
+import { darkBlogPageTemplate } from './dark/blog-page';
+import { naturalNewsTemplate } from './natural/news';
+import { naturalBlogTemplate } from './natural/blog';
+import { naturalNewsPageTemplate } from './natural/news-page';
+import { naturalBlogPageTemplate } from './natural/blog-page';
+import { portfolioNewsTemplate } from './portfolio/news';
+import { portfolioBlogTemplate } from './portfolio/blog';
+import { portfolioNewsPageTemplate } from './portfolio/news-page';
+import { portfolioBlogPageTemplate } from './portfolio/blog-page';
+import { lpNewsTemplate } from './lp/news';
+import { lpBlogTemplate } from './lp/blog';
+import { lpNewsPageTemplate } from './lp/news-page';
+import { lpBlogPageTemplate } from './lp/blog-page';
 
 const REQUIRED_SECTION_IDS = ['top', 'concept', 'features', 'service', 'works', 'company'] as const;
 
@@ -30,9 +69,48 @@ export const templates: Template[] = [
 ];
 
 export const templateVariants: TemplateVariant[] = [
+  modernNewsTemplate,
+  modernBlogTemplate,
+  modernNewsPageTemplate,
+  modernBlogPageTemplate,
+  elegantNewsTemplate,
+  elegantBlogTemplate,
+  elegantNewsPageTemplate,
+  elegantBlogPageTemplate,
+  corporateNewsTemplate,
+  corporateBlogTemplate,
+  corporateNewsPageTemplate,
+  corporateBlogPageTemplate,
+  popNewsTemplate,
+  popBlogTemplate,
+  popNewsPageTemplate,
+  popBlogPageTemplate,
+  minimalNewsTemplate,
+  minimalBlogTemplate,
+  minimalNewsPageTemplate,
+  minimalBlogPageTemplate,
+  darkNewsTemplate,
+  darkBlogTemplate,
+  darkNewsPageTemplate,
+  darkBlogPageTemplate,
+  naturalNewsTemplate,
+  naturalBlogTemplate,
+  naturalNewsPageTemplate,
+  naturalBlogPageTemplate,
   japaneseAboutTemplate,
   japaneseNewsTemplate,
+  japaneseBlogTemplate,
+  japaneseNewsPageTemplate,
+  japaneseBlogPageTemplate,
   japaneseContactTemplate,
+  portfolioNewsTemplate,
+  portfolioBlogTemplate,
+  portfolioNewsPageTemplate,
+  portfolioBlogPageTemplate,
+  lpNewsTemplate,
+  lpBlogTemplate,
+  lpNewsPageTemplate,
+  lpBlogPageTemplate,
 ];
 
 export const TEMPLATE_DEFAULT_ID = templates[0]?.id ?? '';

@@ -9,8 +9,10 @@ type PostItem = {
   title: string;
   slug: string;
   bodyHtml: string;
+  bodyText?: string;
   excerpt: string;
   status: PostStatus;
+  postType: 'blog' | 'news';
   publishedAt: string;
   imageUrl?: string;
   imageAlt?: string;
@@ -60,11 +62,55 @@ const createDraftPost = (): PostItem => {
     title: '',
     slug: '',
     bodyHtml: '',
+    bodyText: '',
     excerpt: '',
-    status: 'draft',
+    status: 'published',
+    postType: 'news',
     publishedAt: now,
     createdAt: now,
     updatedAt: now,
+  };
+};
+
+const textToHtml = (value: string): string => {
+  const normalized = String(value || '').trim();
+  if (!normalized) return '';
+  return normalized
+    .split(/\n{2,}/)
+    .map((block) => `<p>${block.replace(/\n/g, '<br/>')}</p>`)
+    .join('\n');
+};
+
+const htmlToText = (value: string): string => {
+  const raw = String(value || '')
+    .replace(/<\s*br\s*\/?>/gi, '\n')
+    .replace(/<\s*\/p\s*>/gi, '\n\n')
+    .replace(/<[^>]+>/g, '');
+  return raw.replace(/\n{3,}/g, '\n\n').trim();
+};
+
+const buildAutoDraft = (customerName: string, title: string, excerpt: string) => {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const dateLabel = `${y}/${m}/${d}`;
+  const headline = title || `${dateLabel}のお知らせ`;
+  const summary = excerpt || `${customerName || '当社'}からの最新情報をお届けします。`;
+  const bodyText = [
+    `${customerName || '当社'}からのお知らせです。`,
+    `${dateLabel}に公開しました。`,
+    '概要',
+    `・${summary}`,
+    '詳細は以下をご確認ください。',
+    '今後ともよろしくお願いいたします。',
+  ].join('\n\n');
+
+  return {
+    title: headline,
+    excerpt: summary,
+    bodyText,
+    bodyHtml: textToHtml(bodyText),
   };
 };
 
@@ -139,6 +185,8 @@ export default function MainPage() {
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const loginInFlightRef = useRef(false);
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+  const [showGeneratedToast, setShowGeneratedToast] = useState(false);
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === selectedPostId) || null,
@@ -241,11 +289,42 @@ export default function MainPage() {
     );
   };
 
+  const handleGenerateDraft = async () => {
+    if (!selectedPost) return;
+    const title = String(selectedPost.title || '').trim();
+    const excerpt = String(selectedPost.excerpt || '').trim();
+    if (!title || !excerpt) {
+      setSaveError('タイトルと概要（抜粋）を入力してください。');
+      return;
+    }
+
+    setSaveError('');
+    setIsGeneratingDraft(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    const auto = buildAutoDraft(session?.customer?.name || '', title, excerpt);
+    updatePost(selectedPost.id, {
+      bodyText: auto.bodyText,
+      bodyHtml: auto.bodyHtml,
+      slug: selectedPost.slug || slugify(title),
+    });
+    setIsGeneratingDraft(false);
+    setShowGeneratedToast(true);
+    setTimeout(() => setShowGeneratedToast(false), 1800);
+  };
+
   const handleSave = async () => {
     setSaveError('');
 
+    const normalizedPosts = posts.map((post) => {
+      const nextSlug = String(post.slug || '').trim().toLowerCase();
+      if (nextSlug) return post;
+      const generated = slugify(post.title || '');
+      return generated ? { ...post, slug: generated } : post;
+    });
+
     const slugMap = new Map<string, number>();
-    for (const post of posts) {
+    for (const post of normalizedPosts) {
       const slug = String(post.slug || '').trim().toLowerCase();
       if (!slug) {
         setSaveError('スラッグが空の投稿があります。');
@@ -265,14 +344,14 @@ export default function MainPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ posts }),
+        body: JSON.stringify({ posts: normalizedPosts }),
       });
       const data = await res.json();
       if (!res.ok || !data?.success) {
         setSaveError(data?.error || '保存に失敗しました。');
         return;
       }
-      setPosts(Array.isArray(data.posts) ? data.posts : posts);
+      setPosts(Array.isArray(data.posts) ? data.posts : normalizedPosts);
     } catch {
       setSaveError('通信エラーが発生しました。');
     } finally {
@@ -359,6 +438,14 @@ export default function MainPage() {
   return (
     <main className="min-h-screen bg-[#F1F5F9] font-sans">
       <MainScrollStyles />
+      {showGeneratedToast && (
+        <div className="fixed top-6 right-6 z-50">
+          <div className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 shadow-lg">
+            <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            自動生成が完了しました
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto p-4 md:p-8">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -490,7 +577,15 @@ export default function MainPage() {
                       <label className="text-[12px] font-bold text-slate-500 ml-1 italic">タイトル</label>
                       <input
                         value={selectedPost.title}
-                        onChange={(event) => updatePost(selectedPost.id, { title: event.target.value })}
+                        onChange={(event) => {
+                          const nextTitle = event.target.value;
+                          const nextPatch: Partial<PostItem> = { title: nextTitle };
+                          if (!String(selectedPost.slug || '').trim()) {
+                            const generated = slugify(nextTitle);
+                            if (generated) nextPatch.slug = generated;
+                          }
+                          updatePost(selectedPost.id, nextPatch);
+                        }}
                         className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-bold text-slate-800 placeholder:font-normal"
                         placeholder="記事のタイトルを入力..."
                       />
@@ -508,14 +603,30 @@ export default function MainPage() {
                           onClick={() => updatePost(selectedPost.id, { slug: slugify(selectedPost.title) })}
                           className="px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-black transition-colors"
                         >
-                          自動生成
+                          再生成
                         </button>
                       </div>
                     </div>
                   </div>
 
                   {/* Status & Date */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">タイプ</label>
+                      <div className="relative">
+                        <select
+                          value={selectedPost.postType}
+                          onChange={(event) => updatePost(selectedPost.id, { postType: event.target.value as PostItem['postType'] })}
+                          className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none cursor-pointer font-medium text-slate-700"
+                        >
+                          <option value="blog">ブログ</option>
+                          <option value="news">最新情報</option>
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                      </div>
+                    </div>
                     <div className="space-y-1.5">
                       <label className="text-[12px] font-bold text-slate-500 ml-1 italic">公開ステータス</label>
                       <div className="relative">
@@ -569,8 +680,25 @@ export default function MainPage() {
                   </div>
 
                   {/* Excerpt */}
-                  <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">概要（抜粋）</label>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between ml-1 gap-3">
+                      <label className="text-[12px] font-bold text-slate-500 italic">概要（抜粋）</label>
+                      <button
+                        onClick={handleGenerateDraft}
+                        disabled={isGeneratingDraft}
+                        className="px-3 py-1.5 text-[11px] font-black rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-60"
+                      >
+                        {isGeneratingDraft ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-3.5 w-3.5 text-indigo-600" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            生成中...
+                          </span>
+                        ) : '本文を自動生成'}
+                      </button>
+                    </div>
                     <textarea
                       value={selectedPost.excerpt}
                       onChange={(event) => updatePost(selectedPost.id, { excerpt: event.target.value })}
@@ -579,36 +707,46 @@ export default function MainPage() {
                     />
                   </div>
 
-                  {/* Body HTML */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between ml-1">
-                      <label className="text-[12px] font-bold text-slate-500 italic">本文（HTML）</label>
-                      <span className="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded">コード</span>
-                    </div>
+                  {/* Body */}
+                  <div className="space-y-2">
+                    <label className="text-[12px] font-bold text-slate-500 ml-1 italic">本文</label>
                     <textarea
-                      value={selectedPost.bodyHtml}
-                      onChange={(event) => updatePost(selectedPost.id, { bodyHtml: event.target.value })}
-                      className="w-full p-5 bg-[#1E293B] border-none rounded-2xl text-indigo-100 text-[13px] font-mono min-h-[300px] leading-relaxed focus:ring-4 focus:ring-indigo-500/10 outline-none shadow-inner"
-                      placeholder="<p>ここに本文を記述...</p>"
+                      value={selectedPost.bodyText ?? htmlToText(selectedPost.bodyHtml)}
+                      onChange={(event) => {
+                        const nextText = event.target.value;
+                        updatePost(selectedPost.id, {
+                          bodyText: nextText,
+                          bodyHtml: textToHtml(nextText),
+                        });
+                      }}
+                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none min-h-[200px] leading-relaxed"
+                      placeholder="本文を入力してください..."
                     />
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button
-                      onClick={() => {
-                        const auto = buildAutoDraft(session?.customer?.name || '', selectedPost.title);
-                        updatePost(selectedPost.id, {
-                          title: auto.title,
-                          excerpt: auto.excerpt,
-                          bodyHtml: auto.bodyHtml,
-                          slug: selectedPost.slug || slugify(auto.title),
-                        });
-                      }}
-                      className="px-4 py-2 text-xs font-black rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
-                    >
-                      記事内容を自動生成
-                    </button>
-                    <p className="text-[11px] text-slate-400">公開URL: /{customerId}/news/{selectedPost.slug || 'slug'}</p>
+                  {/* Preview */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-[12px] font-black text-slate-500 uppercase tracking-widest">プレビュー</h3>
+                      <span className="text-[11px] text-slate-400">公開URL: /{customerId}/news/{selectedPost.slug || 'slug'}</span>
+                    </div>
+                    <article className="border border-slate-200 rounded-2xl p-6 bg-slate-50/40">
+                      <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        <span>{selectedPost.postType === 'blog' ? 'ブログ' : '最新情報'}</span>
+                        <span>・</span>
+                        <span>{toDatetimeLocal(selectedPost.publishedAt).replace('T', ' ') || '公開日時未設定'}</span>
+                      </div>
+                      <h2 className="text-xl font-black text-slate-900 mt-2">{selectedPost.title || 'タイトル未設定'}</h2>
+                      {selectedPost.imageUrl && (
+                        <img
+                          src={selectedPost.imageUrl}
+                          alt={selectedPost.imageAlt || ''}
+                          className="w-full h-56 object-cover rounded-xl mt-4"
+                        />
+                      )}
+                      <p className="text-sm text-slate-600 mt-4">{selectedPost.excerpt || '概要が入力されていません。'}</p>
+                      <div className="prose prose-slate max-w-none mt-5" dangerouslySetInnerHTML={{ __html: selectedPost.bodyHtml || '' }} />
+                    </article>
                   </div>
                   <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">

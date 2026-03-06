@@ -9,8 +9,10 @@ type PostItem = {
   title: string;
   slug: string;
   bodyHtml: string;
+  bodyText?: string;
   excerpt: string;
   status: PostStatus;
+  postType: 'blog' | 'news';
   publishedAt: string;
   imageUrl?: string;
   imageAlt?: string;
@@ -25,8 +27,10 @@ const normalizePost = (input: Partial<PostItem>, fallbackId: string): PostItem =
     title: String(input.title || ''),
     slug: String(input.slug || '').trim().toLowerCase(),
     bodyHtml: String(input.bodyHtml || ''),
+    bodyText: input.bodyText ? String(input.bodyText) : undefined,
     excerpt: String(input.excerpt || ''),
     status: input.status === 'published' ? 'published' : 'draft',
+    postType: input.postType === 'blog' ? 'blog' : 'news',
     publishedAt: String(input.publishedAt || ''),
     imageUrl: input.imageUrl ? String(input.imageUrl) : undefined,
     imageAlt: input.imageAlt ? String(input.imageAlt) : undefined,

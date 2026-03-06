@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createSessionValue, SESSION_COOKIE_NAME, type SessionPayload } from '../../../../lib/auth-session';
+import { createSessionValue, MAIN_SESSION_COOKIE_NAME, type SessionPayload } from '../../../../lib/auth-session';
 import { readCustomers, upsertCustomer } from '../../_lib/customer-store';
 import { palDbPost } from '../../_lib/pal-db-client';
 import { canLoginPalStudioStandardByPaletteId } from '../../_lib/pal-studio-accounts';
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
     const res = NextResponse.json({ success: true, paletteId, accountName });
     res.cookies.set({
-      name: SESSION_COOKIE_NAME,
+      name: MAIN_SESSION_COOKIE_NAME,
       value: createSessionValue(session),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

@@ -7,6 +7,7 @@ export type SessionPayload = {
 };
 
 export const SESSION_COOKIE_NAME = 'palette_session';
+export const MAIN_SESSION_COOKIE_NAME = 'palette_main_session';
 
 export const createSessionValue = (payload: SessionPayload): string => {
   return encodeURIComponent(JSON.stringify(payload));

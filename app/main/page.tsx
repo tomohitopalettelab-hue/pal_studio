@@ -30,16 +30,6 @@ type SessionPayload = {
   posts?: PostItem[];
 };
 
-const slugify = (value: string): string => {
-  return String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9\-\s]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
-
 const toDatetimeLocal = (iso: string): string => {
   if (!iso) return '';
   const date = new Date(iso);
@@ -316,22 +306,60 @@ export default function MainPage() {
     setSaveError('');
     setIsGeneratingDraft(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    const auto = buildAutoDraft(
-      session?.customer?.name || '',
-      title,
-      excerpt,
-      selectedPost.postType,
-      draftLength,
-    );
-    updatePost(selectedPost.id, {
-      bodyText: auto.bodyText,
-      bodyHtml: auto.bodyHtml,
-      slug: selectedPost.slug || buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt),
-    });
-    setIsGeneratingDraft(false);
-    setShowGeneratedToast(true);
-    setTimeout(() => setShowGeneratedToast(false), 1800);
+    try {
+      const res = await fetch('/api/main/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          title,
+          excerpt,
+          postType: selectedPost.postType,
+          length: draftLength,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        const fallback = buildAutoDraft(
+          session?.customer?.name || '',
+          title,
+          excerpt,
+          selectedPost.postType,
+          draftLength,
+        );
+        updatePost(selectedPost.id, {
+          bodyText: fallback.bodyText,
+          bodyHtml: fallback.bodyHtml,
+          slug: selectedPost.slug || buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt),
+        });
+        setSaveError(data?.error || '自動生成に失敗しました。');
+      } else {
+        const generatedText = String(data.text || '').trim();
+        updatePost(selectedPost.id, {
+          bodyText: generatedText,
+          bodyHtml: textToHtml(generatedText),
+          slug: selectedPost.slug || buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt),
+        });
+        setShowGeneratedToast(true);
+        setTimeout(() => setShowGeneratedToast(false), 1800);
+      }
+    } catch {
+      const fallback = buildAutoDraft(
+        session?.customer?.name || '',
+        title,
+        excerpt,
+        selectedPost.postType,
+        draftLength,
+      );
+      updatePost(selectedPost.id, {
+        bodyText: fallback.bodyText,
+        bodyHtml: fallback.bodyHtml,
+        slug: selectedPost.slug || buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt),
+      });
+      setSaveError('自動生成に失敗しました。');
+    } finally {
+      setIsGeneratingDraft(false);
+    }
   };
 
   const handleSave = async () => {

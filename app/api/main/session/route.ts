@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import { readCustomers } from '../../_lib/customer-store';
-import { parseSessionValue, SESSION_COOKIE_NAME, isExpired } from '../../../../lib/auth-session';
+import { parseSessionValue, MAIN_SESSION_COOKIE_NAME, SESSION_COOKIE_NAME, isExpired } from '../../../../lib/auth-session';
 
 export async function GET(req: Request) {
   try {
     const cookieHeader = req.headers.get('cookie') || '';
-    const match = cookieHeader
-      .split(';')
-      .map((part) => part.trim())
-      .find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`));
-    const value = match ? match.split('=').slice(1).join('=') : '';
+    const parts = cookieHeader.split(';').map((part) => part.trim());
+    const mainMatch = parts.find((part) => part.startsWith(`${MAIN_SESSION_COOKIE_NAME}=`));
+    const legacyMatch = parts.find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`));
+    const value = mainMatch
+      ? mainMatch.split('=').slice(1).join('=')
+      : legacyMatch
+        ? legacyMatch.split('=').slice(1).join('=')
+        : '';
     const session = parseSessionValue(value);
 
     if (!session || session.role !== 'customer' || isExpired(session)) {

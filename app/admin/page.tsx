@@ -262,32 +262,7 @@ export default function PaletteLab() {
   }, []);
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
-  const paletteAiOrigin = (process.env.NEXT_PUBLIC_PALETTE_AI_ORIGIN || '').replace(/\/$/, '');
-
-  const getCustomerMainPath = (customer?: Customer | null) => {
-    if (!customer) return '';
-    const identifier = customer.customer_id || customer.id;
-    if (!identifier) return '';
-    return `/main?cid=${encodeURIComponent(identifier)}`;
-  };
-
-  const getCustomerMainUrl = (customer?: Customer | null) => {
-    const path = getCustomerMainPath(customer);
-    if (!path) return '';
-    return paletteAiOrigin ? `${paletteAiOrigin}${path}` : path;
-  };
-
-  const copyCustomerMainUrl = async (customer?: Customer | null) => {
-    if (!customer || typeof window === 'undefined') return;
-    const fullUrl = getCustomerMainUrl(customer);
-    if (!fullUrl) return;
-    try {
-      await navigator.clipboard.writeText(fullUrl);
-      alert('お客様用 main URL をコピーしました。');
-    } catch {
-      prompt('コピーしてください', fullUrl);
-    }
-  };
+  const studioPublicOrigin = (process.env.NEXT_PUBLIC_STUDIO_ORIGIN || 'https://studio.palette-lab.com').replace(/\/$/, '');
 
   const normalizePublishPathTemplate = (raw?: string) => {
     const value = String(raw || '').trim();
@@ -296,7 +271,7 @@ export default function PaletteLab() {
     return value.startsWith('/') ? value : `/${value}`;
   };
 
-  const buildPublishUrl = (identifier: string, template?: string) => {
+  const buildPublishUrl = (identifier: string, template?: string, originOverride?: string) => {
     const normalized = normalizePublishPathTemplate(template);
     const encodedId = encodeURIComponent(identifier);
     const resolvedPath = normalized
@@ -304,7 +279,28 @@ export default function PaletteLab() {
       .replaceAll('{customer_id}', encodedId);
 
     if (/^https?:\/\//i.test(resolvedPath)) return resolvedPath;
-    return `${window.location.origin}${resolvedPath}`;
+    const fallbackOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+    const baseOrigin = (originOverride || fallbackOrigin || '').replace(/\/$/, '');
+    return baseOrigin ? `${baseOrigin}${resolvedPath}` : resolvedPath;
+  };
+
+  const getCustomerMainUrl = (customer?: Customer | null) => {
+    if (!customer) return '';
+    const identifier = customer.customer_id || customer.id;
+    if (!identifier) return '';
+    return buildPublishUrl(identifier, customer.publishPathTemplate, studioPublicOrigin);
+  };
+
+  const copyCustomerMainUrl = async (customer?: Customer | null) => {
+    if (!customer || typeof window === 'undefined') return;
+    const fullUrl = getCustomerMainUrl(customer);
+    if (!fullUrl) return;
+    try {
+      await navigator.clipboard.writeText(fullUrl);
+      alert('送信先URLをコピーしました。');
+    } catch {
+      prompt('コピーしてください', fullUrl);
+    }
   };
 
 

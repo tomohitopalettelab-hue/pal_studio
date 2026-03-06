@@ -92,7 +92,7 @@ export default function MainPage() {
     setIsLoading(true);
     let sessionData: SessionPayload | undefined;
     try {
-      const res = await fetch('/api/main/session', { cache: 'no-store' });
+      const res = await fetch('/api/main/session', { cache: 'no-store', credentials: 'include' });
       sessionData = (await res.json()) as SessionPayload;
       setSession(sessionData);
       if (sessionData?.authenticated) {
@@ -125,6 +125,7 @@ export default function MainPage() {
       const res = await fetch('/api/main/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ id: loginId, password: loginPassword }),
       });
       const data = await res.json();

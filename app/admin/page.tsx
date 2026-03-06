@@ -1340,36 +1340,6 @@ ${selectedCustomer.htmlCode}
                 )}
               </section>
 
-              <section className="space-y-3">
-                <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Page Tree</h2>
-                <div className="space-y-2">
-                  {PAGE_TREE.map((page) => {
-                    const selected = selectedEditPage === page.key;
-                    return (
-                      <button
-                        key={page.key}
-                        onClick={() => {
-                          setSelectedEditPage(page.key);
-                          setEditingText(null);
-                          setTextDraft('');
-                        }}
-                        className={`w-full px-3 py-2 rounded-lg border text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-between ${
-                          selected
-                            ? 'bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm'
-                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                        }`}
-                      >
-                        <span>{page.label}</span>
-                        <span className={`text-[10px] ${selected ? 'text-indigo-500' : 'text-slate-300'}`}>#{page.sectionId}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="text-[10px] text-slate-400 leading-relaxed">
-                  選択したページ範囲のみテキスト編集とAI調整の対象になります。
-                </p>
-              </section>
-
               {/* Section Control */}
               <section className="space-y-4">
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Layout Sections</h2>
@@ -1619,6 +1589,35 @@ ${selectedCustomer.htmlCode}
                 </div>
                 <div className="text-[10px] font-bold text-slate-400 tracking-widest uppercase italic">{resolveCustomerDisplayName(selectedCustomer)} - {selectedCustomer.id}</div>
               </div>
+              <section className="mb-4 px-2 space-y-2">
+                <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Page Tree</h2>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {PAGE_TREE.map((page) => {
+                    const selected = selectedEditPage === page.key;
+                    return (
+                      <button
+                        key={page.key}
+                        onClick={() => {
+                          setSelectedEditPage(page.key);
+                          setEditingText(null);
+                          setTextDraft('');
+                        }}
+                        className={`px-3 py-2 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 shrink-0 ${
+                          selected
+                            ? 'bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                        }`}
+                      >
+                        <span>{page.label}</span>
+                        <span className={`text-[10px] ${selected ? 'text-indigo-500' : 'text-slate-300'}`}>#{page.sectionId}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-slate-500 leading-relaxed">
+                  選択したページ範囲のみテキスト編集とAI調整の対象になります。
+                </p>
+              </section>
               <div className="flex-1 w-full flex justify-center items-stretch overflow-hidden bg-slate-300/50 rounded-2xl">
                 {activeTab === 'preview' ? (
                   <div className={`bg-white transition-all duration-500 shadow-2xl relative flex flex-col ${viewMode === 'pc' ? 'w-full h-full' : 'w-[375px] h-[667px] my-auto mx-auto rounded-[40px] border-[12px] border-slate-900 overflow-hidden shrink-0'}`}>

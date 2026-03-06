@@ -1373,7 +1373,7 @@ ${selectedCustomer.htmlCode}
                         placeholder={DEFAULT_PUBLISH_PATH_TEMPLATE}
                       />
                       <p className="text-[10px] text-slate-400 leading-relaxed">
-                        例: /{'{id}'}/pages, /main?cid={'{id}'}（未設定時は /{'{id}'}/pages）
+                        例: /sumidokoro, /{'{id}'}, /{'{id}'}/pages, /main?cid={'{id}'}（未設定時は /{'{id}'}/pages）
                       </p>
                     </div>
                   </div>

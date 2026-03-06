@@ -57,6 +57,9 @@ export async function POST(req: Request) {
 
     return res;
   } catch (error: any) {
+    if (error?.name === 'AbortError') {
+      return NextResponse.json({ success: false, error: 'pal_db への接続がタイムアウトしました。' }, { status: 504 });
+    }
     return NextResponse.json({ success: false, error: error?.message || 'ログインに失敗しました。' }, { status: 500 });
   }
 }

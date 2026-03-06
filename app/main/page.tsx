@@ -106,6 +106,7 @@ export default function MainPage() {
       }
     } catch {
       setSession({ authenticated: false });
+      return data;
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +131,10 @@ export default function MainPage() {
         setLoginError(data?.error || 'ログインに失敗しました。');
         return;
       }
-      await loadSession();
+      const nextSession = await loadSession();
+      if (!nextSession?.authenticated) {
+        setLoginError('ログインに失敗しました。pal_dbとの接続を確認してください。');
+      }
     } catch {
       setLoginError('通信エラーが発生しました。');
     } finally {

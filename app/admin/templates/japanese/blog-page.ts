@@ -9,8 +9,10 @@ export const japaneseBlogPageTemplate: TemplateVariant = {
   html: `
 <div class="template-root" style="--main-color: #722F37; --accent-color: #2C2C2C; --bg-color: #F9F8F6; --text-color: #1a1a1a;">
   <div class="min-h-screen font-serif text-[var(--text-color)] bg-[var(--bg-color)]">
-    <header class="p-8 border-b border-[var(--accent-color)]/10">
+    <header class="p-8 border-b border-[var(--accent-color)]/10 relative overflow-hidden">
       <h1 class="text-2xl tracking-[0.4em] uppercase">Japanese / Blog Detail</h1>
+      <p class="mt-4 text-sm opacity-70">和の雰囲気でまとめたプレビューです。</p>
+      <div class="mt-6 h-1 w-16 bg-[var(--accent-color)] rounded-full"></div>
     </header>
     <main>
       <section id="top" class="py-16 px-8">
@@ -40,5 +42,6 @@ export const japaneseBlogPageTemplate: TemplateVariant = {
       </section>
     </main>
   </div>
-</div>`
+</div>
+`
 };

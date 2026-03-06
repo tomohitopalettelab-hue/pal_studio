@@ -68,6 +68,29 @@ const createDraftPost = (): PostItem => {
   };
 };
 
+const buildAutoDraft = (customerName: string, baseTitle: string) => {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const dateLabel = `${y}/${m}/${d}`;
+  const title = baseTitle || `${dateLabel}のお知らせ`;
+  const excerpt = `${customerName || '当社'}からの最新ニュースをお届けします。`;
+  const bodyHtml = `
+<p>${customerName || '当社'}からのお知らせです。</p>
+<p>${dateLabel}に公開しました。</p>
+<h3>概要</h3>
+<ul>
+  <li>内容: サービスに関する最新情報</li>
+  <li>対象: ご利用中のお客様</li>
+  <li>詳細: 下記をご確認ください</li>
+</ul>
+<p>今後ともよろしくお願いいたします。</p>
+  `.trim();
+
+  return { title, excerpt, bodyHtml };
+};
+
 const MainScrollStyles = () => (
   <style jsx global>{`
     html, body {
@@ -241,6 +264,7 @@ export default function MainPage() {
       const res = await fetch('/api/main/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ posts }),
       });
       const data = await res.json();
@@ -265,7 +289,7 @@ export default function MainPage() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          <p className="text-xs font-bold tracking-widest">LOADING</p>
+          <p className="text-xs font-bold tracking-widest">読み込み中...</p>
         </div>
       </main>
     );
@@ -280,7 +304,7 @@ export default function MainPage() {
           <div className="p-8 pt-10">
             <div className="mb-8">
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Palette Studio</h1>
-              <p className="text-sm text-slate-500 mt-1">管理画面へのログイン</p>
+              <p className="text-sm text-slate-500 mt-1">ニュース投稿ログイン</p>
             </div>
             
             <form onSubmit={handleLogin} className="space-y-5">
@@ -341,7 +365,7 @@ export default function MainPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="bg-indigo-600 w-2 h-2 rounded-full" />
-              <p className="text-[11px] uppercase tracking-widest text-indigo-600 font-black">Content Management</p>
+              <p className="text-[11px] uppercase tracking-widest text-indigo-600 font-black">コンテンツ管理</p>
             </div>
             <h1 className="text-3xl font-black text-slate-900 tracking-tight">ニュース投稿管理</h1>
             <div className="flex items-center gap-2 mt-2">
@@ -358,7 +382,7 @@ export default function MainPage() {
               className="px-5 py-2.5 text-[13px] font-bold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              プレビュー
+              公開ページを見る
             </a>
             <button
               onClick={handleCreatePost}
@@ -389,7 +413,7 @@ export default function MainPage() {
           <aside className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit sticky top-8">
             <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <h2 className="text-[13px] font-black text-slate-800 uppercase tracking-wider">記事一覧</h2>
-              <span className="bg-white px-2 py-0.5 rounded-full border border-slate-200 text-[11px] text-slate-500 font-bold">{posts.length} Posts</span>
+              <span className="bg-white px-2 py-0.5 rounded-full border border-slate-200 text-[11px] text-slate-500 font-bold">{posts.length} 件</span>
             </div>
             <div className="p-3 max-h-[calc(100vh-250px)] overflow-y-auto">
               {posts.length === 0 ? (
@@ -463,7 +487,7 @@ export default function MainPage() {
                   {/* Title & Slug */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">Title</label>
+                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">タイトル</label>
                       <input
                         value={selectedPost.title}
                         onChange={(event) => updatePost(selectedPost.id, { title: event.target.value })}
@@ -472,7 +496,7 @@ export default function MainPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">URL Slug</label>
+                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">URLスラッグ</label>
                       <div className="flex gap-2">
                         <input
                           value={selectedPost.slug}
@@ -493,7 +517,7 @@ export default function MainPage() {
                   {/* Status & Date */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">Publish Status</label>
+                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">公開ステータス</label>
                       <div className="relative">
                         <select
                           value={selectedPost.status}
@@ -509,7 +533,7 @@ export default function MainPage() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">Release Date</label>
+                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">公開日時</label>
                       <input
                         type="datetime-local"
                         value={toDatetimeLocal(selectedPost.publishedAt)}
@@ -521,7 +545,7 @@ export default function MainPage() {
 
                   {/* Image Info */}
                   <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-6">
-                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Media Assets</h3>
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">メディア</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-1.5">
                         <label className="text-[12px] font-bold text-slate-600 ml-1">カバー画像URL</label>
@@ -546,7 +570,7 @@ export default function MainPage() {
 
                   {/* Excerpt */}
                   <div className="space-y-1.5">
-                    <label className="text-[12px] font-bold text-slate-500 ml-1 italic">Excerpt (Summary)</label>
+                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">概要（抜粋）</label>
                     <textarea
                       value={selectedPost.excerpt}
                       onChange={(event) => updatePost(selectedPost.id, { excerpt: event.target.value })}
@@ -558,8 +582,8 @@ export default function MainPage() {
                   {/* Body HTML */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between ml-1">
-                      <label className="text-[12px] font-bold text-slate-500 italic">Body Content (HTML)</label>
-                      <span className="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded">CODE MODE</span>
+                      <label className="text-[12px] font-bold text-slate-500 italic">本文（HTML）</label>
+                      <span className="text-[10px] font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded">コード</span>
                     </div>
                     <textarea
                       value={selectedPost.bodyHtml}
@@ -569,7 +593,23 @@ export default function MainPage() {
                     />
                   </div>
 
-                  {/* Footer Info */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button
+                      onClick={() => {
+                        const auto = buildAutoDraft(session?.customer?.name || '', selectedPost.title);
+                        updatePost(selectedPost.id, {
+                          title: auto.title,
+                          excerpt: auto.excerpt,
+                          bodyHtml: auto.bodyHtml,
+                          slug: selectedPost.slug || slugify(auto.title),
+                        });
+                      }}
+                      className="px-4 py-2 text-xs font-black rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+                    >
+                      記事内容を自動生成
+                    </button>
+                    <p className="text-[11px] text-slate-400">公開URL: /{customerId}/news/{selectedPost.slug || 'slug'}</p>
+                  </div>
                   <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>

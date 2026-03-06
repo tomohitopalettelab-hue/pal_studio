@@ -1,5 +1,5 @@
-export type { Template } from './types';
-import type { Template } from './types';
+export type { Template, TemplateVariant } from './types';
+import type { Template, TemplateVariant } from './types';
 import { modernTemplate } from './modern';
 import { elegantTemplate } from './elegant';
 import { corporateTemplate } from './corporate';
@@ -8,6 +8,9 @@ import { minimalTemplate } from './minimal';
 import { darkTemplate } from './dark';
 import { naturalTemplate } from './natural';
 import { japaneseTemplate } from './japanese';
+import { japaneseAboutTemplate } from './japanese/about';
+import { japaneseNewsTemplate } from './japanese/news';
+import { japaneseContactTemplate } from './japanese/contact';
 import { portfolioTemplate } from './portfolio';
 import { lpTemplate } from './lp';
 
@@ -26,13 +29,25 @@ export const templates: Template[] = [
   lpTemplate,
 ];
 
+export const templateVariants: TemplateVariant[] = [
+  japaneseAboutTemplate,
+  japaneseNewsTemplate,
+  japaneseContactTemplate,
+];
+
 export const TEMPLATE_DEFAULT_ID = templates[0]?.id ?? '';
 
 const templateMap = new Map(templates.map((template) => [template.id, template] as const));
+const templateVariantMap = new Map(templateVariants.map((variant) => [variant.id, variant] as const));
 
 export const hasTemplateId = (id?: string | null): id is string => {
   if (!id) return false;
   return templateMap.has(String(id));
+};
+
+export const hasTemplateVariantId = (id?: string | null): id is string => {
+  if (!id) return false;
+  return templateVariantMap.has(String(id));
 };
 
 export const normalizeTemplateId = (id?: string | null): string => {
@@ -44,6 +59,11 @@ export const getTemplateById = (id?: string | null): Template => {
   const resolvedId = normalizeTemplateId(id);
   const template = templateMap.get(resolvedId);
   return template ?? templates[0];
+};
+
+export const getTemplateVariantById = (id?: string | null): TemplateVariant | undefined => {
+  if (!id) return undefined;
+  return templateVariantMap.get(String(id));
 };
 
 if (process.env.NODE_ENV !== 'production') {

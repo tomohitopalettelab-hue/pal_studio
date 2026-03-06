@@ -1,4 +1,4 @@
-import type { Template } from './types';
+import type { Template } from '../types';
 
 export const japaneseTemplate: Template = {
   id: 'template-japanese',

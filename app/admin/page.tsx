@@ -9,6 +9,9 @@ import {
   TEMPLATE_DEFAULT_ID,
   getTemplateById,
   hasTemplateId,
+  hasTemplateVariantId,
+  getTemplateVariantById,
+  templateVariants,
 } from './templates';
 
 type Customer = {
@@ -20,12 +23,13 @@ type Customer = {
   status: 'hearing' | 'reviewing' | 'completed';
   answers: { q: string, a: string }[];
   htmlCode: string;
-  pages?: { slug: string; title: string; htmlCode: string; templateId?: string }[];
+  pages?: { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[];
   updatedAt: string;
   selectedTemplateId?: string;
   publishPathTemplate?: string;
   description?: string;
   isTemplate?: boolean;
+  draftGenerated?: boolean;
 };
 
 type PalDbAccount = {
@@ -85,6 +89,8 @@ export default function PaletteLab() {
   const [showHearingChat, setShowHearingChat] = useState(false);
   const [editingText, setEditingText] = useState<{ index: number; tag: string; text: string } | null>(null);
   const [textDraft, setTextDraft] = useState("");
+  const [draggingPageSlug, setDraggingPageSlug] = useState<string | null>(null);
+  const [dragOverPageSlug, setDragOverPageSlug] = useState<string | null>(null);
 
   const TEXT_EDIT_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,small,label,td,th,blockquote';
   
@@ -322,19 +328,21 @@ export default function PaletteLab() {
   };
 
   const getCustomerPages = (customer?: Customer | null) => {
-    if (!customer) return [] as { slug: string; title: string; htmlCode: string; templateId?: string }[];
+    if (!customer) return [] as { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[];
     const fromPayload = Array.isArray(customer.pages)
       ? customer.pages
           .filter((page) => page && typeof page.slug === 'string')
-          .map((page) => ({
+          .map((page, index) => ({
             slug: normalizePageSlug(page.slug),
             title: String(page.title || deriveTitleFromSlug(page.slug || 'top')),
             htmlCode: String(page.htmlCode || ''),
             templateId: String((page as any).templateId || ''),
+            templateVariantId: String((page as any).templateVariantId || ''),
+            order: Number.isFinite(Number((page as any).order)) ? Number((page as any).order) : index,
           }))
       : [];
 
-    const unique = new Map<string, { slug: string; title: string; htmlCode: string; templateId?: string }>();
+    const unique = new Map<string, { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }>();
     fromPayload.forEach((page) => {
       if (!unique.has(page.slug)) unique.set(page.slug, page);
     });
@@ -345,33 +353,38 @@ export default function PaletteLab() {
       title: unique.get('top')?.title || 'Top',
       htmlCode: topHtml,
       templateId: unique.get('top')?.templateId || '',
+      templateVariantId: unique.get('top')?.templateVariantId || '',
+      order: Number.isFinite(Number(unique.get('top')?.order)) ? Number(unique.get('top')?.order) : 0,
     });
 
     const pages = Array.from(unique.values());
-    pages.sort((a, b) => {
-      if (a.slug === 'top') return -1;
-      if (b.slug === 'top') return 1;
-      return a.slug.localeCompare(b.slug);
-    });
+    pages.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
     return pages;
   };
 
   const selectedCustomerPages = getCustomerPages(selectedCustomer);
   const activePage = selectedCustomerPages.find((page) => page.slug === selectedSitePageSlug) || selectedCustomerPages[0];
   const activePageHtml = String(activePage?.htmlCode || '');
-  const activePageTemplateId = hasTemplateId(String(activePage?.templateId || ''))
-    ? String(activePage?.templateId || '')
-    : selectedTemplateId;
+  const activePageTemplateId = hasTemplateVariantId(String(activePage?.templateVariantId || ''))
+    ? String(activePage?.templateVariantId || '')
+    : (hasTemplateId(String(activePage?.templateId || ''))
+      ? String(activePage?.templateId || '')
+      : selectedTemplateId);
+  const activePageVariants = templateVariants.filter(
+    (variant) => variant.pageSlug === String(activePage?.slug || ''),
+  );
 
-  const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string; templateId?: string }[]) => { slug: string; title: string; htmlCode: string; templateId?: string }[]) => {
+  const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[]) => { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[]) => {
     setCustomers((prev) => prev.map((customer) => {
       if (customer.id !== selectedCustomerId) return customer;
       const nextPages = updater(getCustomerPages(customer));
-      const normalizedPages = nextPages.map((page) => ({
+      const normalizedPages = nextPages.map((page, index) => ({
         slug: normalizePageSlug(page.slug),
         title: String(page.title || deriveTitleFromSlug(page.slug)),
         htmlCode: String(page.htmlCode || ''),
         templateId: String(page.templateId || ''),
+        templateVariantId: String(page.templateVariantId || ''),
+        order: index,
       }));
       const basePath = buildPublishPath(customer);
       const syncedPages = normalizedPages.map((page) => ({
@@ -392,6 +405,20 @@ export default function PaletteLab() {
     updateSelectedCustomerPages((pages) => pages.map((page) => (
       page.slug === activePage.slug ? { ...page, htmlCode: nextHtml } : page
     )));
+  };
+
+  const reorderSitePages = (fromSlug: string, toSlug: string) => {
+    if (!selectedCustomer) return;
+    if (fromSlug === toSlug) return;
+    const pages = getCustomerPages(selectedCustomer);
+    const fromIndex = pages.findIndex((page) => page.slug === fromSlug);
+    const toIndex = pages.findIndex((page) => page.slug === toSlug);
+    if (fromIndex < 0 || toIndex < 0) return;
+
+    const next = [...pages];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    updateSelectedCustomerPages(() => next);
   };
 
   const handleAddSitePage = () => {
@@ -415,6 +442,7 @@ export default function PaletteLab() {
       slug,
       title,
       templateId: pageTemplateId,
+      templateVariantId: '',
       htmlCode: slug === 'top'
         ? String(selectedCustomer.htmlCode || '')
         : (seedHtml || `<main><section id="top" class="p-8"><h1>${deriveTitleFromSlug(slug)} page</h1><p>このページを編集してください。</p></section></main>`),
@@ -729,36 +757,65 @@ ${activePageHtml}
           return;
         }
       }
-      
-      // テンプレ選択はプルダウンを優先。無効値なら自動選択にフォールバック。
       // テンプレートレコード選択時は `tpl-` 接頭辞を除去して実IDに変換する。
       const templateIdFromTemplateRecord = selectedCustomer.isTemplate
         ? selectedCustomer.id.replace(/^tpl-/, '')
         : '';
-      const pageTemplateId = String(activePage?.templateId || '').trim();
 
-      let recommendedTemplateId: string;
-      if (hasTemplateId(pageTemplateId)) {
-        // ページごとのテンプレートがあれば最優先
-        recommendedTemplateId = pageTemplateId;
-      } else if (hasTemplateId(selectedTemplateId)) {
-        // それ以外はプルダウン選択を優先
-        recommendedTemplateId = selectedTemplateId;
-      } else if (hasTemplateId(templateIdFromTemplateRecord)) {
-        recommendedTemplateId = templateIdFromTemplateRecord;
-      } else {
-        recommendedTemplateId = autoSelectTemplate(templateSelectionAnswers);
-      }
+      const shouldGenerateAllPages = !selectedCustomer.draftGenerated;
+      const pagesToGenerate = shouldGenerateAllPages
+        ? selectedCustomerPages
+        : (activePage ? [activePage] : []);
 
-      const template = getTemplateById(recommendedTemplateId);
-      recommendedTemplateId = template.id;
+      for (const page of pagesToGenerate) {
+        const pageSlug = String(page?.slug || 'top');
+        const pageTitle = String(page?.title || deriveTitleFromSlug(pageSlug));
+        const variantId = String(page?.templateVariantId || '').trim();
+        const pageTemplateId = String(page?.templateId || '').trim();
 
-      const baseHtml = template.html;
-      setSelectedTemplateId(recommendedTemplateId);
-      console.log(`Selected template: ${template?.name || "None"} (ID: ${recommendedTemplateId})`);
+        let recommendedTemplateId: string;
+        let baseHtml = '';
+        let templateLabel = '';
 
-      const prompt = `
+        if (hasTemplateVariantId(variantId)) {
+          const variant = getTemplateVariantById(variantId);
+          const template = getTemplateById(variant?.templateId || TEMPLATE_DEFAULT_ID);
+          recommendedTemplateId = template.id;
+          baseHtml = String(variant?.html || template.html);
+          templateLabel = `${template.name} / ${variant?.name || 'Variant'}`;
+        } else if (hasTemplateId(pageTemplateId)) {
+          recommendedTemplateId = pageTemplateId;
+          const template = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = template.id;
+          baseHtml = template.html;
+          templateLabel = template.name;
+        } else if (hasTemplateId(selectedTemplateId)) {
+          recommendedTemplateId = selectedTemplateId;
+          const template = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = template.id;
+          baseHtml = template.html;
+          templateLabel = template.name;
+        } else if (hasTemplateId(templateIdFromTemplateRecord)) {
+          recommendedTemplateId = templateIdFromTemplateRecord;
+          const template = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = template.id;
+          baseHtml = template.html;
+          templateLabel = template.name;
+        } else {
+          recommendedTemplateId = autoSelectTemplate(templateSelectionAnswers);
+          const template = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = template.id;
+          baseHtml = template.html;
+          templateLabel = template.name;
+        }
+
+        setSelectedTemplateId(recommendedTemplateId);
+
+        const prompt = `
       あなたはWebデザイナーです。以下の「ヒアリング内容」の**テーマ**を理解した上で、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。
+
+      【対象ページ】
+      /${pageSlug} (${pageTitle})
 
       【デザインテーマ】
       お客様のサイトのテーマは「${detectTheme(templateSelectionAnswers)}」です。このテーマに沿ったデザイン・表現・色選びを心がけてください。
@@ -786,58 +843,67 @@ ${activePageHtml}
       ${baseHtml}
       `;
 
-      // 高負荷や503エラーに備えてリトライを行う
-      let response: Response;
-      let attempt = 0;
-      const maxAttempts = 3;
-      while (true) {
-        attempt++;
-        response = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system: prompt,
-            history: []
-          })
-        });
+        // 高負荷や503エラーに備えてリトライを行う
+        let response: Response;
+        let attempt = 0;
+        const maxAttempts = 3;
+        while (true) {
+          attempt++;
+          response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system: prompt,
+              history: []
+            })
+          });
 
-        if (response.ok) break;
+          if (response.ok) break;
 
-        if (response.status === 503 && attempt < maxAttempts) {
-          console.warn(`AIモデル高負荷: ${attempt}/${maxAttempts} リトライ中...`);
-          await new Promise(r => setTimeout(r, 1000 * attempt));
-          continue;
+          if (response.status === 503 && attempt < maxAttempts) {
+            console.warn(`AIモデル高負荷: ${attempt}/${maxAttempts} リトライ中...`);
+            await new Promise(r => setTimeout(r, 1000 * attempt));
+            continue;
+          }
+
+          const errorData = await response.json().catch(() => ({ text: response.statusText }));
+          throw new Error(errorData.text || `Server error: ${response.status}`);
         }
 
-        const errorData = await response.json().catch(() => ({ text: response.statusText }));
-        throw new Error(errorData.text || `Server error: ${response.status}`);
-      }
+        const data = await response.json();
+        const { html, comment } = extractHtmlAndComment(data.text || "");
+        const normalized = normalizeHtmlString(html || data.text || "");
 
-      const data = await response.json();
-      const { html, comment } = extractHtmlAndComment(data.text || "");
-      const normalized = normalizeHtmlString(html || data.text || "");
+        const memo = `ページ: /${pageSlug}\nテンプレート: ${templateLabel || '(unknown)'}\nプロンプト:\n${prompt.trim()}`;
 
-      // 生成の記録メモを作成（テンプレート名と使用したプロンプト）
-      const memo = `ページ: /${activePage?.slug || 'top'}\nテンプレート: ${template ? template.name : '(unknown)'}\nプロンプト:\n${prompt.trim()}`;
-
-      // HTML のみを抽出（テキストは除去）
-      if (/<[^>]+>/.test(normalized)) {
-        const generatedHtml = normalized || html;
-        updateSelectedCustomerPages((pages) => pages.map((page) => (
-          page.slug === (activePage?.slug || 'top') ? { ...page, htmlCode: generatedHtml } : page
-        )));
-        setCustomers(prev => prev.map(c =>
-          c.id === selectedCustomerId
-            ? { ...c, description: memo, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
-            : c
-        ));
-      } else {
-        // HTML を得られなかった場合は memo を更新せず、元の説明を残す
-        setCustomers(prev => prev.map(c => 
-          c.id === selectedCustomerId
-            ? { ...c, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
-            : c
-        ));
+        if (/<[^>]+>/.test(normalized)) {
+          const generatedHtml = normalized || html;
+          updateSelectedCustomerPages((pages) => pages.map((p) => (
+            p.slug === pageSlug ? { ...p, htmlCode: generatedHtml } : p
+          )));
+          setCustomers(prev => prev.map(c =>
+            c.id === selectedCustomerId
+              ? {
+                ...c,
+                description: memo,
+                status: 'reviewing',
+                selectedTemplateId: recommendedTemplateId,
+                draftGenerated: shouldGenerateAllPages ? true : c.draftGenerated,
+              }
+              : c
+          ));
+        } else {
+          setCustomers(prev => prev.map(c => 
+            c.id === selectedCustomerId
+              ? {
+                ...c,
+                status: 'reviewing',
+                selectedTemplateId: recommendedTemplateId,
+                draftGenerated: shouldGenerateAllPages ? true : c.draftGenerated,
+              }
+              : c
+          ));
+        }
       }
     } catch (error: any) {
       console.error("Generation Error:", error);
@@ -1801,14 +1867,40 @@ ${activePageHtml}
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {selectedCustomerPages.map((page) => {
                     const selected = selectedSitePageSlug === page.slug;
+                    const dragOver = dragOverPageSlug === page.slug && draggingPageSlug !== page.slug;
                     return (
                       <div
                         key={page.slug}
+                        draggable
+                        onDragStart={(e) => {
+                          setDraggingPageSlug(page.slug);
+                          setDragOverPageSlug(null);
+                          e.dataTransfer.effectAllowed = 'move';
+                          e.dataTransfer.setData('text/plain', page.slug);
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          if (dragOverPageSlug !== page.slug) setDragOverPageSlug(page.slug);
+                        }}
+                        onDragLeave={() => {
+                          if (dragOverPageSlug === page.slug) setDragOverPageSlug(null);
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const fromSlug = draggingPageSlug || e.dataTransfer.getData('text/plain');
+                          if (fromSlug) reorderSitePages(fromSlug, page.slug);
+                          setDraggingPageSlug(null);
+                          setDragOverPageSlug(null);
+                        }}
+                        onDragEnd={() => {
+                          setDraggingPageSlug(null);
+                          setDragOverPageSlug(null);
+                        }}
                         className={`px-2 py-1.5 rounded-lg border text-[10px] font-bold tracking-wider transition-all flex items-center gap-2 shrink-0 ${
                           selected
                             ? 'bg-slate-900 border-slate-900 text-white'
                             : 'bg-white border-slate-200 text-slate-500'
-                        }`}
+                        } ${dragOver ? 'ring-2 ring-indigo-300 border-indigo-300' : ''}`}
                       >
                         <button onClick={() => setSelectedSitePageSlug(page.slug)} className="flex items-center gap-2">
                           <span className="uppercase">/{page.slug}</span>
@@ -1832,8 +1924,17 @@ ${activePageHtml}
                     onChange={(e) => {
                       const nextTemplateId = e.target.value;
                       if (!activePage) return;
+                      if (hasTemplateVariantId(nextTemplateId)) {
+                        const variant = getTemplateVariantById(nextTemplateId);
+                        updateSelectedCustomerPages((pages) => pages.map((page) => (
+                          page.slug === activePage.slug
+                            ? { ...page, templateVariantId: nextTemplateId, templateId: variant?.templateId || page.templateId }
+                            : page
+                        )));
+                        return;
+                      }
                       updateSelectedCustomerPages((pages) => pages.map((page) => (
-                        page.slug === activePage.slug ? { ...page, templateId: nextTemplateId } : page
+                        page.slug === activePage.slug ? { ...page, templateId: nextTemplateId, templateVariantId: '' } : page
                       )));
                     }}
                     className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-[10px] outline-none focus:border-indigo-500"
@@ -1841,6 +1942,15 @@ ${activePageHtml}
                     {templates.map(t => (
                       <option key={t.id} value={t.id}>{t.name}</option>
                     ))}
+                    {activePageVariants.length > 0 && (
+                      <optgroup label="Variants">
+                        {activePageVariants.map((variant) => (
+                          <option key={variant.id} value={variant.id}>
+                            {getTemplateById(variant.templateId).name} / {variant.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
                   </select>
                 </div>
               </section>

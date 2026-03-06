@@ -22,6 +22,7 @@ type Customer = {
   htmlCode: string;
   updatedAt: string;
   selectedTemplateId?: string;
+  publishPathTemplate?: string;
   description?: string;
   isTemplate?: boolean;
 };
@@ -60,6 +61,8 @@ const extractHtmlAndComment = (text: string) => {
 };
 
 export default function PaletteLab() {
+  const DEFAULT_PUBLISH_PATH_TEMPLATE = '/{id}/pages';
+
   const PAGE_TREE = [
     { key: 'top', label: 'Top', sectionId: 'top' },
     { key: 'about', label: 'About', sectionId: 'concept' },
@@ -286,6 +289,24 @@ export default function PaletteLab() {
     }
   };
 
+  const normalizePublishPathTemplate = (raw?: string) => {
+    const value = String(raw || '').trim();
+    if (!value) return DEFAULT_PUBLISH_PATH_TEMPLATE;
+    if (/^https?:\/\//i.test(value)) return value;
+    return value.startsWith('/') ? value : `/${value}`;
+  };
+
+  const buildPublishUrl = (identifier: string, template?: string) => {
+    const normalized = normalizePublishPathTemplate(template);
+    const encodedId = encodeURIComponent(identifier);
+    const resolvedPath = normalized
+      .replaceAll('{id}', encodedId)
+      .replaceAll('{customer_id}', encodedId);
+
+    if (/^https?:\/\//i.test(resolvedPath)) return resolvedPath;
+    return `${window.location.origin}${resolvedPath}`;
+  };
+
 
   // 顧客選択時のみ、dirty判定用のスナップショットを更新
   useEffect(() => {
@@ -317,6 +338,7 @@ export default function PaletteLab() {
     const a = JSON.stringify({
       name: selectedCustomer.name,
       status: selectedCustomer.status,
+      publishPathTemplate: selectedCustomer.publishPathTemplate,
       description: selectedCustomer.description,
       htmlCode: selectedCustomer.htmlCode,
       answers: selectedCustomer.answers
@@ -324,6 +346,7 @@ export default function PaletteLab() {
     const b = JSON.stringify({
       name: originalCustomer.name,
       status: originalCustomer.status,
+      publishPathTemplate: originalCustomer.publishPathTemplate,
       description: originalCustomer.description,
       htmlCode: originalCustomer.htmlCode,
       answers: originalCustomer.answers
@@ -728,7 +751,7 @@ ${selectedCustomer.htmlCode}
 
         // customers サーバーから発行される ID があれば優先して使用
         const identifier = savedCustomer.customer_id || savedCustomer.id;
-        const publicUrl = `${window.location.origin}/${identifier}/pages`;
+        const publicUrl = buildPublishUrl(identifier, savedCustomer.publishPathTemplate || selectedCustomer.publishPathTemplate);
         if (confirm(`公開しました！\nURL: ${publicUrl}\n\nページを開きますか？`)) {
           window.open(publicUrl, '_blank');
         }
@@ -1336,6 +1359,23 @@ ${selectedCustomer.htmlCode}
                     >
                       URLをコピー
                     </button>
+
+                    <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">送信先パス</p>
+                      <input
+                        type="text"
+                        value={selectedCustomer.publishPathTemplate || ''}
+                        onChange={(e) => {
+                          const publishPathTemplate = e.target.value;
+                          setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, publishPathTemplate } : c));
+                        }}
+                        className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                        placeholder={DEFAULT_PUBLISH_PATH_TEMPLATE}
+                      />
+                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                        例: /{'{id}'}/pages, /main?cid={'{id}'}（未設定時は /{'{id}'}/pages）
+                      </p>
+                    </div>
                   </div>
                 )}
               </section>

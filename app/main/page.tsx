@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type PostStatus = 'draft' | 'published';
 
@@ -80,6 +80,7 @@ export default function MainPage() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const loginInFlightRef = useRef(false);
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === selectedPostId) || null,
@@ -88,25 +89,28 @@ export default function MainPage() {
 
   const customerId = session?.customer?.customerId || session?.customer?.id || '';
 
-  const loadSession = async () => {
+  const loadSession = async (options?: { preserveOnFailure?: boolean }) => {
     setIsLoading(true);
     let sessionData: SessionPayload | undefined;
     try {
       const res = await fetch('/api/main/session', { cache: 'no-store', credentials: 'include' });
       sessionData = (await res.json()) as SessionPayload;
-      setSession(sessionData);
       if (sessionData?.authenticated) {
+        setSession(sessionData);
         const loadedPosts = Array.isArray(sessionData.posts) ? sessionData.posts : [];
         setPosts(loadedPosts);
         if (loadedPosts.length > 0) {
           setSelectedPostId(loadedPosts[0].id);
         }
-      } else {
+      } else if (!options?.preserveOnFailure && !loginInFlightRef.current) {
+        setSession(sessionData);
         setPosts([]);
         setSelectedPostId(null);
       }
     } catch {
-      setSession({ authenticated: false });
+      if (!options?.preserveOnFailure && !loginInFlightRef.current) {
+        setSession({ authenticated: false });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +125,7 @@ export default function MainPage() {
     event.preventDefault();
     setLoginError('');
     setIsLoggingIn(true);
+    loginInFlightRef.current = true;
     try {
       const res = await fetch('/api/main/login', {
         method: 'POST',
@@ -133,13 +138,23 @@ export default function MainPage() {
         setLoginError(data?.error || 'ログインに失敗しました。');
         return;
       }
-      const nextSession = await loadSession();
-      if (!nextSession?.authenticated) {
-        setLoginError('ログインに失敗しました。pal_dbとの接続を確認してください。');
+      setSession({
+        authenticated: true,
+        customer: {
+          id: data.paletteId,
+          customerId: data.paletteId,
+          name: data.accountName || '顧客名未設定',
+        },
+        posts: [],
+      });
+      const nextSession = await loadSession({ preserveOnFailure: true });
+      if (nextSession && !nextSession.authenticated) {
+        setLoginError('投稿の取得に失敗しました。時間をおいて再読み込みしてください。');
       }
     } catch {
       setLoginError('通信エラーが発生しました。');
     } finally {
+      loginInFlightRef.current = false;
       setIsLoggingIn(false);
     }
   };

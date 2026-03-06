@@ -64,13 +64,6 @@ const extractHtmlAndComment = (text: string) => {
 export default function PaletteLab() {
   const DEFAULT_PUBLISH_PATH_TEMPLATE = '/{id}/pages';
 
-  const PAGE_TREE = [
-    { key: 'top', label: 'Top', sectionId: 'top' },
-    { key: 'about', label: 'About', sectionId: 'concept' },
-    { key: 'company', label: 'Company', sectionId: 'company' },
-  ] as const;
-
-  type PageTreeKey = (typeof PAGE_TREE)[number]['key'];
 
   const [viewMode, setViewMode] = useState<'pc' | 'mobile'>('pc');
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
@@ -92,7 +85,6 @@ export default function PaletteLab() {
   const [showHearingChat, setShowHearingChat] = useState(false);
   const [editingText, setEditingText] = useState<{ index: number; tag: string; text: string } | null>(null);
   const [textDraft, setTextDraft] = useState("");
-  const [selectedEditPage, setSelectedEditPage] = useState<PageTreeKey>('top');
 
   const TEXT_EDIT_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,small,label,td,th,blockquote';
   
@@ -112,13 +104,6 @@ export default function PaletteLab() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(TEMPLATE_DEFAULT_ID);
   const [selectedSitePageSlug, setSelectedSitePageSlug] = useState<string>('top');
 
-  const selectedEditSectionId = PAGE_TREE.find((item) => item.key === selectedEditPage)?.sectionId || 'top';
-
-  const getEditableRoot = (root: ParentNode) => {
-    if (!(root as Document).querySelector) return root;
-    const scoped = (root as Document).querySelector(`#${selectedEditSectionId}`);
-    return scoped ?? root;
-  };
 
   const PALETTE_ID_PATTERN = /^[A-Z][0-9]{4}$/i;
 
@@ -277,6 +262,35 @@ export default function PaletteLab() {
     return s === 'top' ? 'Top' : s.charAt(0).toUpperCase() + s.slice(1);
   };
 
+  const buildPageHref = (slug: string) => `/${normalizePageSlug(slug)}`;
+
+  const syncNavWithSitePages = (html: string, pages: { slug: string; title: string }[]) => {
+    if (!html) return html;
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(html, 'text/html');
+    const nav = parsed.querySelector('nav[data-sync="site-pages"]')
+      || parsed.querySelector('header nav')
+      || parsed.querySelector('nav');
+    if (!nav) return html;
+
+    const anchors = Array.from(nav.querySelectorAll('a')) as HTMLAnchorElement[];
+    if (anchors.length === 0) return html;
+
+    const templateAnchor = anchors[0].cloneNode(true) as HTMLAnchorElement;
+    anchors.forEach((anchor) => anchor.remove());
+
+    pages.forEach((page) => {
+      const link = templateAnchor.cloneNode(true) as HTMLAnchorElement;
+      link.setAttribute('href', buildPageHref(page.slug));
+      link.textContent = page.title || deriveTitleFromSlug(page.slug);
+      nav.appendChild(link);
+    });
+
+    return /<html[\s>]/i.test(html)
+      ? parsed.documentElement.outerHTML
+      : parsed.body.innerHTML;
+  };
+
   const getCustomerPages = (customer?: Customer | null) => {
     if (!customer) return [] as { slug: string; title: string; htmlCode: string }[];
     const fromPayload = Array.isArray(customer.pages)
@@ -323,10 +337,14 @@ export default function PaletteLab() {
         title: String(page.title || deriveTitleFromSlug(page.slug)),
         htmlCode: String(page.htmlCode || ''),
       }));
-      const topPage = normalizedPages.find((page) => page.slug === 'top');
+      const syncedPages = normalizedPages.map((page) => ({
+        ...page,
+        htmlCode: syncNavWithSitePages(page.htmlCode, normalizedPages),
+      }));
+      const topPage = syncedPages.find((page) => page.slug === 'top');
       return {
         ...customer,
-        pages: normalizedPages,
+        pages: syncedPages,
         htmlCode: topPage ? topPage.htmlCode : customer.htmlCode,
       };
     }));
@@ -349,11 +367,15 @@ export default function PaletteLab() {
       alert('同じslugのページが既にあります。');
       return;
     }
+    const defaultTitle = deriveTitleFromSlug(slug);
+    const rawTitle = prompt('ページ名を入力してください（ナビに表示されます）', defaultTitle);
+    if (rawTitle === null) return;
+    const title = String(rawTitle || '').trim() || defaultTitle;
     const topPage = pages.find((page) => page.slug === 'top');
     const seedHtml = String(topPage?.htmlCode || selectedCustomer.htmlCode || '').trim();
     updateSelectedCustomerPages((prev) => [...prev, {
       slug,
-      title: deriveTitleFromSlug(slug),
+      title,
       htmlCode: slug === 'top'
         ? String(selectedCustomer.htmlCode || '')
         : (seedHtml || `<main><section id="top" class="p-8"><h1>${deriveTitleFromSlug(slug)} page</h1><p>このページを編集してください。</p></section></main>`),
@@ -557,10 +579,6 @@ export default function PaletteLab() {
     try {
       const tuningPrompt = `
 あなたはWebデザイナーです。以下の編集指示に従って、現在のHTMLを修正してください。
-
-    【編集対象セクション】
-    id="${selectedEditSectionId}" のセクション（${selectedEditPage.toUpperCase()}ページ相当）
-    他のセクションは必要最小限の変更に留めてください。
 
 【編集指示】
 ${aiInstruction}
@@ -1083,7 +1101,7 @@ ${activePageHtml}
     const parser = new DOMParser();
     const sourceHtml = activePageHtml || '';
     const parsed = parser.parseFromString(sourceHtml, 'text/html');
-    const editable = getEditableTextElements(getEditableRoot(parsed));
+    const editable = getEditableTextElements(parsed);
     const target = editable[editingText.index];
 
     if (!target) {
@@ -1203,12 +1221,7 @@ ${activePageHtml}
       const textTarget = textDirect || textLayered || null;
       if (!textTarget) return;
 
-      const editableRoot = getEditableRoot(doc);
-      if (editableRoot instanceof Element && textTarget && !editableRoot.contains(textTarget)) {
-        return;
-      }
-
-      const textElements = getEditableTextElements(editableRoot);
+      const textElements = getEditableTextElements(doc);
       const index = textElements.findIndex((el) => el === textTarget);
       if (index < 0) return;
 
@@ -1774,8 +1787,11 @@ ${activePageHtml}
                             : 'bg-white border-slate-200 text-slate-500'
                         }`}
                       >
-                        <button onClick={() => setSelectedSitePageSlug(page.slug)} className="uppercase">
-                          /{page.slug}
+                        <button onClick={() => setSelectedSitePageSlug(page.slug)} className="flex items-center gap-2">
+                          <span className="uppercase">/{page.slug}</span>
+                          <span className={`text-[9px] ${selected ? 'text-slate-300' : 'text-slate-400'}`}>
+                            {page.title || deriveTitleFromSlug(page.slug)}
+                          </span>
                         </button>
                         {page.slug !== 'top' && (
                           <button onClick={() => handleRemoveSitePage(page.slug)} className={`text-[9px] ${selected ? 'text-slate-300' : 'text-slate-400'}`}>
@@ -1786,35 +1802,6 @@ ${activePageHtml}
                     );
                   })}
                 </div>
-              </section>
-              <section className="mb-4 px-2 space-y-2">
-                <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Page Tree</h2>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {PAGE_TREE.map((page) => {
-                    const selected = selectedEditPage === page.key;
-                    return (
-                      <button
-                        key={page.key}
-                        onClick={() => {
-                          setSelectedEditPage(page.key);
-                          setEditingText(null);
-                          setTextDraft('');
-                        }}
-                        className={`px-3 py-2 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 shrink-0 ${
-                          selected
-                            ? 'bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm'
-                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                        }`}
-                      >
-                        <span>{page.label}</span>
-                        <span className={`text-[10px] ${selected ? 'text-indigo-500' : 'text-slate-300'}`}>#{page.sectionId}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="text-[10px] text-slate-500 leading-relaxed">
-                  現在編集中: /{activePage?.slug || 'top'} | 選択した範囲のみテキスト編集とAI調整の対象になります。
-                </p>
               </section>
               <div className="flex-1 w-full flex justify-center items-stretch overflow-hidden bg-slate-300/50 rounded-2xl">
                 {activeTab === 'preview' ? (

@@ -423,16 +423,19 @@ export default function MainPage() {
     }
   };
 
-  if (isLoading) {
+if (isLoading) {
     return (
-      <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-br from-white to-[#E6F7F9] flex items-center justify-center">
         <MainScrollStyles />
-        <div className="flex flex-col items-center gap-3 text-slate-500">
-          <svg className="animate-spin h-6 w-6 text-indigo-600" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          <p className="text-xs font-bold tracking-widest">読み込み中...</p>
+        <div className="flex flex-col items-center gap-4 text-[#00B7CE]">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full blur-xl bg-[#00B7CE]/20 animate-pulse" />
+            <svg className="animate-spin h-8 w-8 relative" viewBox="0 0 24 24">
+              <circle className="opacity-10" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
+              <path className="opacity-100" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </div>
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-60">読み込み中</p>
         </div>
       </main>
     );
@@ -440,39 +443,41 @@ export default function MainPage() {
 
   if (!session?.authenticated) {
     return (
-      <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans">
+      <main className="min-h-screen bg-gradient-to-tr from-[#F0FDFF] via-white to-[#F0FDFF] flex items-center justify-center p-6 font-sans text-slate-900">
         <MainScrollStyles />
-        <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
-          <div className="bg-gradient-to-r from-[#0047AB] to-[#4F46E5] h-2 w-full" />
-          <div className="p-8 pt-10">
-            <div className="mb-8">
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Palette Studio</h1>
-              <p className="text-sm text-slate-500 mt-1">ニュース投稿ログイン</p>
+        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,183,206,0.1)] border border-white overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-[#00B7CE]" />
+          <div className="p-10">
+            <div className="mb-10 text-center">
+              <h1 className="text-3xl font-black tracking-tighter text-slate-900 mb-2">Palette Studio</h1>
+              <div className="inline-block px-3 py-1 bg-[#00B7CE]/10 rounded-full">
+                <p className="text-[11px] font-bold text-[#00B7CE] uppercase tracking-wider">お客様ログイン</p>
+              </div>
             </div>
             
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-slate-700 ml-1">ログインID</label>
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">ログインID</label>
                 <input
                   value={loginId}
                   onChange={(event) => setLoginId(event.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+                  className="w-full px-5 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm transition-all focus:bg-white focus:ring-4 focus:ring-[#00B7CE]/10 focus:border-[#00B7CE] outline-none"
                   placeholder="A0001"
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-slate-700 ml-1">パスワード</label>
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">パスワード</label>
                 <input
                   type="password"
                   value={loginPassword}
                   onChange={(event) => setLoginPassword(event.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+                  className="w-full px-5 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm transition-all focus:bg-white focus:ring-4 focus:ring-[#00B7CE]/10 focus:border-[#00B7CE] outline-none"
                   placeholder="••••••••"
                 />
               </div>
               
               {loginError && (
-                <div className="bg-red-50 text-red-600 text-xs p-3 rounded-lg border border-red-100 animate-pulse">
+                <div className="bg-red-50/80 backdrop-blur text-red-500 text-[11px] font-bold p-4 rounded-2xl border border-red-100 text-center">
                   {loginError}
                 </div>
               )}
@@ -480,17 +485,9 @@ export default function MainPage() {
               <button
                 type="submit"
                 disabled={isLoggingIn}
-                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-bold shadow-lg shadow-slate-200 transition-all active:scale-[0.98] disabled:opacity-60"
+                className="w-full py-4 bg-[#00B7CE] hover:bg-[#00A5BB] text-white rounded-2xl text-sm font-black shadow-[0_12px_24px_-6px_rgba(0,183,206,0.4)] transition-all active:scale-[0.98] disabled:opacity-60"
               >
-                {isLoggingIn ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    ログイン中...
-                  </span>
-                ) : 'ログインする'}
+                {isLoggingIn ? '認証中...' : 'ログインする'}
               </button>
             </form>
           </div>
@@ -500,164 +497,163 @@ export default function MainPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F1F5F9] font-sans">
+    <main className="min-h-screen bg-[#F8FDFF] font-sans text-slate-900 selection:bg-[#00B7CE]/20">
       <MainScrollStyles />
       {showGeneratedToast && (
-        <div className="fixed top-6 right-6 z-50">
-          <div className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 shadow-lg">
-            <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+        <div className="fixed top-8 right-8 z-[100] animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex items-center gap-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-[#00B7CE]/20 px-5 py-4 text-sm font-bold text-slate-800 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)]">
+            <span className="flex h-2 w-2 rounded-full bg-[#00B7CE] animate-ping" />
             自動生成が完了しました
           </div>
         </div>
       )}
-      <div className="max-w-7xl mx-auto p-4 md:p-8">
-        {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-indigo-600 w-2 h-2 rounded-full" />
-              <p className="text-[11px] uppercase tracking-widest text-indigo-600 font-black">コンテンツ管理</p>
+
+      <div className="max-w-[1400px] mx-auto p-4 md:p-10">
+        {/* Header */}
+        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-1 bg-[#00B7CE] rounded-full" />
+              <p className="text-[11px] uppercase tracking-[0.4em] text-[#00B7CE] font-black">編集ダッシュボード</p>
             </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">ニュース投稿管理</h1>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-xs bg-white px-2 py-1 rounded border border-slate-200 text-slate-500 font-medium">
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">ニュース投稿管理</h1>
+            <div className="flex items-center gap-2 pt-1">
+              <span className="text-[11px] bg-white px-3 py-1 rounded-full border border-slate-100 shadow-sm text-slate-500 font-bold">
                 {session.customer?.name || '顧客名未設定'}
               </span>
-              <span className="text-xs text-slate-400">ID: {customerId}</span>
+              <span className="text-[11px] text-slate-300 font-mono">ID: {customerId}</span>
             </div>
           </div>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4">
             <a
               href={`/${customerId}/news`}
-              className="px-5 py-2.5 text-[13px] font-bold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2"
+              className="px-6 py-3 text-sm font-bold rounded-2xl border border-slate-100 bg-white/50 text-slate-600 hover:bg-white hover:shadow-md transition-all flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              <svg className="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               公開ページを見る
             </a>
             <button
               onClick={handleCreatePost}
-              className="px-5 py-2.5 text-[13px] font-bold rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-all flex items-center gap-2 shadow-md shadow-slate-200"
+              className="px-6 py-3 text-sm font-bold rounded-2xl bg-white text-slate-800 border border-slate-100 hover:border-[#00B7CE]/30 shadow-sm transition-all flex items-center gap-2"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+              <svg className="w-4 h-4 text-[#00B7CE]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
               新規作成
             </button>
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-8 py-2.5 text-[13px] font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 transition-all disabled:opacity-60 shadow-lg shadow-indigo-100"
+              className="px-10 py-3 text-sm font-black rounded-2xl bg-[#00B7CE] text-white hover:bg-[#00A5BB] shadow-[0_10px_20px_-5px_rgba(0,183,206,0.3)] transition-all disabled:opacity-60"
             >
               {isSaving ? '保存中...' : '変更を保存'}
             </button>
           </div>
         </header>
 
-        {saveError && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 flex items-center gap-3">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-            {saveError}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8">
-          {/* Sidebar: List */}
-          <aside className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit sticky top-8">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-[13px] font-black text-slate-800 uppercase tracking-wider">記事一覧</h2>
-              <span className="bg-white px-2 py-0.5 rounded-full border border-slate-200 text-[11px] text-slate-500 font-bold">{posts.length} 件</span>
-            </div>
-            <div className="p-3 max-h-[calc(100vh-250px)] overflow-y-auto">
-              {posts.length === 0 ? (
-                <div className="py-10 text-center">
-                  <p className="text-xs text-slate-400">記事が存在しません</p>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  {posts.map((post) => (
-                    <button
-                      key={post.id}
-                      onClick={() => setSelectedPostId(post.id)}
-                      className={`w-full text-left rounded-2xl px-4 py-3.5 transition-all group ${
-                        selectedPostId === post.id
-                          ? 'bg-indigo-50 ring-1 ring-indigo-200'
-                          : 'hover:bg-slate-50'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className={`text-[13px] font-bold truncate ${selectedPostId === post.id ? 'text-indigo-700' : 'text-slate-700'}`}>
-                          {post.title || '（無題の記事）'}
+        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-10">
+          {/* List Sidebar */}
+          <aside className="space-y-6">
+            <div className="bg-white/60 backdrop-blur-md rounded-[2rem] border border-white shadow-[0_8px_32px_rgba(0,0,0,0.02)] overflow-hidden h-fit">
+              <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">記事一覧</h2>
+                <span className="text-[10px] font-black bg-[#00B7CE]/10 text-[#00B7CE] px-2 py-0.5 rounded-full">{posts.length}</span>
+              </div>
+              <div className="p-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                {posts.length === 0 ? (
+                  <p className="py-10 text-center text-xs text-slate-300">記事がありません</p>
+                ) : (
+                  <div className="space-y-2">
+                    {posts.map((post) => (
+                      <button
+                        key={post.id}
+                        onClick={() => setSelectedPostId(post.id)}
+                        className={`w-full text-left rounded-[1.25rem] px-5 py-4 transition-all relative overflow-hidden group ${
+                          selectedPostId === post.id
+                            ? 'bg-white shadow-[0_10px_25px_-5px_rgba(0,183,206,0.15)] ring-1 ring-[#00B7CE]/20'
+                            : 'hover:bg-white/50'
+                        }`}
+                      >
+                        {selectedPostId === post.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00B7CE]" />}
+                        <div className="flex items-start justify-between gap-3 mb-1">
+                          <p className={`text-[13px] font-bold truncate ${selectedPostId === post.id ? 'text-slate-900' : 'text-slate-600'}`}>
+                            {post.title || '無題'}
+                          </p>
+                          <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded-md font-black uppercase tracking-tighter ${
+                            post.status === 'published' ? 'text-[#00B7CE] bg-[#00B7CE]/10' : 'text-slate-300 bg-slate-100'
+                          }`}>
+                            {post.status === 'published' ? '公開' : '下書き'}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-300 font-mono truncate tracking-tight uppercase">
+                          {(post.postType === 'blog' ? 'ブログ' : '最新情報')} / {post.slug || '未設定'}
                         </p>
-                        <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-md font-black uppercase tracking-tighter ${
-                          post.status === 'published' 
-                            ? 'bg-emerald-100 text-emerald-700' 
-                            : 'bg-slate-100 text-slate-500'
-                        }`}>
-                          {post.status === 'published' ? '公開' : '下書き'}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-400 font-mono truncate tracking-tight">
-                        /{post.slug || 'no-slug'}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </aside>
 
-          {/* Main Content: Editor */}
-          <section className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* Editor Main */}
+          <section className="bg-white/80 backdrop-blur-md rounded-[2.5rem] border border-white shadow-[0_8px_40px_rgba(0,0,0,0.03)] overflow-hidden">
             {!selectedPost ? (
-              <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
-                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              <div className="flex flex-col items-center justify-center py-40 px-10 text-center space-y-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-white to-slate-50 rounded-[2rem] border border-white shadow-sm flex items-center justify-center">
+                  <svg className="w-8 h-8 text-[#00B7CE]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 </div>
-                <h3 className="text-slate-900 font-bold">編集する記事を選択</h3>
-                <p className="text-sm text-slate-400 mt-1">左側のリストから記事を選択するか、新規作成してください。</p>
+                <div>
+                  <h3 className="text-slate-900 font-black">記事が選択されていません</h3>
+                  <p className="text-sm text-slate-400 mt-1">左のリストから編集したいコンテンツを選んでください。</p>
+                </div>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
-                {/* Editor Header */}
-                <div className="p-6 flex items-center justify-between bg-slate-50/30">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-100 rounded-lg">
-                      <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              <div className="divide-y divide-slate-50">
+                <div className="p-8 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#00B7CE]/10 rounded-2xl flex items-center justify-center text-[#00B7CE]">
+                      {selectedPost.postType === 'blog' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 2v4a2 2 0 002 2h4" /></svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                      )}
                     </div>
-                    <h2 className="text-lg font-black text-slate-800">エディタ</h2>
+                    <div>
+                      <h2 className="text-xl font-black text-slate-900 tracking-tight">コンテンツ編集</h2>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">{selectedPost.postType === 'blog' ? 'ブログ' : '最新情報'} 編集</p>
+                    </div>
                   </div>
                   <button
                     onClick={() => handleDeletePost(selectedPost.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-3 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v2m3 4s5 5.5 5 5-5 5-5 5" /></svg>
-                    記事を削除
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v2m3 4s5 5.5 5 5-5 5-5 5" /></svg>
                   </button>
                 </div>
 
-                <div className="p-8 space-y-8">
-                  {/* Title & Slug */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">タイトル</label>
+                <div className="p-8 lg:p-12 space-y-12">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">タイトル</label>
                       <input
                         value={selectedPost.title}
                         onChange={(event) => updatePost(selectedPost.id, { title: event.target.value })}
-                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-bold text-slate-800 placeholder:font-normal"
-                        placeholder="記事のタイトルを入力..."
+                        className="w-full px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-[15px] font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-[#00B7CE]/5 focus:border-[#00B7CE] transition-all outline-none"
+                        placeholder="タイトルを入力..."
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">URLスラッグ</label>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">URLスラッグ</label>
                       <div className="flex gap-2">
                         <input
                           value={selectedPost.slug}
                           onChange={(event) => updatePost(selectedPost.id, { slug: event.target.value, slugAuto: false })}
-                          className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-mono text-indigo-600"
-                          placeholder="news-article-01"
+                          className="flex-1 px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-mono text-[#00B7CE] focus:bg-white focus:ring-4 focus:ring-[#00B7CE]/5 outline-none"
                         />
                         <button
                           onClick={() => updatePost(selectedPost.id, { slug: buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt), slugAuto: true })}
-                          className="px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-black transition-colors"
+                          className="px-5 bg-white border border-slate-100 hover:border-[#00B7CE]/30 text-slate-400 hover:text-[#00B7CE] rounded-[1.25rem] text-[10px] font-black transition-all uppercase"
                         >
                           再生成
                         </button>
@@ -665,119 +661,85 @@ export default function MainPage() {
                     </div>
                   </div>
 
-                  {/* Status & Date */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">タイプ</label>
-                      <div className="relative">
+                  {/* Settings */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {[
+                      { label: 'タイプ', key: 'postType', options: [{v:'blog', l:'ブログ'}, {v:'news', l:'最新情報'}] },
+                      { label: '公開状態', key: 'status', options: [{v:'draft', l:'📁 下書き'}, {v:'published', l:'🚀 公開'}] }
+                    ].map((field) => (
+                      <div key={field.label} className="space-y-3">
+                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{field.label}</label>
                         <select
-                          value={selectedPost.postType}
-                          onChange={(event) => updatePost(selectedPost.id, { postType: event.target.value as PostItem['postType'] })}
-                          className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none cursor-pointer font-medium text-slate-700"
+                          value={selectedPost[field.key as keyof PostItem] as string}
+                          onChange={(event) => updatePost(selectedPost.id, { [field.key]: event.target.value })}
+                          className="w-full appearance-none px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none cursor-pointer focus:bg-white focus:border-[#00B7CE] transition-all"
                         >
-                          <option value="blog">ブログ</option>
-                          <option value="news">最新情報</option>
+                          {field.options.map(opt => <option key={opt.v} value={opt.v}>{opt.l}</option>)}
                         </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">公開ステータス</label>
-                      <div className="relative">
-                        <select
-                          value={selectedPost.status}
-                          onChange={(event) => updatePost(selectedPost.id, { status: event.target.value as PostStatus })}
-                          className="w-full appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none cursor-pointer font-medium text-slate-700"
-                        >
-                          <option value="draft">📁 下書きとして保存</option>
-                          <option value="published">🚀 今すぐ公開する</option>
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[12px] font-bold text-slate-500 ml-1 italic">公開日時</label>
+                    ))}
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">公開日時</label>
                       <input
                         type="datetime-local"
                         value={toDatetimeLocal(selectedPost.publishedAt)}
                         onChange={(event) => updatePost(selectedPost.id, { publishedAt: toIsoFromLocal(event.target.value) })}
-                        className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none text-slate-700"
+                        className="w-full px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#00B7CE] transition-all"
                       />
                     </div>
                   </div>
 
-                  {/* Image Info */}
-                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-6">
-                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">メディア</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[12px] font-bold text-slate-600 ml-1">カバー画像URL</label>
+                  {/* Media Section */}
+                  <div className="p-8 bg-gradient-to-br from-white to-[#F0FDFF] rounded-[2rem] border border-white shadow-inner space-y-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-4 bg-[#00B7CE] rounded-full" />
+                      <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-widest">メディア</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-slate-400 ml-1">カバー画像URL</label>
                         <input
                           value={selectedPost.imageUrl || ''}
                           onChange={(event) => updatePost(selectedPost.id, { imageUrl: event.target.value })}
-                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none"
-                          placeholder="https://images.unsplash.com/..."
+                          className="w-full px-5 py-3 bg-white border border-slate-100 rounded-xl text-sm outline-none focus:border-[#00B7CE]"
+                          placeholder="https://..."
                         />
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[12px] font-bold text-slate-600 ml-1">画像代替テキスト (Alt)</label>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-bold text-slate-400 ml-1">画像Altテキスト</label>
                         <input
                           value={selectedPost.imageAlt || ''}
                           onChange={(event) => updatePost(selectedPost.id, { imageAlt: event.target.value })}
-                          className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none"
-                          placeholder="画像の説明を入力"
+                          className="w-full px-5 py-3 bg-white border border-slate-100 rounded-xl text-sm outline-none focus:border-[#00B7CE]"
+                          placeholder="画像の説明"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Excerpt */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between ml-1 gap-3">
-                      <label className="text-[12px] font-bold text-slate-500 italic">概要（抜粋）</label>
-                    </div>
-                    <textarea
-                      value={selectedPost.excerpt}
-                      onChange={(event) => updatePost(selectedPost.id, { excerpt: event.target.value })}
-                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none min-h-[100px] leading-relaxed"
-                      placeholder="記事の概要を短く入力してください..."
-                    />
-                  </div>
-
-                  {/* Body */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between ml-1 gap-3 flex-wrap">
-                      <label className="text-[12px] font-bold text-slate-500 italic">本文</label>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 rounded-xl bg-slate-100 px-2 py-1">
-                          <span className="text-[10px] font-bold text-slate-500">文字数</span>
+                  {/* Body Content */}
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                        <div className="w-1.5 h-4 bg-slate-200 rounded-full" />
+                        本文
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                          <span className="text-[10px] font-black text-slate-300 uppercase">文字数</span>
                           <input
                             type="number"
-                            min={200}
-                            max={2000}
                             value={draftLength}
-                            onChange={(event) => setDraftLength(Number(event.target.value || 0))}
-                            className="w-20 bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-700 outline-none"
+                            onChange={(event) => setDraftLength(Number(event.target.value))}
+                            className="w-16 bg-transparent text-[11px] font-bold text-[#00B7CE] outline-none"
                           />
                         </div>
                         <button
                           onClick={handleGenerateDraft}
                           disabled={isGeneratingDraft}
-                          className="px-3 py-1.5 text-[11px] font-black rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-60"
+                          className="px-5 py-2 text-[11px] font-black rounded-full bg-white text-[#00B7CE] border border-[#00B7CE]/20 hover:bg-[#00B7CE] hover:text-white transition-all disabled:opacity-30 shadow-sm"
                         >
-                          {isGeneratingDraft ? (
-                            <span className="flex items-center gap-2">
-                              <svg className="animate-spin h-3.5 w-3.5 text-indigo-600" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                              </svg>
-                              生成中...
-                            </span>
-                          ) : '本文を自動生成'}
+                          {isGeneratingDraft ? '生成中...' : '本文を自動生成'}
                         </button>
                       </div>
                     </div>
@@ -785,46 +747,37 @@ export default function MainPage() {
                       value={selectedPost.bodyText ?? htmlToText(selectedPost.bodyHtml)}
                       onChange={(event) => {
                         const nextText = event.target.value;
-                        updatePost(selectedPost.id, {
-                          bodyText: nextText,
-                          bodyHtml: textToHtml(nextText),
-                        });
+                        updatePost(selectedPost.id, { bodyText: nextText, bodyHtml: textToHtml(nextText) });
                       }}
-                      className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none min-h-[200px] leading-relaxed"
+                      className="w-full px-8 py-8 bg-white border border-slate-100 rounded-[2rem] text-[15px] leading-[1.8] text-slate-700 focus:ring-4 focus:ring-[#00B7CE]/5 focus:border-[#00B7CE] transition-all outline-none min-h-[400px]"
                       placeholder="本文を入力してください..."
                     />
                   </div>
 
-                  {/* Preview */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-[12px] font-black text-slate-500 uppercase tracking-widest">プレビュー</h3>
-                      <span className="text-[11px] text-slate-400">公開URL: /{customerId}/news/{selectedPost.slug || 'slug'}</span>
-                    </div>
-                    <article className="border border-slate-200 rounded-2xl p-6 bg-slate-50/40">
-                      <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                  {/* Preview UI */}
+                  <div className="space-y-6">
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">プレビュー</h3>
+                    <article className="max-w-2xl mx-auto border border-white bg-white/40 rounded-[2.5rem] p-10 shadow-sm">
+                      <div className="flex items-center gap-3 text-[10px] font-black text-[#00B7CE]/50 uppercase tracking-[0.2em] mb-4">
                         <span>{selectedPost.postType === 'blog' ? 'ブログ' : '最新情報'}</span>
-                        <span>・</span>
-                        <span>{toDatetimeLocal(selectedPost.publishedAt).replace('T', ' ') || '公開日時未設定'}</span>
+                        <div className="w-1 h-1 rounded-full bg-slate-200" />
+                        <span>{toDatetimeLocal(selectedPost.publishedAt).split('T')[0]}</span>
                       </div>
-                      <h2 className="text-xl font-black text-slate-900 mt-2">{selectedPost.title || 'タイトル未設定'}</h2>
+                      <h2 className="text-3xl font-black text-slate-900 leading-tight mb-6">{selectedPost.title || 'タイトル未入力'}</h2>
                       {selectedPost.imageUrl && (
-                        <img
-                          src={selectedPost.imageUrl}
-                          alt={selectedPost.imageAlt || ''}
-                          className="w-full h-56 object-cover rounded-xl mt-4"
-                        />
+                        <img src={selectedPost.imageUrl} className="w-full h-64 object-cover rounded-[1.5rem] mb-8 shadow-lg shadow-[#00B7CE]/5" />
                       )}
-                      <p className="text-sm text-slate-600 mt-4">{selectedPost.excerpt || '概要が入力されていません。'}</p>
-                      <div className="prose prose-slate max-w-none mt-5" dangerouslySetInnerHTML={{ __html: selectedPost.bodyHtml || '' }} />
+                      <div className="prose prose-slate prose-sm max-w-none opacity-80" dangerouslySetInnerHTML={{ __html: selectedPost.bodyHtml || '' }} />
                     </article>
                   </div>
-                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                      /{customerId}/news/{selectedPost.slug || '...'}
+
+                  {/* Footer */}
+                  <div className="pt-10 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+                      <svg className="w-4 h-4 text-[#00B7CE] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                      {customerId} / {selectedPost.slug || '未設定'}
                     </div>
-                    <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Palette Studio Content Editor v2.0</p>
+                    <p className="text-[9px] text-slate-200 font-black uppercase tracking-[0.3em]">Palette Studio 編集画面</p>
                   </div>
                 </div>
               </div>

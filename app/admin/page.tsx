@@ -387,7 +387,7 @@ export default function PaletteLab() {
     'menu',
     'gallery',
     ...templateVariants.map((variant) => variant.pageSlug),
-  ])).filter((slug) => slug && slug !== 'top');
+  ])).filter((slug) => slug && slug !== 'top' && slug !== 'news-page' && slug !== 'blog-page');
 
   const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[]) => { slug: string; title: string; htmlCode: string; templateId?: string; templateVariantId?: string; order?: number }[]) => {
     setCustomers((prev) => prev.map((customer) => {

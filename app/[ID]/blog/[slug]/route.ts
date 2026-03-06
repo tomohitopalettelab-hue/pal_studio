@@ -37,7 +37,7 @@ export async function GET(
 
     const posts = (Array.isArray(customer.posts) ? customer.posts : []) as PostItem[];
     const post = posts.find((item) => String(item.slug || '').trim().toLowerCase() === slug);
-    if (!post || post.status !== 'published' || String(post.postType || 'news') !== 'news') {
+    if (!post || post.status !== 'published' || String(post.postType || 'blog') !== 'blog') {
       return new NextResponse('Page not found', { status: 404 });
     }
     if (post.publishedAt) {
@@ -48,7 +48,7 @@ export async function GET(
     }
 
     const templateId = getCustomerTemplateId(customer);
-    const baseHtml = selectVariantHtml('news-page', templateId);
+    const baseHtml = selectVariantHtml('blog-page', templateId);
     const topHtml = buildPostDetailTopHtml(post);
     const bodyHtml = buildPostDetailBodyHtml(post);
     const withTop = replaceSectionContent(baseHtml, 'top', topHtml);

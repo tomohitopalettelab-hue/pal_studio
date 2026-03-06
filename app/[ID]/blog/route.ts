@@ -37,7 +37,7 @@ export async function GET(
     const now = new Date();
     const published = posts
       .filter((post) => String(post.status || '') === 'published')
-      .filter((post) => String(post.postType || 'news') === 'news')
+      .filter((post) => String(post.postType || 'blog') === 'blog')
       .filter((post) => {
         if (!post.publishedAt) return true;
         const date = new Date(post.publishedAt);
@@ -47,8 +47,8 @@ export async function GET(
       .sort((a, b) => String(b.publishedAt || '').localeCompare(String(a.publishedAt || '')));
 
     const templateId = getCustomerTemplateId(customer);
-    const baseHtml = selectVariantHtml('news', templateId);
-    const listHtml = buildPostListHtml(published, `/${encodeURIComponent(id)}/news`, 'ニュース');
+    const baseHtml = selectVariantHtml('blog', templateId);
+    const listHtml = buildPostListHtml(published, `/${encodeURIComponent(id)}/blog`, 'ブログ');
     const injected = replaceSectionContent(baseHtml, 'top', listHtml);
     const output = ensureHtmlDocument(injected || listHtml);
 

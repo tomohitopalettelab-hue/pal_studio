@@ -514,7 +514,7 @@ if (isLoading) {
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-1 bg-[#00B7CE] rounded-full" />
-              <p className="text-[11px] uppercase tracking-[0.4em] text-[#00B7CE] font-black">編集ダッシュボード</p>
+              <p className="text-[11px] uppercase tracking-[0.4em] text-[#00B7CE] font-black">Pal Studio</p>
             </div>
             <h1 className="text-4xl font-black text-slate-900 tracking-tight">ニュース投稿管理</h1>
             <div className="flex items-center gap-2 pt-1">

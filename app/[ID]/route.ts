@@ -28,6 +28,17 @@ const resolvePublishPath = (customer: any) => {
   return fromUrl.startsWith('/') ? fromUrl : `/${fromUrl}`;
 };
 
+const normalizePageSlug = (raw: string) => String(raw || '').trim().toLowerCase().replace(/^\/+/, '');
+
+const getCustomerPageHtml = (customer: any, slug: string) => {
+  const target = normalizePageSlug(slug || 'top') || 'top';
+  const pages = Array.isArray(customer?.pages) ? customer.pages : [];
+  const found = pages.find((page: any) => normalizePageSlug(page?.slug || '') === target);
+  if (found && found.htmlCode) return String(found.htmlCode);
+  if (target === 'top' && customer?.htmlCode) return String(customer.htmlCode);
+  return '';
+};
+
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ ID: string }> }
@@ -41,14 +52,15 @@ export async function GET(
     const customer = customers.find((c: any) => {
       if (c.id === id || c.customer_id === id) return true;
       const publishPath = resolvePublishPath(c);
-      return publishPath === requestPath;
+      return publishPath === requestPath || `${publishPath}/pages` === requestPath;
     });
 
-    if (!customer || !customer.htmlCode) {
+    const topHtml = customer ? getCustomerPageHtml(customer, 'top') : '';
+    if (!customer || !topHtml) {
       return new NextResponse('Page not found', { status: 404 });
     }
 
-    let html = String(customer.htmlCode);
+    let html = String(topHtml);
 
     if (!/<html[\s>]/i.test(html)) {
       html = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +

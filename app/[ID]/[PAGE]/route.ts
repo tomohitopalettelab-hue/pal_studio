@@ -41,49 +41,48 @@ const getCustomerPageHtml = (customer: any, slug: string) => {
 
 export async function GET(
   request: NextRequest,
-  props: { params: Promise<{ ID: string }> }
+  props: { params: Promise<{ ID: string; PAGE: string }> }
 ) {
   const params = await props.params;
-  const { ID: id } = params; // rename to keep existing logic
+  const id = String(params.ID || '');
+  const pageSlug = normalizePageSlug(String(params.PAGE || ''));
+
+  // /{id}/pages は既存ルートに任せる
+  if (pageSlug === 'pages') {
+    return new NextResponse('Not found', { status: 404 });
+  }
 
   try {
     const customers = await readCustomers();
-    const requestPath = `/${id}/pages`;
-
-    // 顧客データは内部ID/外部IDに加え、送信先パスのカスタムスラッグでも解決する。
+    const basePath = `/${id}`;
     const customer = customers.find((c: any) => {
       if (c.id === id || c.customer_id === id) return true;
       const publishPath = resolvePublishPath(c);
-      return publishPath === requestPath || `${publishPath}/pages` === requestPath;
+      return publishPath === basePath;
     });
 
-    const topHtml = customer ? getCustomerPageHtml(customer, 'top') : '';
-    if (!customer || !topHtml) {
+    const html = customer ? getCustomerPageHtml(customer, pageSlug) : '';
+    if (!customer || !html) {
       return new NextResponse('Page not found', { status: 404 });
     }
 
-    let html = String(topHtml);
-
-    // 出力するHTMLに <html> タグが含まれていない場合、自前でラップする。
-    // 同時に charset と Tailwind CDN を挿入し、文字化けとスタイル未適用を防止する。
-    if (!/<html[\s>]/i.test(html)) {
-      html = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
-             `<script src="https://cdn.tailwindcss.com"></script></head><body>${html}</body></html>`;
+    let output = String(html);
+    if (!/<html[\s>]/i.test(output)) {
+      output = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
+               `<script src="https://cdn.tailwindcss.com"></script></head><body>${output}</body></html>`;
     } else {
-      // charset が指定されていない場合は挿入
-      if (!/<meta[^>]+charset=/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
+      if (!/<meta[^>]+charset=/i.test(output)) {
+        output = output.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
       }
-      // Tailwind CDN が含まれていなければ追加
-      if (!/cdn\.tailwindcss\.com/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.tailwindcss.com"></script>`);
+      if (!/cdn\.tailwindcss\.com/i.test(output)) {
+        output = output.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.tailwindcss.com"></script>`);
       }
     }
 
-    return new NextResponse(html, {
+    return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },
     });
-  } catch (error) {
+  } catch {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

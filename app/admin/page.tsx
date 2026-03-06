@@ -20,6 +20,7 @@ type Customer = {
   status: 'hearing' | 'reviewing' | 'completed';
   answers: { q: string, a: string }[];
   htmlCode: string;
+  pages?: { slug: string; title: string; htmlCode: string }[];
   updatedAt: string;
   selectedTemplateId?: string;
   publishPathTemplate?: string;
@@ -109,6 +110,7 @@ export default function PaletteLab() {
   const [originalCustomer, setOriginalCustomer] = useState<Customer | null>(null); // server copy for dirty check
   const [isDirty, setIsDirty] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(TEMPLATE_DEFAULT_ID);
+  const [selectedSitePageSlug, setSelectedSitePageSlug] = useState<string>('top');
 
   const selectedEditSectionId = PAGE_TREE.find((item) => item.key === selectedEditPage)?.sectionId || 'top';
 
@@ -264,6 +266,113 @@ export default function PaletteLab() {
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
   const studioPublicOrigin = (process.env.NEXT_PUBLIC_STUDIO_ORIGIN || 'https://studio.palette-lab.com').replace(/\/$/, '');
 
+  const normalizePageSlug = (raw: string) => {
+    const normalized = String(raw || '').trim().toLowerCase().replace(/^\/+/, '');
+    if (!normalized) return 'top';
+    return normalized.replace(/[^a-z0-9-_]/g, '-').replace(/-+/g, '-');
+  };
+
+  const deriveTitleFromSlug = (slug: string) => {
+    const s = normalizePageSlug(slug);
+    return s === 'top' ? 'Top' : s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
+  const getCustomerPages = (customer?: Customer | null) => {
+    if (!customer) return [] as { slug: string; title: string; htmlCode: string }[];
+    const fromPayload = Array.isArray(customer.pages)
+      ? customer.pages
+          .filter((page) => page && typeof page.slug === 'string')
+          .map((page) => ({
+            slug: normalizePageSlug(page.slug),
+            title: String(page.title || deriveTitleFromSlug(page.slug || 'top')),
+            htmlCode: String(page.htmlCode || ''),
+          }))
+      : [];
+
+    const unique = new Map<string, { slug: string; title: string; htmlCode: string }>();
+    fromPayload.forEach((page) => {
+      if (!unique.has(page.slug)) unique.set(page.slug, page);
+    });
+
+    const topHtml = String(customer.htmlCode || unique.get('top')?.htmlCode || '');
+    unique.set('top', {
+      slug: 'top',
+      title: unique.get('top')?.title || 'Top',
+      htmlCode: topHtml,
+    });
+
+    const pages = Array.from(unique.values());
+    pages.sort((a, b) => {
+      if (a.slug === 'top') return -1;
+      if (b.slug === 'top') return 1;
+      return a.slug.localeCompare(b.slug);
+    });
+    return pages;
+  };
+
+  const selectedCustomerPages = getCustomerPages(selectedCustomer);
+  const activePage = selectedCustomerPages.find((page) => page.slug === selectedSitePageSlug) || selectedCustomerPages[0];
+  const activePageHtml = String(activePage?.htmlCode || '');
+
+  const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string }[]) => { slug: string; title: string; htmlCode: string }[]) => {
+    setCustomers((prev) => prev.map((customer) => {
+      if (customer.id !== selectedCustomerId) return customer;
+      const nextPages = updater(getCustomerPages(customer));
+      const normalizedPages = nextPages.map((page) => ({
+        slug: normalizePageSlug(page.slug),
+        title: String(page.title || deriveTitleFromSlug(page.slug)),
+        htmlCode: String(page.htmlCode || ''),
+      }));
+      const topPage = normalizedPages.find((page) => page.slug === 'top');
+      return {
+        ...customer,
+        pages: normalizedPages,
+        htmlCode: topPage ? topPage.htmlCode : customer.htmlCode,
+      };
+    }));
+  };
+
+  const updateActivePageHtml = (nextHtml: string) => {
+    if (!activePage) return;
+    updateSelectedCustomerPages((pages) => pages.map((page) => (
+      page.slug === activePage.slug ? { ...page, htmlCode: nextHtml } : page
+    )));
+  };
+
+  const handleAddSitePage = () => {
+    if (!selectedCustomer) return;
+    const raw = prompt('追加するページのslugを入力してください（例: about, service, contact）');
+    if (!raw) return;
+    const slug = normalizePageSlug(raw);
+    const pages = getCustomerPages(selectedCustomer);
+    if (pages.some((page) => page.slug === slug)) {
+      alert('同じslugのページが既にあります。');
+      return;
+    }
+    const topPage = pages.find((page) => page.slug === 'top');
+    const seedHtml = String(topPage?.htmlCode || selectedCustomer.htmlCode || '').trim();
+    updateSelectedCustomerPages((prev) => [...prev, {
+      slug,
+      title: deriveTitleFromSlug(slug),
+      htmlCode: slug === 'top'
+        ? String(selectedCustomer.htmlCode || '')
+        : (seedHtml || `<main><section id="top" class="p-8"><h1>${deriveTitleFromSlug(slug)} page</h1><p>このページを編集してください。</p></section></main>`),
+    }]);
+    setSelectedSitePageSlug(slug);
+  };
+
+  const handleRemoveSitePage = (slug: string) => {
+    if (slug === 'top') {
+      alert('topページは削除できません。');
+      return;
+    }
+    if (!confirm(`/${slug} ページを削除しますか？`)) return;
+    updateSelectedCustomerPages((pages) => pages.filter((page) => page.slug !== slug));
+    if (selectedSitePageSlug === slug) {
+      setSelectedSitePageSlug('top');
+    }
+  };
+
   const normalizePublishPathTemplate = (raw?: string) => {
     const value = String(raw || '').trim();
     if (!value) return DEFAULT_PUBLISH_PATH_TEMPLATE;
@@ -313,6 +422,18 @@ export default function PaletteLab() {
     }
   }, [selectedCustomerId]);
 
+  useEffect(() => {
+    if (!selectedCustomer) return;
+    const pages = getCustomerPages(selectedCustomer);
+    if (pages.length === 0) {
+      setSelectedSitePageSlug('top');
+      return;
+    }
+    if (!pages.some((page) => page.slug === selectedSitePageSlug)) {
+      setSelectedSitePageSlug(pages[0].slug);
+    }
+  }, [selectedCustomerId, selectedCustomer?.pages, selectedCustomer?.htmlCode]);
+
   // warn on unload if there are unsaved changes
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
@@ -337,6 +458,7 @@ export default function PaletteLab() {
       publishPathTemplate: selectedCustomer.publishPathTemplate,
       description: selectedCustomer.description,
       htmlCode: selectedCustomer.htmlCode,
+      pages: getCustomerPages(selectedCustomer),
       answers: selectedCustomer.answers
     });
     const b = JSON.stringify({
@@ -345,6 +467,7 @@ export default function PaletteLab() {
       publishPathTemplate: originalCustomer.publishPathTemplate,
       description: originalCustomer.description,
       htmlCode: originalCustomer.htmlCode,
+      pages: getCustomerPages(originalCustomer),
       answers: originalCustomer.answers
     });
     setIsDirty(a !== b);
@@ -359,9 +482,9 @@ export default function PaletteLab() {
     return t;
   };
 
-  const isSelectedCustomerHtml = (cust: Customer | undefined | null) => {
-    if (!cust || !cust.htmlCode) return false;
-    const sample = normalizeHtmlString(cust.htmlCode);
+  const isHtmlText = (html?: string) => {
+    if (!html) return false;
+    const sample = normalizeHtmlString(html);
     return /<[^>]+>/.test(sample);
   };
 
@@ -448,7 +571,7 @@ ${aiInstruction}
 3. 既存レイアウト構造（大枠のタグ構造）は維持すること。
 
 【現在のHTML】
-${selectedCustomer.htmlCode}
+${activePageHtml}
       `;
 
       const response = await fetch('/api/generate', {
@@ -472,11 +595,11 @@ ${selectedCustomer.htmlCode}
       const htmlToApply = normalized || html;
 
       if (isRenderableHtml(htmlToApply)) {
-        setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { 
-          ...c, 
-          htmlCode: htmlToApply,
-          description: comment || c.description // コメントがあれば更新
-        } : c));
+        updateActivePageHtml(htmlToApply);
+        setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? ({
+          ...c,
+          description: comment || c.description,
+        }) : c));
       } else {
         // HTMLと判定できない場合は、htmlCodeを上書きせずにdescriptionに保存しておく
         setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? ({ ...c, description: (data.text || comment || c.description) }) : c));
@@ -638,9 +761,13 @@ ${selectedCustomer.htmlCode}
 
       // HTML のみを抽出（テキストは除去）
       if (/<[^>]+>/.test(normalized)) {
-        setCustomers(prev => prev.map(c => 
+        const generatedHtml = normalized || html;
+        updateSelectedCustomerPages((pages) => pages.map((page) => (
+          page.slug === 'top' ? { ...page, htmlCode: generatedHtml } : page
+        )));
+        setCustomers(prev => prev.map(c =>
           c.id === selectedCustomerId
-            ? { ...c, htmlCode: html, description: memo, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
+            ? { ...c, htmlCode: generatedHtml, description: memo, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
             : c
         ));
       } else {
@@ -711,7 +838,7 @@ ${selectedCustomer.htmlCode}
   const handlePublish = async () => {
     if (!selectedCustomer) return;
 
-    if (!selectedCustomer.htmlCode) {
+    if (!selectedCustomer.htmlCode && !activePageHtml) {
       alert("公開するHTMLがありません。編集またはAI生成を行ってください。");
       return;
     }
@@ -913,7 +1040,7 @@ ${selectedCustomer.htmlCode}
 
     let currentIndex = 0;
     // imgタグを検索して、targetIndex番目のものを置換
-    const updatedHtml = selectedCustomer.htmlCode.replace(/<img\s+([^>]*?)>/gi, (match) => {
+    const updatedHtml = activePageHtml.replace(/<img\s+([^>]*?)>/gi, (match) => {
       const imageIndex = currentIndex;
       currentIndex += 1;
 
@@ -933,7 +1060,7 @@ ${selectedCustomer.htmlCode}
       return match.replace('<img', `<img src="${newSrc}"`);
     });
 
-    setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, htmlCode: updatedHtml } : c));
+    updateActivePageHtml(updatedHtml);
     setEditingImage(null); // モーダルを閉じる
   };
 
@@ -954,7 +1081,7 @@ ${selectedCustomer.htmlCode}
     if (!selectedCustomer || !editingText) return;
 
     const parser = new DOMParser();
-    const sourceHtml = selectedCustomer.htmlCode || '';
+    const sourceHtml = activePageHtml || '';
     const parsed = parser.parseFromString(sourceHtml, 'text/html');
     const editable = getEditableTextElements(getEditableRoot(parsed));
     const target = editable[editingText.index];
@@ -970,7 +1097,7 @@ ${selectedCustomer.htmlCode}
       ? parsed.documentElement.outerHTML
       : parsed.body.innerHTML;
 
-    setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, htmlCode: updatedHtml } : c));
+    updateActivePageHtml(updatedHtml);
     setEditingText(null);
     setTextDraft('');
   };
@@ -1626,6 +1753,41 @@ ${selectedCustomer.htmlCode}
                 <div className="text-[10px] font-bold text-slate-400 tracking-widest uppercase italic">{resolveCustomerDisplayName(selectedCustomer)} - {selectedCustomer.id}</div>
               </div>
               <section className="mb-4 px-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Site Pages</h2>
+                  <button
+                    onClick={handleAddSitePage}
+                    className="px-3 py-1.5 rounded-md bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-slate-700"
+                  >
+                    + Add Page
+                  </button>
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {selectedCustomerPages.map((page) => {
+                    const selected = selectedSitePageSlug === page.slug;
+                    return (
+                      <div
+                        key={page.slug}
+                        className={`px-2 py-1.5 rounded-lg border text-[10px] font-bold tracking-wider transition-all flex items-center gap-2 shrink-0 ${
+                          selected
+                            ? 'bg-slate-900 border-slate-900 text-white'
+                            : 'bg-white border-slate-200 text-slate-500'
+                        }`}
+                      >
+                        <button onClick={() => setSelectedSitePageSlug(page.slug)} className="uppercase">
+                          /{page.slug}
+                        </button>
+                        {page.slug !== 'top' && (
+                          <button onClick={() => handleRemoveSitePage(page.slug)} className={`text-[9px] ${selected ? 'text-slate-300' : 'text-slate-400'}`}>
+                            x
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+              <section className="mb-4 px-2 space-y-2">
                 <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Page Tree</h2>
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {PAGE_TREE.map((page) => {
@@ -1651,16 +1813,16 @@ ${selectedCustomer.htmlCode}
                   })}
                 </div>
                 <p className="text-[10px] text-slate-500 leading-relaxed">
-                  選択したページ範囲のみテキスト編集とAI調整の対象になります。
+                  現在編集中: /{activePage?.slug || 'top'} | 選択した範囲のみテキスト編集とAI調整の対象になります。
                 </p>
               </section>
               <div className="flex-1 w-full flex justify-center items-stretch overflow-hidden bg-slate-300/50 rounded-2xl">
                 {activeTab === 'preview' ? (
                   <div className={`bg-white transition-all duration-500 shadow-2xl relative flex flex-col ${viewMode === 'pc' ? 'w-full h-full' : 'w-[375px] h-[667px] my-auto mx-auto rounded-[40px] border-[12px] border-slate-900 overflow-hidden shrink-0'}`}>
-                    {isSelectedCustomerHtml(selectedCustomer) ? (
+                    {isHtmlText(activePageHtml) ? (
                       <iframe 
                         ref={iframeRef}
-                        key={selectedCustomer.htmlCode}
+                        key={`${selectedCustomer.id}:${activePage?.slug || 'top'}:${activePageHtml}`}
                         onLoad={handlePreviewFrameLoad}
                         srcDoc={`
                           <html>
@@ -1668,7 +1830,7 @@ ${selectedCustomer.htmlCode}
                               <script src="https://cdn.tailwindcss.com"></script>
                               <style>body { margin: 0; padding: 0; } body::-webkit-scrollbar { display: none; }</style>
                             </head>
-                            <body>${getProcessedHtml(selectedCustomer.htmlCode)}</body>
+                            <body>${getProcessedHtml(activePageHtml)}</body>
                           </html>
                         `}
                         className="flex-1 w-full h-full border-none" 
@@ -1676,28 +1838,28 @@ ${selectedCustomer.htmlCode}
                     ) : (
                       <div className="flex-1 w-full h-full p-6 overflow-auto text-left">
                         <div className="text-sm text-slate-500 mb-4">HTMLプレビューが利用できません。Generation Memoを表示します。</div>
-                        <div className="mb-3 text-[11px] text-slate-500">Debug: htmlLength: <span className="font-mono text-slate-700">{selectedCustomer.htmlCode ? selectedCustomer.htmlCode.length : 0}</span> — isHtml: <span className="font-mono">{isSelectedCustomerHtml(selectedCustomer) ? 'yes' : 'no'}</span></div>
+                        <div className="mb-3 text-[11px] text-slate-500">Debug: htmlLength: <span className="font-mono text-slate-700">{activePageHtml ? activePageHtml.length : 0}</span> - isHtml: <span className="font-mono">{isHtmlText(activePageHtml) ? 'yes' : 'no'}</span></div>
                         <div className="whitespace-pre-wrap text-sm text-slate-700 bg-white p-4 rounded-lg border border-slate-100 mb-3">{selectedCustomer.description || '（メモなし）'}</div>
                         <details className="bg-white border border-slate-100 rounded-lg p-3 text-xs text-slate-500">
                           <summary className="cursor-pointer font-bold text-slate-600 mb-2">正規化された HTML（デバッグ）</summary>
-                          <pre className="text-[11px] text-slate-700 max-h-56 overflow-auto bg-slate-50 p-3 rounded">{normalizeHtmlString(selectedCustomer.htmlCode)}</pre>
+                          <pre className="text-[11px] text-slate-700 max-h-56 overflow-auto bg-slate-50 p-3 rounded">{normalizeHtmlString(activePageHtml)}</pre>
                         </details>
                       </div>
                     )}
                   </div>
                 ) : (
                   <div className="w-full h-full bg-slate-900 p-6 overflow-auto text-left rounded-xl shadow-2xl">
-                    {isSelectedCustomerHtml(selectedCustomer) ? (
+                    {isHtmlText(activePageHtml) ? (
                       <pre className="text-emerald-400 text-xs font-mono leading-relaxed">
-                        <code>{getProcessedHtml(selectedCustomer.htmlCode)}</code>
+                        <code>{getProcessedHtml(activePageHtml)}</code>
                       </pre>
                     ) : (
                       <div>
                         <div className="text-white text-sm whitespace-pre-wrap mb-3">{selectedCustomer.description || '（メモなし）'}</div>
-                        <div className="text-[11px] text-slate-300">Debug: htmlLength: <span className="font-mono">{selectedCustomer.htmlCode ? selectedCustomer.htmlCode.length : 0}</span> — isHtml: <span className="font-mono">{isSelectedCustomerHtml(selectedCustomer) ? 'yes' : 'no'}</span></div>
+                        <div className="text-[11px] text-slate-300">Debug: htmlLength: <span className="font-mono">{activePageHtml ? activePageHtml.length : 0}</span> - isHtml: <span className="font-mono">{isHtmlText(activePageHtml) ? 'yes' : 'no'}</span></div>
                         <details className="mt-3 text-xs text-slate-300">
                           <summary className="cursor-pointer">正規化された HTML（デバッグ表示）</summary>
-                          <pre className="mt-2 text-[11px] text-slate-200 bg-slate-800 p-3 rounded max-h-72 overflow-auto">{normalizeHtmlString(selectedCustomer.htmlCode)}</pre>
+                          <pre className="mt-2 text-[11px] text-slate-200 bg-slate-800 p-3 rounded max-h-72 overflow-auto">{normalizeHtmlString(activePageHtml)}</pre>
                         </details>
                       </div>
                     )}

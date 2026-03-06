@@ -114,29 +114,6 @@ const buildAutoDraft = (customerName: string, title: string, excerpt: string) =>
   };
 };
 
-const buildAutoDraft = (customerName: string, baseTitle: string) => {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  const dateLabel = `${y}/${m}/${d}`;
-  const title = baseTitle || `${dateLabel}のお知らせ`;
-  const excerpt = `${customerName || '当社'}からの最新ニュースをお届けします。`;
-  const bodyHtml = `
-<p>${customerName || '当社'}からのお知らせです。</p>
-<p>${dateLabel}に公開しました。</p>
-<h3>概要</h3>
-<ul>
-  <li>内容: サービスに関する最新情報</li>
-  <li>対象: ご利用中のお客様</li>
-  <li>詳細: 下記をご確認ください</li>
-</ul>
-<p>今後ともよろしくお願いいたします。</p>
-  `.trim();
-
-  return { title, excerpt, bodyHtml };
-};
-
 const MainScrollStyles = () => (
   <style jsx global>{`
     html, body {

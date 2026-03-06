@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createSessionValue, SESSION_COOKIE_NAME, type SessionPayload } from '../../../../lib/auth-session';
+import { readCustomers, upsertCustomer } from '../../_lib/customer-store';
 import { palDbPost } from '../../_lib/pal-db-client';
 import { canLoginPalStudioStandardByPaletteId } from '../../_lib/pal-studio-accounts';
 
@@ -36,6 +37,23 @@ export async function POST(req: Request) {
         { success: false, error: 'Pal Studio Standard契約が必要です。' },
         { status: 403 },
       );
+    }
+
+    const existingCustomers = await readCustomers();
+    const existing = existingCustomers.find(
+      (item: any) => item.id === paletteId || item.customer_id === paletteId,
+    );
+    if (!existing) {
+      await upsertCustomer({
+        id: paletteId,
+        customer_id: paletteId,
+        name: accountName || '顧客名未設定',
+        status: 'hearing',
+        answers: [],
+        description: '',
+        htmlCode: '',
+        updatedAt: new Date().toISOString(),
+      });
     }
 
     const session: SessionPayload = {

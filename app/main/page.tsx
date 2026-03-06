@@ -90,12 +90,13 @@ export default function MainPage() {
 
   const loadSession = async () => {
     setIsLoading(true);
+    let sessionData: SessionPayload | undefined;
     try {
       const res = await fetch('/api/main/session', { cache: 'no-store' });
-      const data = (await res.json()) as SessionPayload;
-      setSession(data);
-      if (data?.authenticated) {
-        const loadedPosts = Array.isArray(data.posts) ? data.posts : [];
+      sessionData = (await res.json()) as SessionPayload;
+      setSession(sessionData);
+      if (sessionData?.authenticated) {
+        const loadedPosts = Array.isArray(sessionData.posts) ? sessionData.posts : [];
         setPosts(loadedPosts);
         if (loadedPosts.length > 0) {
           setSelectedPostId(loadedPosts[0].id);
@@ -106,10 +107,10 @@ export default function MainPage() {
       }
     } catch {
       setSession({ authenticated: false });
-      return data;
     } finally {
       setIsLoading(false);
     }
+    return sessionData;
   };
 
   useEffect(() => {

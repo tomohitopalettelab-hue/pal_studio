@@ -717,6 +717,20 @@ if (isLoading) {
                     </div>
                   </div>
 
+                  {/* Summary */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                      <div className="w-1.5 h-4 bg-slate-200 rounded-full" />
+                      概要
+                    </div>
+                    <textarea
+                      value={selectedPost.excerpt || ''}
+                      onChange={(event) => updatePost(selectedPost.id, { excerpt: event.target.value })}
+                      className="w-full px-6 py-5 bg-white border border-slate-100 rounded-[1.5rem] text-[14px] leading-[1.7] text-slate-700 focus:ring-4 focus:ring-[#00B7CE]/5 focus:border-[#00B7CE] transition-all outline-none min-h-[140px]"
+                      placeholder="本文の要点や見出し用の短い説明を入力してください..."
+                    />
+                  </div>
+
                   {/* Body Content */}
                   <div className="space-y-6">
                     <div className="flex items-center justify-between flex-wrap gap-4">

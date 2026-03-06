@@ -6,7 +6,7 @@ import { parseSessionValue, MAIN_SESSION_COOKIE_NAME, SESSION_COOKIE_NAME, isExp
 export async function GET(req: Request) {
   try {
     const cookieHeader = req.headers.get('cookie') || '';
-    const store = cookies();
+    const store = await cookies();
     const mainCookie = store.get(MAIN_SESSION_COOKIE_NAME)?.value;
     const legacyCookie = store.get(SESSION_COOKIE_NAME)?.value;
     const fallbackValue = (() => {

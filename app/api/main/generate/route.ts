@@ -5,8 +5,8 @@ import { parseSessionValue, MAIN_SESSION_COOKIE_NAME, SESSION_COOKIE_NAME, isExp
 
 export const runtime = 'nodejs';
 
-const getSession = (cookieHeader: string) => {
-  const store = cookies();
+const getSession = async (cookieHeader: string) => {
+  const store = await cookies();
   const mainCookie = store.get(MAIN_SESSION_COOKIE_NAME)?.value;
   const legacyCookie = store.get(SESSION_COOKIE_NAME)?.value;
   if (mainCookie) return parseSessionValue(mainCookie);
@@ -32,7 +32,7 @@ type GenerateBody = {
 
 export async function POST(req: Request) {
   try {
-    const session = getSession(req.headers.get('cookie') || '');
+    const session = await getSession(req.headers.get('cookie') || '');
     if (!session || session.role !== 'customer' || isExpired(session)) {
       return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 });
     }

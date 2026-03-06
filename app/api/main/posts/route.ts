@@ -44,7 +44,7 @@ const normalizePost = (input: Partial<PostItem>, fallbackId: string): PostItem =
 
 const getSessionCustomer = async (req: Request) => {
   const cookieHeader = req.headers.get('cookie') || '';
-  const store = cookies();
+  const store = await cookies();
   const mainCookie = store.get(MAIN_SESSION_COOKIE_NAME)?.value;
   const legacyCookie = store.get(SESSION_COOKIE_NAME)?.value;
   const fallbackValue = (() => {

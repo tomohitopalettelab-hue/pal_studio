@@ -20,7 +20,7 @@ type Customer = {
   status: 'hearing' | 'reviewing' | 'completed';
   answers: { q: string, a: string }[];
   htmlCode: string;
-  pages?: { slug: string; title: string; htmlCode: string }[];
+  pages?: { slug: string; title: string; htmlCode: string; templateId?: string }[];
   updatedAt: string;
   selectedTemplateId?: string;
   publishPathTemplate?: string;
@@ -262,9 +262,39 @@ export default function PaletteLab() {
     return s === 'top' ? 'Top' : s.charAt(0).toUpperCase() + s.slice(1);
   };
 
-  const buildPageHref = (slug: string) => `/${normalizePageSlug(slug)}`;
+  const buildPublishPath = (customer: Customer) => {
+    const identifier = String(customer?.customer_id || customer?.id || '').trim();
+    if (!identifier) return '';
+    const normalized = normalizePublishPathTemplate(customer.publishPathTemplate);
+    const replaced = normalized
+      .replaceAll('{id}', encodeURIComponent(identifier))
+      .replaceAll('{customer_id}', encodeURIComponent(identifier));
+    if (/^https?:\/\//i.test(replaced)) {
+      try {
+        const url = new URL(replaced);
+        return url.pathname || '';
+      } catch {
+        return '';
+      }
+    }
+    return replaced.startsWith('/') ? replaced : `/${replaced}`;
+  };
 
-  const syncNavWithSitePages = (html: string, pages: { slug: string; title: string }[]) => {
+  const buildPageHref = (slug: string, basePath: string) => {
+    const normalizedSlug = normalizePageSlug(slug);
+    if (normalizedSlug === 'top') return basePath || '/';
+    const baseForSubpages = basePath.endsWith('/pages')
+      ? basePath.replace(/\/pages$/, '')
+      : basePath;
+    if (!baseForSubpages) return `/${normalizedSlug}`;
+    return `${baseForSubpages.replace(/\/$/, '')}/${normalizedSlug}`;
+  };
+
+  const syncNavWithSitePages = (
+    html: string,
+    pages: { slug: string; title: string }[],
+    basePath: string,
+  ) => {
     if (!html) return html;
     const parser = new DOMParser();
     const parsed = parser.parseFromString(html, 'text/html');
@@ -281,7 +311,7 @@ export default function PaletteLab() {
 
     pages.forEach((page) => {
       const link = templateAnchor.cloneNode(true) as HTMLAnchorElement;
-      link.setAttribute('href', buildPageHref(page.slug));
+      link.setAttribute('href', buildPageHref(page.slug, basePath));
       link.textContent = page.title || deriveTitleFromSlug(page.slug);
       nav.appendChild(link);
     });
@@ -292,7 +322,7 @@ export default function PaletteLab() {
   };
 
   const getCustomerPages = (customer?: Customer | null) => {
-    if (!customer) return [] as { slug: string; title: string; htmlCode: string }[];
+    if (!customer) return [] as { slug: string; title: string; htmlCode: string; templateId?: string }[];
     const fromPayload = Array.isArray(customer.pages)
       ? customer.pages
           .filter((page) => page && typeof page.slug === 'string')
@@ -300,6 +330,7 @@ export default function PaletteLab() {
             slug: normalizePageSlug(page.slug),
             title: String(page.title || deriveTitleFromSlug(page.slug || 'top')),
             htmlCode: String(page.htmlCode || ''),
+            templateId: String((page as any).templateId || ''),
           }))
       : [];
 
@@ -313,6 +344,7 @@ export default function PaletteLab() {
       slug: 'top',
       title: unique.get('top')?.title || 'Top',
       htmlCode: topHtml,
+      templateId: unique.get('top')?.templateId || '',
     });
 
     const pages = Array.from(unique.values());
@@ -327,8 +359,11 @@ export default function PaletteLab() {
   const selectedCustomerPages = getCustomerPages(selectedCustomer);
   const activePage = selectedCustomerPages.find((page) => page.slug === selectedSitePageSlug) || selectedCustomerPages[0];
   const activePageHtml = String(activePage?.htmlCode || '');
+  const activePageTemplateId = hasTemplateId(String(activePage?.templateId || ''))
+    ? String(activePage?.templateId || '')
+    : selectedTemplateId;
 
-  const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string }[]) => { slug: string; title: string; htmlCode: string }[]) => {
+  const updateSelectedCustomerPages = (updater: (pages: { slug: string; title: string; htmlCode: string; templateId?: string }[]) => { slug: string; title: string; htmlCode: string; templateId?: string }[]) => {
     setCustomers((prev) => prev.map((customer) => {
       if (customer.id !== selectedCustomerId) return customer;
       const nextPages = updater(getCustomerPages(customer));
@@ -336,10 +371,12 @@ export default function PaletteLab() {
         slug: normalizePageSlug(page.slug),
         title: String(page.title || deriveTitleFromSlug(page.slug)),
         htmlCode: String(page.htmlCode || ''),
+        templateId: String(page.templateId || ''),
       }));
+      const basePath = buildPublishPath(customer);
       const syncedPages = normalizedPages.map((page) => ({
         ...page,
-        htmlCode: syncNavWithSitePages(page.htmlCode, normalizedPages),
+        htmlCode: syncNavWithSitePages(page.htmlCode, normalizedPages, basePath),
       }));
       const topPage = syncedPages.find((page) => page.slug === 'top');
       return {
@@ -373,9 +410,11 @@ export default function PaletteLab() {
     const title = String(rawTitle || '').trim() || defaultTitle;
     const topPage = pages.find((page) => page.slug === 'top');
     const seedHtml = String(topPage?.htmlCode || selectedCustomer.htmlCode || '').trim();
+    const pageTemplateId = hasTemplateId(selectedTemplateId) ? selectedTemplateId : TEMPLATE_DEFAULT_ID;
     updateSelectedCustomerPages((prev) => [...prev, {
       slug,
       title,
+      templateId: pageTemplateId,
       htmlCode: slug === 'top'
         ? String(selectedCustomer.htmlCode || '')
         : (seedHtml || `<main><section id="top" class="p-8"><h1>${deriveTitleFromSlug(slug)} page</h1><p>このページを編集してください。</p></section></main>`),
@@ -696,10 +735,14 @@ ${activePageHtml}
       const templateIdFromTemplateRecord = selectedCustomer.isTemplate
         ? selectedCustomer.id.replace(/^tpl-/, '')
         : '';
+      const pageTemplateId = String(activePage?.templateId || '').trim();
 
       let recommendedTemplateId: string;
-      if (hasTemplateId(selectedTemplateId)) {
-        // 常にプルダウン選択を最優先
+      if (hasTemplateId(pageTemplateId)) {
+        // ページごとのテンプレートがあれば最優先
+        recommendedTemplateId = pageTemplateId;
+      } else if (hasTemplateId(selectedTemplateId)) {
+        // それ以外はプルダウン選択を優先
         recommendedTemplateId = selectedTemplateId;
       } else if (hasTemplateId(templateIdFromTemplateRecord)) {
         recommendedTemplateId = templateIdFromTemplateRecord;
@@ -775,17 +818,17 @@ ${activePageHtml}
       const normalized = normalizeHtmlString(html || data.text || "");
 
       // 生成の記録メモを作成（テンプレート名と使用したプロンプト）
-      const memo = `テンプレート: ${template ? template.name : '(unknown)'}\nプロンプト:\n${prompt.trim()}`;
+      const memo = `ページ: /${activePage?.slug || 'top'}\nテンプレート: ${template ? template.name : '(unknown)'}\nプロンプト:\n${prompt.trim()}`;
 
       // HTML のみを抽出（テキストは除去）
       if (/<[^>]+>/.test(normalized)) {
         const generatedHtml = normalized || html;
         updateSelectedCustomerPages((pages) => pages.map((page) => (
-          page.slug === 'top' ? { ...page, htmlCode: generatedHtml } : page
+          page.slug === (activePage?.slug || 'top') ? { ...page, htmlCode: generatedHtml } : page
         )));
         setCustomers(prev => prev.map(c =>
           c.id === selectedCustomerId
-            ? { ...c, htmlCode: generatedHtml, description: memo, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
+            ? { ...c, description: memo, status: 'reviewing', selectedTemplateId: recommendedTemplateId }
             : c
         ));
       } else {
@@ -1673,29 +1716,6 @@ ${activePageHtml}
 
               <section className="space-y-4 pt-4 border-t border-slate-200">
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Initial Generation</h2>
-                
-                {/* テンプレート選択プルダウン */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500">使用するテンプレート</label>
-                  <select 
-                    value={selectedTemplateId} 
-                    onChange={(e) => {
-                      const nextTemplateId = e.target.value;
-                      setSelectedTemplateId(nextTemplateId);
-                      setCustomers((prev) => prev.map((customer) => (
-                        customer.id === selectedCustomerId
-                          ? { ...customer, selectedTemplateId: nextTemplateId }
-                          : customer
-                      )));
-                    }}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
-                  >
-                    {templates.map(t => (
-                      <option key={t.id} value={t.id}>{t.name}</option>
-                    ))}
-                  </select>
-                </div>
-
                 <button 
                   onClick={handleInitialGeneration}
                   disabled={isApplying}
@@ -1704,6 +1724,9 @@ ${activePageHtml}
                   <Sparkles className="w-6 h-6 text-yellow-300" />
                   <span>Generate Draft</span>
                 </button>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  上部のPage Templateで選んだテンプレートが使われます。
+                </p>
               </section>
 
               <section className="space-y-4 pt-4 border-t border-slate-200">
@@ -1801,6 +1824,24 @@ ${activePageHtml}
                       </div>
                     );
                   })}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Page Template</span>
+                  <select
+                    value={activePageTemplateId}
+                    onChange={(e) => {
+                      const nextTemplateId = e.target.value;
+                      if (!activePage) return;
+                      updateSelectedCustomerPages((pages) => pages.map((page) => (
+                        page.slug === activePage.slug ? { ...page, templateId: nextTemplateId } : page
+                      )));
+                    }}
+                    className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-[10px] outline-none focus:border-indigo-500"
+                  >
+                    {templates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
                 </div>
               </section>
               <div className="flex-1 w-full flex justify-center items-stretch overflow-hidden bg-slate-300/50 rounded-2xl">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createSessionValue, SESSION_COOKIE_NAME, type SessionPayload } from '../../../../lib/auth-session';
 import { palDbPost } from '../../_lib/pal-db-client';
+import { canLoginPalStudioStandardByPaletteId } from '../../_lib/pal-studio-accounts';
 
 type LoginBody = {
   id?: string;
@@ -27,6 +28,14 @@ export async function POST(req: Request) {
     const accountName = String(verifyBody?.accountName || '').trim();
     if (!paletteId) {
       return NextResponse.json({ success: false, error: 'ログイン情報の取得に失敗しました。' }, { status: 500 });
+    }
+
+    const canLogin = await canLoginPalStudioStandardByPaletteId(paletteId);
+    if (!canLogin) {
+      return NextResponse.json(
+        { success: false, error: 'Pal Studio Standard契約が必要です。' },
+        { status: 403 },
+      );
     }
 
     const session: SessionPayload = {

@@ -30,6 +30,11 @@ const isPalStudioPlanCode = (code: string): boolean => {
     || normalized === 'pal_studio_pro';
 };
 
+const isPalStudioStandardPlanCode = (code: string): boolean => {
+  const normalized = normalize(code).replace(/-/g, '_');
+  return normalized === 'pal_studio_standard';
+};
+
 const todayYmd = (): string => {
   const now = new Date();
   const y = now.getFullYear();
@@ -86,4 +91,46 @@ export const findPalStudioAccountByPaletteId = async (paletteId: string): Promis
   if (!target) return null;
   const accounts = await listPalStudioAccountsFromPalDb();
   return accounts.find((account) => String(account.paletteId || '').trim().toUpperCase() === target) || null;
+};
+
+export const canLoginPalStudioStandardByPaletteId = async (paletteId: string): Promise<boolean> => {
+  const target = String(paletteId || '').trim().toUpperCase();
+  if (!target) return false;
+
+  const activeOn = todayYmd();
+  const [accountsRes, contractsRes, plansRes] = await Promise.all([
+    palDbGet('/api/accounts'),
+    palDbGet(`/api/contracts?activeOn=${encodeURIComponent(activeOn)}`),
+    palDbGet('/api/plans?includeInactive=1'),
+  ]);
+
+  if (!accountsRes.ok || !contractsRes.ok || !plansRes.ok) {
+    throw new Error('pal_db のプラン照合に失敗しました');
+  }
+
+  const accountsBody = await accountsRes.json().catch(() => ({}));
+  const contractsBody = await contractsRes.json().catch(() => ({}));
+  const plansBody = await plansRes.json().catch(() => ({}));
+
+  const accounts: PalDbAccount[] = Array.isArray(accountsBody?.accounts) ? accountsBody.accounts : [];
+  const contracts: ContractItem[] = Array.isArray(contractsBody?.contracts) ? contractsBody.contracts : [];
+  const plans: PlanItem[] = Array.isArray(plansBody?.plans) ? plansBody.plans : [];
+
+  const account = accounts.find((item) => String(item.paletteId || '').trim().toUpperCase() === target);
+  if (!account) return false;
+
+  const standardPlanIds = new Set(
+    plans
+      .filter((plan) => isPalStudioStandardPlanCode(plan.code))
+      .map((plan) => String(plan.id || '').trim())
+      .filter(Boolean),
+  );
+
+  const hasStandardContract = contracts.some((item) => {
+    const accountId = String(item.accountId || '').trim();
+    const planId = String(item.planId || '').trim();
+    return accountId === String(account.id || '').trim() && standardPlanIds.has(planId);
+  });
+
+  return hasStandardContract;
 };

@@ -8,6 +8,7 @@ type PostItem = {
   id: string;
   title: string;
   slug: string;
+  slugAuto?: boolean;
   bodyHtml: string;
   bodyText?: string;
   excerpt: string;
@@ -26,6 +27,7 @@ const normalizePost = (input: Partial<PostItem>, fallbackId: string): PostItem =
     id: String(input.id || fallbackId),
     title: String(input.title || ''),
     slug: String(input.slug || '').trim().toLowerCase(),
+    slugAuto: typeof input.slugAuto === 'boolean' ? input.slugAuto : undefined,
     bodyHtml: String(input.bodyHtml || ''),
     bodyText: input.bodyText ? String(input.bodyText) : undefined,
     excerpt: String(input.excerpt || ''),

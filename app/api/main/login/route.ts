@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createSessionValue, MAIN_SESSION_COOKIE_NAME, type SessionPayload } from '../../../../lib/auth-session';
+import { createSessionValue, MAIN_SESSION_COOKIE_NAME, SESSION_COOKIE_NAME, type SessionPayload } from '../../../../lib/auth-session';
 import { readCustomers, upsertCustomer } from '../../_lib/customer-store';
 import { palDbPost } from '../../_lib/pal-db-client';
 import { canLoginPalStudioStandardByPaletteId } from '../../_lib/pal-studio-accounts';
@@ -71,6 +71,15 @@ export async function POST(req: Request) {
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 12,
+    });
+    res.cookies.set({
+      name: SESSION_COOKIE_NAME,
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 0,
     });
 
     return res;

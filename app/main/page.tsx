@@ -8,6 +8,7 @@ type PostItem = {
   id: string;
   title: string;
   slug: string;
+  slugAuto?: boolean;
   bodyHtml: string;
   bodyText?: string;
   excerpt: string;
@@ -51,6 +52,7 @@ const createDraftPost = (): PostItem => {
     id: `post-${Date.now()}`,
     title: '',
     slug: '',
+    slugAuto: true,
     bodyHtml: '',
     bodyText: '',
     excerpt: '',
@@ -225,10 +227,12 @@ export default function MainPage() {
 
   useEffect(() => {
     if (!selectedPost) return;
-    if (String(selectedPost.slug || '').trim()) return;
+    const slugValue = String(selectedPost.slug || '').trim();
+    const shouldAuto = !slugValue || slugValue.length < 3 || selectedPost.slugAuto;
+    if (!shouldAuto) return;
     const nextSlug = buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt);
     if (nextSlug) {
-      updatePost(selectedPost.id, { slug: nextSlug });
+      updatePost(selectedPost.id, { slug: nextSlug, slugAuto: true });
     }
   }, [selectedPostId, selectedPost?.postType, selectedPost?.publishedAt]);
 
@@ -647,12 +651,12 @@ export default function MainPage() {
                       <div className="flex gap-2">
                         <input
                           value={selectedPost.slug}
-                          onChange={(event) => updatePost(selectedPost.id, { slug: event.target.value })}
+                          onChange={(event) => updatePost(selectedPost.id, { slug: event.target.value, slugAuto: false })}
                           className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none font-mono text-indigo-600"
                           placeholder="news-article-01"
                         />
                         <button
-                          onClick={() => updatePost(selectedPost.id, { slug: buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt) })}
+                          onClick={() => updatePost(selectedPost.id, { slug: buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt), slugAuto: true })}
                           className="px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-black transition-colors"
                         >
                           再生成

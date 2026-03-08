@@ -13,6 +13,15 @@ import {
   getTemplateVariantById,
   templateVariants,
 } from './templates';
+import {
+  buildTopNewsSectionHtml,
+  buildTopBlogSectionHtml,
+  buildPostListHtml,
+  buildPostDetailTopHtml,
+  buildPostDetailBodyHtml,
+  replaceSectionContent,
+  applyContactEmail,
+} from '../[ID]/_lib/post-templates';
 
 type Customer = {
   id: string;
@@ -1457,6 +1466,78 @@ ${activePageHtml}
     setTextDraft('');
   };
 
+  const replaceSectionBlock = (source: string, sectionId: string, nextSection: string) => {
+    if (!source || !nextSection) return source;
+    const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'][^>]*>)[\s\S]*?(</section>)`, 'i');
+    if (!re.test(source)) return source;
+    return source.replace(re, nextSection);
+  };
+
+  const getPublishedPostsForPreview = (postType: 'news' | 'blog') => {
+    if (!selectedCustomer || !Array.isArray((selectedCustomer as any).posts)) return [] as any[];
+    const posts = (selectedCustomer as any).posts as any[];
+    const now = new Date();
+    return posts
+      .filter((post) => String(post?.status || '') === 'published')
+      .filter((post) => String(post?.postType || postType) === postType)
+      .filter((post) => {
+        if (!post?.publishedAt) return true;
+        const date = new Date(post.publishedAt);
+        if (Number.isNaN(date.getTime())) return true;
+        return date <= now;
+      })
+      .sort((a, b) => String(b?.publishedAt || '').localeCompare(String(a?.publishedAt || '')));
+  };
+
+  const buildPreviewHtml = (html: string) => {
+    if (!selectedCustomer || !html) return html;
+    const defaultEyecatchUrl = selectedCustomer.defaultEyecatchUrl;
+    const contactEmail = selectedCustomer.contactEmail;
+    const pageSlug = String(activePage?.slug || selectedSitePageSlug || 'top');
+    const newsPosts = getPublishedPostsForPreview('news');
+    const blogPosts = getPublishedPostsForPreview('blog');
+    let output = String(html);
+
+    if (pageSlug === 'top') {
+      const newsSection = buildTopNewsSectionHtml(newsPosts, '/news', defaultEyecatchUrl)
+        || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
+      const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
+        || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
+      output = replaceSectionBlock(output, 'news', newsSection);
+      output = replaceSectionBlock(output, 'blog', blogSection);
+    } else if (pageSlug === 'news') {
+      const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
+        || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';
+      output = replaceSectionContent(output, 'top', listHtml);
+    } else if (pageSlug === 'blog') {
+      const listHtml = buildPostListHtml(blogPosts, '/blog', 'ブログ', defaultEyecatchUrl)
+        || '<p class="text-sm text-slate-400">公開済みのブログがありません。</p>';
+      output = replaceSectionContent(output, 'top', listHtml);
+    } else if (pageSlug === 'news-page') {
+      const post = newsPosts[0];
+      const topHtml = post
+        ? buildPostDetailTopHtml(post, defaultEyecatchUrl)
+        : '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';
+      const bodyHtml = post
+        ? buildPostDetailBodyHtml(post)
+        : '';
+      output = replaceSectionContent(output, 'top', topHtml);
+      output = replaceSectionContent(output, 'concept', bodyHtml);
+    } else if (pageSlug === 'blog-page') {
+      const post = blogPosts[0];
+      const topHtml = post
+        ? buildPostDetailTopHtml(post, defaultEyecatchUrl)
+        : '<p class="text-sm text-slate-400">公開済みのブログがありません。</p>';
+      const bodyHtml = post
+        ? buildPostDetailBodyHtml(post)
+        : '';
+      output = replaceSectionContent(output, 'top', topHtml);
+      output = replaceSectionContent(output, 'concept', bodyHtml);
+    }
+
+    return applyContactEmail(output, contactEmail);
+  };
+
   // ファイルアップロードハンドラ
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2443,7 +2524,7 @@ ${activePageHtml}
                               <script src="https://cdn.tailwindcss.com"></script>
                               <style>body { margin: 0; padding: 0; } body::-webkit-scrollbar { display: none; }</style>
                             </head>
-                            <body>${getProcessedHtml(activePageHtml)}</body>
+                            <body>${getProcessedHtml(buildPreviewHtml(activePageHtml))}</body>
                           </html>
                         `}
                         className="flex-1 w-full h-full border-none" 

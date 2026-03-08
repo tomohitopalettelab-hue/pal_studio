@@ -226,7 +226,7 @@ export const buildPostListHtml = (
     const excerpt = escapeHtml(post.excerpt || '');
     const date = escapeHtml(formatDate(post.publishedAt));
     const tags = normalizeTags(post.tags);
-    const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+    const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
     const imageAlt = escapeHtml(post.imageAlt || post.title || '');
     const image = imageUrl
       ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full aspect-[4/3] object-cover rounded-xl" />`
@@ -270,7 +270,7 @@ export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string, def
   const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
     const title = escapeHtml(post.title || '');
     const date = escapeHtml(formatDate(post.publishedAt));
-    const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+    const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
     const imageAlt = escapeHtml(post.imageAlt || post.title || '');
     const image = imageUrl
       ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700" />`
@@ -315,7 +315,7 @@ export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string, def
   const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
-    const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+    const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
     const imageAlt = escapeHtml(post.imageAlt || post.title || '');
     const image = imageUrl
       ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105" />`
@@ -353,7 +353,7 @@ export const buildPostDetailTopHtml = (post: PostItem, defaultImageUrl?: string)
   const title = escapeHtml(post.title || '');
   const excerpt = escapeHtml(post.excerpt || '');
   const date = escapeHtml(formatDate(post.publishedAt));
-  const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+  const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
   const imageAlt = escapeHtml(post.imageAlt || post.title || '');
   const image = imageUrl
     ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full rounded-2xl object-cover" />`

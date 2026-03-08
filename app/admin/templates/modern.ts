@@ -80,24 +80,9 @@ export const modernTemplate: Template = {
           </div>
           
           <div class="grid grid-cols-1 divide-y divide-black/5 border-t border-black/5">
-            <article class="group py-8 md:py-10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10 cursor-pointer">
-              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200 flex-shrink-0">
-                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700" alt="News 01">
-              </div>
-              <div class="flex-1">
-                <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.03.08</p>
-                <h4 class="text-xl md:text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">新サービス「Ethereal Design Suite」を公開しました</h4>
-              </div>
-            </article>
-            <article class="group py-8 md:py-10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10 cursor-pointer">
-              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200 flex-shrink-0">
-                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700" alt="News 02">
-              </div>
-              <div class="flex-1">
-                <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.02.18</p>
-                <h4 class="text-xl md:text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">Global Design Award 2026 金賞を受賞しました</h4>
-              </div>
-            </article>
+            <div class="py-8 md:py-10">
+              <p class="text-sm text-slate-400">最新情報は公開投稿から自動生成されます。</p>
+            </div>
           </div>
         </div>
       </section>
@@ -198,22 +183,9 @@ export const modernTemplate: Template = {
           </div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
-            <article class="group cursor-pointer">
-              <div class="aspect-video overflow-hidden mb-6 relative">
-                <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105" alt="Blog 01">
-                <div class="absolute top-4 left-4 md:top-6 md:left-6 px-3 py-1 bg-white/90 text-[8px] font-black uppercase tracking-widest">Design</div>
-              </div>
-              <h4 class="text-xl md:text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">2026年、ブランドに求められるのは「静寂」という価値。</h4>
-              <p class="text-[var(--text-light)] text-sm md:text-lg font-light leading-relaxed">情報の洪水の中で、あえて語らないことで伝わるメッセージの深さについて考察します。</p>
-            </article>
-            <article class="group cursor-pointer">
-              <div class="aspect-video overflow-hidden mb-6 relative">
-                <img src="https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105" alt="Blog 02">
-                <div class="absolute top-4 left-4 md:top-6 md:left-6 px-3 py-1 bg-white/90 text-[8px] font-black uppercase tracking-widest">Business</div>
-              </div>
-              <h4 class="text-xl md:text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">クリエイティブがビジネス指標に与える実質的なインパクト</h4>
-              <p class="text-[var(--text-light)] text-sm md:text-lg font-light leading-relaxed">デザイン刷新によってLTVが200%向上したスタートアップの事例を元に考察します。</p>
-            </article>
+            <div class="py-6">
+              <p class="text-sm text-slate-400">ブログ記事は公開投稿から自動生成されます。</p>
+            </div>
           </div>
         </div>
       </section>

@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
+import {
+  buildPostListHtml,
+  getCustomerPagesForNav,
+  replaceSectionContent,
+  syncNavWithSitePagesHtml,
+} from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -39,6 +45,27 @@ const getCustomerPageHtml = (customer: any, slug: string) => {
   return '';
 };
 
+const hideSection = (source: string, sectionId: string) => {
+  const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'])`, 'i');
+  if (!re.test(source)) return source;
+  return source.replace(re, `$1 hidden style="display: none !important;"`);
+};
+
+const getPublishedPosts = (customer: any, postType: 'news' | 'blog') => {
+  const posts = Array.isArray(customer?.posts) ? customer.posts : [];
+  const now = new Date();
+  return posts
+    .filter((post: any) => String(post.status || '') === 'published')
+    .filter((post: any) => String(post.postType || postType) === postType)
+    .filter((post: any) => {
+      if (!post.publishedAt) return true;
+      const date = new Date(post.publishedAt);
+      if (Number.isNaN(date.getTime())) return true;
+      return date <= now;
+    })
+    .sort((a: any, b: any) => String(b.publishedAt || '').localeCompare(String(a.publishedAt || '')));
+};
+
 export async function GET(
   request: NextRequest,
   props: { params: Promise<{ ID: string }> }
@@ -63,9 +90,25 @@ export async function GET(
     }
 
     const basePath = resolvePublishPath(customer) || requestPath;
+    const baseForPosts = basePath.endsWith('/pages') ? basePath.replace(/\/pages$/, '') : basePath;
     const linkSyncScript = `<script id="palette-link-sync">(function(){var basePath=${JSON.stringify(basePath)};function normalize(s){return String(s||'').replace(/^\\/+/, '')}function build(slug){slug=normalize(slug);if(!slug||slug==='top')return basePath||'/';var baseForSubpages=basePath.endsWith('/pages')?basePath.replace(/\\/pages$/,''):basePath;if(!baseForSubpages)return '/'+slug;return baseForSubpages.replace(/\\/$/,'')+'/'+slug}var links=document.querySelectorAll('a[data-page-slug]');links.forEach(function(link){var slug=link.getAttribute('data-page-slug');if(!slug)return;var hash=link.getAttribute('data-page-hash')||'';hash=hash.replace(/^#/, '');var href=build(slug);link.setAttribute('href', hash?href+'#'+hash:href)});})();</script>`;
 
     let html = String(topHtml);
+    const newsPosts = getPublishedPosts(customer, 'news');
+    const blogPosts = getPublishedPosts(customer, 'blog');
+    const newsHtml = buildPostListHtml(newsPosts, `${baseForPosts}/news`, 'ニュース');
+    const blogHtml = buildPostListHtml(blogPosts, `${baseForPosts}/blog`, 'ブログ');
+    if (newsHtml) {
+      html = replaceSectionContent(html, 'news', newsHtml);
+    } else {
+      html = hideSection(html, 'news');
+    }
+    if (blogHtml) {
+      html = replaceSectionContent(html, 'blog', blogHtml);
+    } else {
+      html = hideSection(html, 'blog');
+    }
+    html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
 
     // 出力するHTMLに <html> タグが含まれていない場合、自前でラップする。
     // 同時に charset と Tailwind CDN を挿入し、文字化けとスタイル未適用を防止する。

@@ -5,10 +5,13 @@ import {
   resolvePublishPath,
   ensureHtmlDocument,
   getCustomerPagesForNav,
+  getCustomerTopHtml,
+  extractHeaderHtml,
   getCustomerTemplateId,
   selectVariantHtml,
   replaceSectionContent,
   buildPostListHtml,
+  replaceHeaderHtml,
   syncNavWithSitePagesHtml,
 } from '../_lib/post-templates';
 
@@ -51,14 +54,16 @@ export async function GET(
     const templateId = getCustomerTemplateId(customer);
     const publishBasePath = resolvePublishPath(customer) || basePath;
     const baseHtml = selectVariantHtml('news', templateId);
+    const headerHtml = extractHeaderHtml(getCustomerTopHtml(customer));
+    const withHeader = replaceHeaderHtml(baseHtml, headerHtml) || baseHtml;
     const listHtml = buildPostListHtml(published, `${publishBasePath}/news`, 'ニュース');
-    const injected = replaceSectionContent(baseHtml, 'top', listHtml);
+    const injected = listHtml ? replaceSectionContent(withHeader, 'top', listHtml) : withHeader;
     const withNav = syncNavWithSitePagesHtml(
-      injected || baseHtml,
+      injected,
       getCustomerPagesForNav(customer),
       publishBasePath,
     );
-    const output = ensureHtmlDocument(withNav || listHtml);
+    const output = ensureHtmlDocument(withNav || listHtml || injected);
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

@@ -60,12 +60,6 @@ export const modernNewsPageTemplate: TemplateVariant = {
           </div>
         </section>
 
-        <div class="max-w-7xl mx-auto px-6 md:px-10 mb-20 md:mb-32">
-          <div class="aspect-[21/9] bg-slate-100 overflow-hidden shadow-2xl shadow-black/5">
-            <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=1600" class="w-full h-full object-cover" alt="Main Visual">
-          </div>
-        </div>
-
         <section id="concept" class="max-w-3xl mx-auto px-6 md:px-10 pb-32">
           <div class="prose prose-slate lg:prose-xl">
             <p class="text-xl md:text-2xl font-light leading-relaxed text-[var(--text-color)] italic mb-16 border-l-4 border-[var(--accent-color)] pl-8">

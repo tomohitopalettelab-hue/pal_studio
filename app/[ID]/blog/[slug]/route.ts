@@ -5,11 +5,14 @@ import {
   resolvePublishPath,
   ensureHtmlDocument,
   getCustomerPagesForNav,
+  getCustomerTopHtml,
+  extractHeaderHtml,
   getCustomerTemplateId,
   selectVariantHtml,
   replaceSectionContent,
   buildPostDetailTopHtml,
   buildPostDetailBodyHtml,
+  replaceHeaderHtml,
   syncNavWithSitePagesHtml,
 } from '../../_lib/post-templates';
 
@@ -52,12 +55,14 @@ export async function GET(
     const templateId = getCustomerTemplateId(customer);
     const publishBasePath = resolvePublishPath(customer) || basePath;
     const baseHtml = selectVariantHtml('blog-page', templateId);
+    const headerHtml = extractHeaderHtml(getCustomerTopHtml(customer));
+    const withHeader = replaceHeaderHtml(baseHtml, headerHtml) || baseHtml;
     const topHtml = buildPostDetailTopHtml(post);
     const bodyHtml = buildPostDetailBodyHtml(post);
-    const withTop = replaceSectionContent(baseHtml, 'top', topHtml);
+    const withTop = replaceSectionContent(withHeader, 'top', topHtml);
     const withBody = replaceSectionContent(withTop, 'concept', bodyHtml);
     const withNav = syncNavWithSitePagesHtml(
-      withBody || baseHtml,
+      withBody || withHeader,
       getCustomerPagesForNav(customer),
       publishBasePath,
     );

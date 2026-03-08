@@ -73,6 +73,23 @@ export const getCustomerPagesForNav = (customer: any) => {
   return Array.from(unique.values());
 };
 
+export const getCustomerTopHtml = (customer: any) => {
+  const rawPages = Array.isArray(customer?.pages) ? customer.pages : [];
+  const topPage = rawPages.find((page: any) => String(page?.slug || '').trim().toLowerCase() === 'top');
+  return String(topPage?.htmlCode || customer?.htmlCode || '');
+};
+
+export const extractHeaderHtml = (html: string) => {
+  const match = String(html || '').match(/<header[\s\S]*?<\/header>/i);
+  return match ? match[0] : '';
+};
+
+export const replaceHeaderHtml = (html: string, headerHtml: string) => {
+  if (!headerHtml) return html;
+  if (!/<header[\s\S]*?<\/header>/i.test(html)) return html;
+  return html.replace(/<header[\s\S]*?<\/header>/i, headerHtml);
+};
+
 export const syncNavWithSitePagesHtml = (
   html: string,
   pages: { slug: string; title: string }[],
@@ -82,9 +99,9 @@ export const syncNavWithSitePagesHtml = (
   if (!/data-sync=["']site-pages["']/.test(html)) return html;
 
   return html.replace(/<nav[^>]*data-sync=["']site-pages["'][^>]*>[\s\S]*?<\/nav>/gi, (match) => {
-    const classMatch = match.match(/class=["']([^"']+)["']/i);
-    const className = classMatch ? classMatch[1] : '';
-    const classAttr = className ? ` class="${className}"` : '';
+    const anchorClassMatch = match.match(/<a[^>]*class=["']([^"']+)["']/i);
+    const anchorClassName = anchorClassMatch ? anchorClassMatch[1] : '';
+    const classAttr = anchorClassName ? ` class="${anchorClassName}"` : '';
     const links = pages.map((page) => {
       const href = buildPageHref(page.slug, basePath);
       const label = escapeHtml(page.title || deriveTitleFromSlug(page.slug));
@@ -160,11 +177,11 @@ export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel
     const excerpt = escapeHtml(post.excerpt || '');
     const date = escapeHtml(formatDate(post.publishedAt));
     const image = post.imageUrl
-      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full h-44 object-cover rounded-xl" />`
+      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full aspect-[4/3] object-cover rounded-xl" />`
       : '';
 
     return `
-      <article class="border border-slate-200 rounded-2xl p-6 bg-white">
+      <article class="border border-slate-200 rounded-2xl p-6 bg-white h-full">
         ${image}
         <div class="mt-4">
           <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em]">${date}</p>
@@ -182,7 +199,7 @@ export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel
         <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-bold">${typeLabel}</p>
         <h2 class="text-3xl font-black">${typeLabel} 一覧</h2>
       </div>
-      <div class="grid gap-5">
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         ${listItems}
       </div>
     </div>

@@ -349,26 +349,27 @@ export default function PaletteLab() {
     const parsed = parser.parseFromString(html, 'text/html');
     let mutated = false;
 
-    const nav = parsed.querySelector('nav[data-sync="site-pages"]')
-      || parsed.querySelector('header nav')
-      || parsed.querySelector('nav');
+    const navs = Array.from(parsed.querySelectorAll('nav[data-sync="site-pages"]')) as HTMLElement[];
+    const fallbackNav = parsed.querySelector('header nav') || parsed.querySelector('nav');
+    const targets = navs.length > 0 ? navs : (fallbackNav ? [fallbackNav] : []);
 
-    if (nav && !nav.hasAttribute('data-nav-fixed')) {
+    targets.forEach((nav) => {
+      if (nav.hasAttribute('data-nav-fixed')) return;
       const anchors = Array.from(nav.querySelectorAll('a')) as HTMLAnchorElement[];
-      if (anchors.length > 0) {
-        const templateAnchor = anchors[0].cloneNode(true) as HTMLAnchorElement;
-        anchors.forEach((anchor) => anchor.remove());
+      if (anchors.length === 0) return;
 
-        pages.forEach((page) => {
-          const link = templateAnchor.cloneNode(true) as HTMLAnchorElement;
-          link.setAttribute('href', buildPageHref(page.slug, basePath));
-          link.textContent = page.title || deriveTitleFromSlug(page.slug);
-          nav.appendChild(link);
-        });
+      const templateAnchor = anchors[0].cloneNode(true) as HTMLAnchorElement;
+      anchors.forEach((anchor) => anchor.remove());
 
-        mutated = true;
-      }
-    }
+      pages.forEach((page) => {
+        const link = templateAnchor.cloneNode(true) as HTMLAnchorElement;
+        link.setAttribute('href', buildPageHref(page.slug, basePath));
+        link.textContent = page.title || deriveTitleFromSlug(page.slug);
+        nav.appendChild(link);
+      });
+
+      mutated = true;
+    });
 
     const pageLinks = Array.from(parsed.querySelectorAll('a[data-page-slug]')) as HTMLAnchorElement[];
     pageLinks.forEach((link) => {

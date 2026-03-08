@@ -1530,6 +1530,11 @@ ${activePageHtml}
     return `${source}${sectionHtml}`;
   };
 
+  const hasSectionId = (source: string, sectionId: string) => {
+    const re = new RegExp(`<section[^>]*id=["']${sectionId}["']`, 'i');
+    return re.test(source);
+  };
+
   const removeAutoPlaceholderSections = (source: string) => {
     const patterns = [
       '最新情報は公開投稿から自動生成されます。',
@@ -1586,8 +1591,12 @@ ${activePageHtml}
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
       const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
         || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
-      output = replaceSectionBlock(output, 'news', newsSection);
-      output = replaceSectionBlock(output, 'blog', blogSection);
+      output = hasSectionId(output, 'news')
+        ? replaceSectionBlock(output, 'news', newsSection)
+        : insertSectionAfterId(output, 'top', newsSection);
+      output = hasSectionId(output, 'blog')
+        ? replaceSectionBlock(output, 'blog', blogSection)
+        : insertSectionAfterId(output, 'news', blogSection);
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';

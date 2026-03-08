@@ -74,6 +74,11 @@ const insertSectionAfterId = (source: string, afterId: string, sectionHtml: stri
   return insertSectionBeforeMainClose(source, sectionHtml);
 };
 
+const hasSectionId = (source: string, sectionId: string) => {
+  const re = new RegExp(`<section[^>]*id=["']${sectionId}["']`, 'i');
+  return re.test(source);
+};
+
 const removeAutoPlaceholderSections = (source: string) => {
   const patterns = [
     '最新情報は公開投稿から自動生成されます。',
@@ -153,12 +158,16 @@ export async function GET(
       customer?.defaultEyecatchUrl
     );
     if (newsSection) {
-      html = replaceSectionBlock(html, 'news', newsSection);
+      html = hasSectionId(html, 'news')
+        ? replaceSectionBlock(html, 'news', newsSection)
+        : insertSectionAfterId(html, 'top', newsSection);
     } else {
       html = hideSection(html, 'news');
     }
     if (blogSection) {
-      html = replaceSectionBlock(html, 'blog', blogSection);
+      html = hasSectionId(html, 'blog')
+        ? replaceSectionBlock(html, 'blog', blogSection)
+        : insertSectionAfterId(html, 'news', blogSection);
     } else {
       html = hideSection(html, 'blog');
     }

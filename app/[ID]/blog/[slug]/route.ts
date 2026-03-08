@@ -12,6 +12,7 @@ import {
   replaceSectionContent,
   buildPostDetailTopHtml,
   buildPostDetailBodyHtml,
+  buildPostArchiveListHtml,
   replaceHeaderHtml,
   syncNavWithSitePagesHtml,
   applyContactEmail,
@@ -62,8 +63,15 @@ export async function GET(
     const bodyHtml = buildPostDetailBodyHtml(post);
     const withTop = replaceSectionContent(withHeader, 'top', topHtml);
     const withBody = replaceSectionContent(withTop, 'concept', bodyHtml);
+      const archivePosts = posts
+        .filter((item) => item.id !== post.id && String(item.postType || 'blog') === 'blog')
+        .filter((item) => String(item.status || '') === 'published');
+      const archiveHtml = buildPostArchiveListHtml(archivePosts, `${publishBasePath}/blog`);
+      const withArchive = archiveHtml
+        ? replaceSectionContent(withBody, 'archive', archiveHtml)
+        : withBody;
     const withNav = syncNavWithSitePagesHtml(
-      withBody || withHeader,
+        withArchive || withHeader,
       getCustomerPagesForNav(customer),
       publishBasePath,
     );

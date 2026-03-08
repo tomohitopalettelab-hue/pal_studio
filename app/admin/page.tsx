@@ -19,6 +19,7 @@ import {
   buildPostListHtml,
   buildPostDetailTopHtml,
   buildPostDetailBodyHtml,
+  buildPostArchiveListHtml,
   replaceSectionContent,
   applyContactEmail,
 } from '../[ID]/_lib/post-templates';
@@ -1474,11 +1475,16 @@ ${activePageHtml}
   };
 
   const getPublishedPostsForPreview = (postType: 'news' | 'blog') => {
-    if (!selectedCustomer || !Array.isArray((selectedCustomer as any).posts)) return [] as any[];
-    const posts = (selectedCustomer as any).posts as any[];
+    const rawPosts = Array.isArray((selectedCustomer as any)?.posts)
+      ? (selectedCustomer as any).posts
+      : Array.isArray((selectedCustomer as any)?.payload?.posts)
+        ? (selectedCustomer as any).payload.posts
+        : [];
+    if (!selectedCustomer || rawPosts.length === 0) return [] as any[];
+    const posts = rawPosts as any[];
     const now = new Date();
     return posts
-      .filter((post) => String(post?.status || '') === 'published')
+      .filter((post) => String(post?.status || '') !== '')
       .filter((post) => String(post?.postType || postType) === postType)
       .filter((post) => {
         if (!post?.publishedAt) return true;
@@ -1531,8 +1537,12 @@ ${activePageHtml}
       const bodyHtml = post
         ? buildPostDetailBodyHtml(post)
         : '';
+      const archiveHtml = buildPostArchiveListHtml(blogPosts.slice(1), '/blog');
       output = replaceSectionContent(output, 'top', topHtml);
       output = replaceSectionContent(output, 'concept', bodyHtml);
+      if (archiveHtml) {
+        output = replaceSectionContent(output, 'archive', archiveHtml);
+      }
     }
 
     return applyContactEmail(output, contactEmail);

@@ -61,12 +61,6 @@ export const modernBlogPageTemplate: TemplateVariant = {
           </div>
         </section>
 
-        <div class="max-w-7xl mx-auto px-6 md:px-10 mb-20 md:mb-32">
-          <div class="aspect-video md:aspect-[21/9] bg-slate-100 overflow-hidden shadow-2xl shadow-black/5">
-            <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=1600" class="w-full h-full object-cover" alt="Blog Hero Visual">
-          </div>
-        </div>
-
         <div class="max-w-7xl mx-auto px-6 md:px-10 pb-32 grid lg:grid-cols-12 gap-16 md:gap-24">
           
           <section id="concept" class="lg:col-span-8">
@@ -113,32 +107,9 @@ export const modernBlogPageTemplate: TemplateVariant = {
           <aside class="lg:col-span-4 space-y-20">
             <div class="sticky top-32 space-y-16">
               <div>
-                <h3 class="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-8 border-b border-black/5 pb-4">Author Profile</h3>
-                <div class="flex items-center gap-4 mb-6">
-                  <div class="w-16 h-16 bg-slate-100 rounded-full overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover" alt="Author">
-                  </div>
-                  <div>
-                    <h4 class="text-lg font-bold">佐藤 健太</h4>
-                    <p class="text-[10px] font-bold uppercase text-[var(--accent-color)]">Creative Director</p>
-                  </div>
-                </div>
-                <p class="text-xs text-[var(--text-light)] leading-relaxed">
-                  大手制作会社を経てStudio Modernに参画。ブランド設計から大規模サイトの運用戦略まで、一貫したディレクションを得意とする。
-                </p>
-              </div>
-
-              <div>
-                <h3 class="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-8 border-b border-black/5 pb-4">Related Insights</h3>
-                <div class="space-y-10">
-                  <a data-page-slug="blog-page" href="/blog-page" class="group block">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase mb-2">2026.02.21</p>
-                    <h5 class="text-sm font-bold group-hover:text-[var(--accent-color)] transition-colors leading-tight">ブランドストーリーを視覚化する「静寂」の美学。</h5>
-                  </a>
-                  <a data-page-slug="blog-page" href="/blog-page" class="group block">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase mb-2">2026.02.10</p>
-                    <h5 class="text-sm font-bold group-hover:text-[var(--accent-color)] transition-colors leading-tight">運用で差がつく更新設計：現場の負荷を下げるために。</h5>
-                  </a>
+                <h3 class="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400 mb-8 border-b border-black/5 pb-4">Blog Archive</h3>
+                <div id="archive" class="space-y-10">
+                  <p class="text-sm text-slate-400">公開記事がここに表示されます。</p>
                 </div>
               </div>
             </div>

@@ -377,3 +377,23 @@ export const buildPostDetailBodyHtml = (post: PostItem) => {
   const excerpt = escapeHtml(post.excerpt || '');
   return excerpt ? `<p class="text-sm text-slate-600">${excerpt}</p>` : '';
 };
+
+export const buildPostArchiveListHtml = (posts: PostItem[], basePath: string) => {
+  if (posts.length === 0) return '';
+  const items = posts.slice(0, 6).map((post) => {
+    const title = escapeHtml(post.title || '');
+    const date = escapeHtml(formatDate(post.publishedAt));
+    return `
+      <a href="${basePath}/${encodeURIComponent(post.slug)}" class="group block">
+        <p class="text-[9px] font-bold text-slate-400 uppercase mb-2">${date}</p>
+        <h5 class="text-sm font-bold group-hover:text-[var(--accent-color)] transition-colors leading-tight">${title}</h5>
+      </a>
+    `;
+  }).join('');
+
+  return `
+    <div class="space-y-8">
+      ${items}
+    </div>
+  `;
+};

@@ -39,6 +39,7 @@ type Customer = {
   publishPathTemplate?: string;
   defaultEyecatchUrl?: string;
   faviconUrl?: string;
+  logoUrl?: string;
   contactEmail?: string;
   description?: string;
   isTemplate?: boolean;
@@ -103,7 +104,7 @@ export default function PaletteLab() {
   
   // 画像編集用ステート
   const [editingImage, setEditingImage] = useState<{ pid: string, src: string, alt: string } | null>(null);
-  const [imagePickTarget, setImagePickTarget] = useState<'defaultEyecatch' | 'favicon' | null>(null);
+  const [imagePickTarget, setImagePickTarget] = useState<'defaultEyecatch' | 'favicon' | 'logo' | null>(null);
   const [imageSearchQuery, setImageSearchQuery] = useState("");
   const [searchedImages, setSearchedImages] = useState<any[]>([]);
   const [isSearchingImage, setIsSearchingImage] = useState(false);
@@ -722,6 +723,7 @@ export default function PaletteLab() {
       publishPathTemplate: selectedCustomer.publishPathTemplate,
       defaultEyecatchUrl: selectedCustomer.defaultEyecatchUrl,
       faviconUrl: selectedCustomer.faviconUrl,
+      logoUrl: selectedCustomer.logoUrl,
       contactEmail: selectedCustomer.contactEmail,
       description: selectedCustomer.description,
       htmlCode: selectedCustomer.htmlCode,
@@ -734,6 +736,7 @@ export default function PaletteLab() {
       publishPathTemplate: originalCustomer.publishPathTemplate,
       defaultEyecatchUrl: originalCustomer.defaultEyecatchUrl,
       faviconUrl: originalCustomer.faviconUrl,
+      logoUrl: originalCustomer.logoUrl,
       contactEmail: originalCustomer.contactEmail,
       description: originalCustomer.description,
       htmlCode: originalCustomer.htmlCode,
@@ -1382,16 +1385,21 @@ ${activePageHtml}
     }
   };
 
-  const openSiteImagePicker = (target: 'defaultEyecatch' | 'favicon') => {
+  const openSiteImagePicker = (target: 'defaultEyecatch' | 'favicon' | 'logo') => {
     setImagePickTarget(target);
-    setEditingImage({ pid: 'site-setting', src: '', alt: target === 'favicon' ? 'favicon' : 'eyecatch' });
+    const alt = target === 'favicon' ? 'favicon' : target === 'logo' ? 'logo' : 'eyecatch';
+    setEditingImage({ pid: 'site-setting', src: '', alt });
   };
 
   // 画像適用ハンドラ
   const applyNewImage = (newSrc: string) => {
     if (!selectedCustomer || !editingImage) return;
     if (imagePickTarget) {
-      const key = imagePickTarget === 'favicon' ? 'faviconUrl' : 'defaultEyecatchUrl';
+      const key = imagePickTarget === 'favicon'
+        ? 'faviconUrl'
+        : imagePickTarget === 'logo'
+          ? 'logoUrl'
+          : 'defaultEyecatchUrl';
       setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, [key]: newSrc } : c));
       setEditingImage(null);
       setImagePickTarget(null);
@@ -2010,7 +2018,7 @@ ${activePageHtml}
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">サイト設定</p>
                       <div className="space-y-2">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Default Eyecatch URL</label>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap gap-2">
                           <input
                             type="text"
                             value={selectedCustomer.defaultEyecatchUrl || ''}
@@ -2018,25 +2026,27 @@ ${activePageHtml}
                               const defaultEyecatchUrl = e.target.value;
                               setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl } : c));
                             }}
-                            className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                            className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
                             placeholder="https://example.com/eyecatch.jpg"
                           />
-                          <button
-                            type="button"
-                            onClick={() => openSiteImagePicker('defaultEyecatch')}
-                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
-                          >
-                            画像選択
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl: '' } : c));
-                            }}
-                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
-                          >
-                            クリア
-                          </button>
+                          <div className="flex flex-wrap gap-2 w-full">
+                            <button
+                              type="button"
+                              onClick={() => openSiteImagePicker('defaultEyecatch')}
+                              className="flex-1 px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
+                            >
+                              画像選択
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl: '' } : c));
+                              }}
+                              className="flex-1 px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
+                            >
+                              クリア
+                            </button>
+                          </div>
                         </div>
                         {selectedCustomer.defaultEyecatchUrl && (
                           <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
@@ -2050,7 +2060,7 @@ ${activePageHtml}
                       </div>
                       <div className="space-y-2">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Favicon URL</label>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap gap-2">
                           <input
                             type="text"
                             value={selectedCustomer.faviconUrl || ''}
@@ -2058,25 +2068,27 @@ ${activePageHtml}
                               const faviconUrl = e.target.value;
                               setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl } : c));
                             }}
-                            className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                            className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
                             placeholder="https://example.com/favicon.ico"
                           />
-                          <button
-                            type="button"
-                            onClick={() => openSiteImagePicker('favicon')}
-                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
-                          >
-                            画像選択
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl: '' } : c));
-                            }}
-                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
-                          >
-                            クリア
-                          </button>
+                          <div className="flex flex-wrap gap-2 w-full">
+                            <button
+                              type="button"
+                              onClick={() => openSiteImagePicker('favicon')}
+                              className="flex-1 px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
+                            >
+                              画像選択
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl: '' } : c));
+                              }}
+                              className="flex-1 px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
+                            >
+                              クリア
+                            </button>
+                          </div>
                         </div>
                         {selectedCustomer.faviconUrl && (
                           <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 flex items-center justify-center">
@@ -2084,6 +2096,48 @@ ${activePageHtml}
                               src={selectedCustomer.faviconUrl}
                               alt="Favicon"
                               className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Logo URL</label>
+                        <div className="flex flex-wrap gap-2">
+                          <input
+                            type="text"
+                            value={selectedCustomer.logoUrl || ''}
+                            onChange={(e) => {
+                              const logoUrl = e.target.value;
+                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, logoUrl } : c));
+                            }}
+                            className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                            placeholder="https://example.com/logo.png"
+                          />
+                          <div className="flex flex-wrap gap-2 w-full">
+                            <button
+                              type="button"
+                              onClick={() => openSiteImagePicker('logo')}
+                              className="flex-1 px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
+                            >
+                              画像選択
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, logoUrl: '' } : c));
+                              }}
+                              className="flex-1 px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
+                            >
+                              クリア
+                            </button>
+                          </div>
+                        </div>
+                        {selectedCustomer.logoUrl && (
+                          <div className="h-12 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 flex items-center justify-center px-3">
+                            <img
+                              src={selectedCustomer.logoUrl}
+                              alt="Logo"
+                              className="max-h-8 w-auto object-contain"
                             />
                           </div>
                         )}

@@ -1571,11 +1571,6 @@ ${activePageHtml}
     return `${source}${sectionHtml}`;
   };
 
-  const hasSectionId = (source: string, sectionId: string) => {
-    const re = new RegExp(`<section[^>]*id=["']${sectionId}["']`, 'i');
-    return re.test(source);
-  };
-
   const removeAutoPlaceholderSections = (source: string) => {
     const patterns = [
       '最新情報は公開投稿から自動生成されます。',

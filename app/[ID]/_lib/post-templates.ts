@@ -219,10 +219,26 @@ export const applyLogoToHeader = (html: string, logoUrl?: string) => {
   if (!url) return html;
   const source = String(html || '');
   if (/data-logo=/i.test(source)) return source;
-  return source.replace(
+  let output = source.replace(
     /<div class="flex items-center gap-4 group cursor-pointer">/i,
     `<div class="flex items-center gap-4 group cursor-pointer"><img data-logo src="${escapeHtml(url)}" alt="Logo" class="h-8 md:h-10 w-auto object-contain" />`
   );
+
+  let iconHidden = false;
+  output = output.replace(/<div class="relative[^"']*"/i, (match) => {
+    if (iconHidden) return match;
+    iconHidden = true;
+    return match.replace('class="', 'class="hidden ');
+  });
+
+  let titleHidden = false;
+  output = output.replace(/<h1 class="[^"']*"/i, (match) => {
+    if (titleHidden) return match;
+    titleHidden = true;
+    return match.replace('class="', 'class="hidden ');
+  });
+
+  return output;
 };
 
 export const buildPostListHtml = (

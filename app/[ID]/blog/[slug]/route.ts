@@ -43,7 +43,11 @@ export async function GET(
       return new NextResponse('Page not found', { status: 404 });
     }
 
-    const posts = (Array.isArray(customer.posts) ? customer.posts : []) as PostItem[];
+    const posts = (Array.isArray(customer.posts)
+      ? customer.posts
+      : Array.isArray(customer?.payload?.posts)
+        ? customer.payload.posts
+        : []) as PostItem[];
     const post = posts.find((item) => String(item.slug || '').trim().toLowerCase() === slug);
     if (!post || post.status !== 'published' || String(post.postType || 'blog') !== 'blog') {
       return new NextResponse('Page not found', { status: 404 });

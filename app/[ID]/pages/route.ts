@@ -71,7 +71,11 @@ const hideSection = (source: string, sectionId: string) => {
 };
 
 const getPublishedPosts = (customer: any, postType: 'news' | 'blog') => {
-  const posts = Array.isArray(customer?.posts) ? customer.posts : [];
+  const posts = Array.isArray(customer?.posts)
+    ? customer.posts
+    : Array.isArray(customer?.payload?.posts)
+      ? customer.payload.posts
+      : [];
   const now = new Date();
   return posts
     .filter((post: any) => String(post.status || '') === 'published')

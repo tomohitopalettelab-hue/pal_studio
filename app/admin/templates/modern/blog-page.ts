@@ -43,7 +43,7 @@ export const modernBlogPageTemplate: TemplateVariant = {
 
     <main class="pt-32 md:pt-48">
       <article>
-        <section id="top" class="max-w-4xl mx-auto px-6 md:px-10 mb-16">
+        <section id="top" class="max-w-7xl mx-auto px-6 md:px-10 mb-12 md:mb-16">
           <div class="flex items-center gap-4 mb-8 text-[10px] font-bold uppercase tracking-[0.4em]">
             <span class="text-slate-400">2026.03.07</span>
             <span class="text-[var(--accent-color)]">/ Strategy</span>

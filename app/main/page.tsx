@@ -21,6 +21,17 @@ type PostItem = {
   updatedAt: string;
 };
 
+type MediaAsset = {
+  id: string;
+  paletteId: string;
+  fileName: string;
+  originalName: string;
+  mimeType: string;
+  sizeBytes: number;
+  url: string;
+  createdAt: string;
+};
+
 type SessionPayload = {
   authenticated: boolean;
   customer?: {
@@ -176,6 +187,11 @@ export default function MainPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
+  const [mediaError, setMediaError] = useState('');
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
 
   const [loginId, setLoginId] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -192,6 +208,18 @@ export default function MainPage() {
   );
 
   const customerId = session?.customer?.customerId || session?.customer?.id || '';
+  const PALETTE_ID_REGEX = /^[A-Z][0-9]{4}$/;
+  const canUseMedia = Boolean(session?.authenticated && PALETTE_ID_REGEX.test(customerId));
+  const imageAssets = mediaAssets.filter((asset) => String(asset.mimeType || '').startsWith('image/'));
+
+  const formatBytes = (value: number): string => {
+    if (!Number.isFinite(value) || value <= 0) return '0 KB';
+    if (value < 1024) return `${value} B`;
+    const kb = value / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    const mb = kb / 1024;
+    return `${mb.toFixed(1)} MB`;
+  };
 
   const loadSession = async (options?: { preserveOnFailure?: boolean }) => {
     setIsLoading(true);
@@ -221,9 +249,85 @@ export default function MainPage() {
     return sessionData;
   };
 
+  const loadMediaAssets = async (paletteId: string) => {
+    if (!paletteId) return;
+    setMediaLoading(true);
+    setMediaError('');
+    try {
+      const response = await fetch(`/api/media?paletteId=${encodeURIComponent(paletteId)}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.success === false) {
+        throw new Error(data?.error || `メディア取得に失敗しました (${response.status})`);
+      }
+      const assets = Array.isArray(data?.assets) ? data.assets : [];
+      setMediaAssets(assets);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'メディア取得に失敗しました。';
+      setMediaError(message);
+      setMediaAssets([]);
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  const handleMediaUpload = async (file: File, paletteId: string) => {
+    try {
+      const formData = new FormData();
+      formData.set('paletteId', paletteId);
+      formData.set('file', file, file.name || 'upload');
+      const response = await fetch('/api/media/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.success === false) {
+        throw new Error(data?.error || `アップロードに失敗しました (${response.status})`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'アップロードに失敗しました。';
+      setMediaError(message);
+      throw error;
+    }
+  };
+
+  const handleMediaFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length || !canUseMedia) return;
+    setIsUploadingMedia(true);
+    setMediaError('');
+    try {
+      for (const file of files) {
+        await handleMediaUpload(file, customerId);
+      }
+      await loadMediaAssets(customerId);
+    } finally {
+      setIsUploadingMedia(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleMediaSelect = (asset: MediaAsset) => {
+    if (!selectedPost) return;
+    const url = String(asset.url || '').trim();
+    if (!url) return;
+    updatePost(selectedPost.id, {
+      imageUrl: url,
+      imageAlt: selectedPost.imageAlt || asset.originalName || '',
+    });
+  };
+
   useEffect(() => {
     loadSession();
   }, []);
+
+  useEffect(() => {
+    if (!canUseMedia) {
+      setMediaAssets([]);
+      setMediaError('');
+      return;
+    }
+    void loadMediaAssets(customerId);
+  }, [canUseMedia, customerId]);
 
   useEffect(() => {
     if (!selectedPost) return;
@@ -714,6 +818,77 @@ if (isLoading) {
                           placeholder="画像の説明"
                         />
                       </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">メディア一覧</div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => loadMediaAssets(customerId)}
+                            disabled={!canUseMedia || mediaLoading}
+                            className="px-3 py-1.5 rounded-full text-[10px] font-black border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-50"
+                          >
+                            更新
+                          </button>
+                          <button
+                            onClick={() => mediaInputRef.current?.click()}
+                            disabled={!canUseMedia || isUploadingMedia}
+                            className="px-3.5 py-1.5 rounded-full text-[10px] font-black text-white bg-[#00B7CE] hover:bg-[#009FB3] disabled:opacity-50"
+                          >
+                            {isUploadingMedia ? 'アップロード中' : 'アップロード'}
+                          </button>
+                          <input
+                            ref={mediaInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleMediaFileChange}
+                            className="hidden"
+                          />
+                        </div>
+                      </div>
+
+                      {!canUseMedia && (
+                        <div className="text-[11px] text-slate-400">顧客IDの認証後に利用できます。</div>
+                      )}
+
+                      {canUseMedia && mediaLoading && (
+                        <div className="text-[11px] text-slate-400">読み込み中...</div>
+                      )}
+
+                      {canUseMedia && !mediaLoading && mediaError && (
+                        <div className="text-[11px] text-red-500">{mediaError}</div>
+                      )}
+
+                      {canUseMedia && !mediaLoading && !mediaError && imageAssets.length === 0 && (
+                        <div className="text-[11px] text-slate-400">まだメディアがありません。</div>
+                      )}
+
+                      {canUseMedia && !mediaLoading && imageAssets.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {imageAssets.map((asset) => (
+                            <button
+                              key={asset.id}
+                              type="button"
+                              onClick={() => handleMediaSelect(asset)}
+                              className="group text-left rounded-2xl border border-slate-100 bg-white shadow-sm hover:shadow-md transition overflow-hidden"
+                            >
+                              <div className="aspect-[4/3] bg-slate-100">
+                                <img
+                                  src={asset.url}
+                                  alt={asset.originalName || 'media'}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="px-3 py-2">
+                                <p className="text-[10px] font-bold text-slate-600 truncate">{asset.originalName || asset.fileName}</p>
+                                <p className="text-[9px] text-slate-400">{formatBytes(Number(asset.sizeBytes || 0))}</p>
+                                <p className="text-[9px] text-[#00B7CE] font-bold mt-1">この画像を設定</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 

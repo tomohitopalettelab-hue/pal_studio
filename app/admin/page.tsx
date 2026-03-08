@@ -40,6 +40,17 @@ type PalDbAccount = {
   updatedAt?: string;
 };
 
+type MediaAsset = {
+  id: string;
+  paletteId: string;
+  fileName: string;
+  originalName: string;
+  mimeType: string;
+  sizeBytes: number;
+  url: string;
+  createdAt: string;
+};
+
 // AIのレスポンスからHTMLとコメントを分離するヘルパー関数
 const extractHtmlAndComment = (text: string) => {
   const codeBlockRegex = /```html([\s\S]*?)```/;
@@ -87,10 +98,15 @@ export default function PaletteLab() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [generatedImageError, setGeneratedImageError] = useState("");
   const [showHearingChat, setShowHearingChat] = useState(false);
+  const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
+  const [mediaError, setMediaError] = useState('');
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [editingText, setEditingText] = useState<{ index: number; tag: string; text: string } | null>(null);
   const [textDraft, setTextDraft] = useState("");
   const [draggingPageSlug, setDraggingPageSlug] = useState<string | null>(null);
   const [dragOverPageSlug, setDragOverPageSlug] = useState<string | null>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
 
   const TEXT_EDIT_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,small,label,td,th,blockquote';
   
@@ -151,6 +167,19 @@ export default function PaletteLab() {
     const date = new Date(raw);
     if (Number.isNaN(date.getTime())) return String(raw);
     return date.toLocaleDateString('ja-JP');
+  };
+
+  const formatBytes = (value: number): string => {
+    if (!Number.isFinite(value) || value <= 0) return '0 KB';
+    if (value < 1024) return `${value} B`;
+    const kb = value / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    const mb = kb / 1024;
+    return `${mb.toFixed(1)} MB`;
+  };
+
+  const resolvePaletteId = (customer?: Customer | null): string => {
+    return String(customer?.customer_id || customer?.id || '').trim().toUpperCase();
   };
 
   const refreshCustomers = async () => {
@@ -257,6 +286,8 @@ export default function PaletteLab() {
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
   const studioPublicOrigin = (process.env.NEXT_PUBLIC_STUDIO_ORIGIN || 'https://studio.palette-lab.com').replace(/\/$/, '');
+  const activePaletteId = resolvePaletteId(selectedCustomer);
+  const canUseMedia = Boolean(selectedCustomer && !selectedCustomer.isTemplate && PALETTE_ID_PATTERN.test(activePaletteId));
 
   const normalizePageSlug = (raw: string) => {
     const normalized = String(raw || '').trim().toLowerCase().replace(/^\/+/, '');
@@ -549,6 +580,92 @@ export default function PaletteLab() {
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, [isDirty]);
+
+  const loadMediaAssets = async (paletteId: string) => {
+    if (!paletteId) return;
+    setMediaLoading(true);
+    setMediaError('');
+    try {
+      const response = await fetch(`/api/media?paletteId=${encodeURIComponent(paletteId)}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.success === false) {
+        throw new Error(data?.error || `メディア取得に失敗しました (${response.status})`);
+      }
+      const assets = Array.isArray(data?.assets) ? data.assets : [];
+      setMediaAssets(assets);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'メディア取得に失敗しました。';
+      setMediaError(message);
+      setMediaAssets([]);
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  const handleMediaUpload = async (file: File, paletteId: string) => {
+    try {
+      const formData = new FormData();
+      formData.set('paletteId', paletteId);
+      formData.set('file', file, file.name || 'upload');
+      const response = await fetch('/api/media/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.success === false) {
+        throw new Error(data?.error || `アップロードに失敗しました (${response.status})`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'アップロードに失敗しました。';
+      setMediaError(message);
+      throw error;
+    }
+  };
+
+  const handleMediaFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length || !canUseMedia) return;
+    setIsUploadingMedia(true);
+    setMediaError('');
+    try {
+      for (const file of files) {
+        await handleMediaUpload(file, activePaletteId);
+      }
+      await loadMediaAssets(activePaletteId);
+    } finally {
+      setIsUploadingMedia(false);
+      event.target.value = '';
+    }
+  };
+
+  const copyMediaUrl = async (url: string) => {
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      alert('URLをコピーしました。');
+    } catch {
+      prompt('コピーしてください', url);
+    }
+  };
+
+  const handleMediaSelect = (asset: MediaAsset) => {
+    const url = String(asset.url || '').trim();
+    if (!url) return;
+    if (editingImage) {
+      applyNewImage(url);
+      return;
+    }
+    void copyMediaUrl(url);
+  };
+
+  useEffect(() => {
+    if (!canUseMedia) {
+      setMediaAssets([]);
+      setMediaError('');
+      return;
+    }
+    void loadMediaAssets(activePaletteId);
+  }, [activePaletteId, canUseMedia]);
 
   // dirty判定：selectedCustomer と originalCustomer を比較
   useEffect(() => {
@@ -1705,6 +1822,86 @@ ${activePageHtml}
                   className="w-full h-24 p-3 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500 resize-none shadow-sm text-slate-600"
                   placeholder="AIからのコメントやメモ..."
                 />
+              </section>
+
+              <section className="space-y-4 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">メディア一覧</h2>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => loadMediaAssets(activePaletteId)}
+                      disabled={!canUseMedia || mediaLoading}
+                      className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      更新
+                    </button>
+                    <button
+                      onClick={() => mediaInputRef.current?.click()}
+                      disabled={!canUseMedia || isUploadingMedia}
+                      className="px-2.5 py-1 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-50"
+                    >
+                      {isUploadingMedia ? 'アップロード中' : 'アップロード'}
+                    </button>
+                    <input
+                      ref={mediaInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleMediaFileChange}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+
+                {!canUseMedia && (
+                  <p className="text-[10px] text-slate-400">顧客IDの認証が完了していません。</p>
+                )}
+
+                {canUseMedia && mediaLoading && (
+                  <p className="text-[10px] text-slate-400">読み込み中...</p>
+                )}
+
+                {canUseMedia && !mediaLoading && mediaError && (
+                  <p className="text-[10px] text-red-500">{mediaError}</p>
+                )}
+
+                {canUseMedia && !mediaLoading && !mediaError && mediaAssets.length === 0 && (
+                  <p className="text-[10px] text-slate-400">まだメディアがありません。</p>
+                )}
+
+                {canUseMedia && !mediaLoading && mediaAssets.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {mediaAssets.map((asset) => {
+                      const isVideo = String(asset.mimeType || '').startsWith('video/');
+                      return (
+                        <div key={asset.id} className="rounded-lg border border-slate-200 bg-white overflow-hidden shadow-sm">
+                          <button
+                            type="button"
+                            onClick={() => handleMediaSelect(asset)}
+                            className="w-full aspect-[4/3] bg-slate-100 flex items-center justify-center"
+                          >
+                            {isVideo ? (
+                              <video src={asset.url} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                            ) : (
+                              <img src={asset.url} alt={asset.originalName || 'media'} className="w-full h-full object-cover" />
+                            )}
+                          </button>
+                          <div className="px-2 py-1 text-[9px] text-slate-500">
+                            <div className="truncate">{asset.originalName || asset.fileName}</div>
+                            <div className="text-[8px]">{formatBytes(Number(asset.sizeBytes || 0))}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleMediaSelect(asset)}
+                            className="w-full px-2 py-1 text-[9px] font-bold text-indigo-600 border-t border-slate-200 hover:bg-slate-50"
+                          >
+                            {editingImage ? 'この画像を適用' : 'URLをコピー'}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </section>
 
               {/* 【復活】ヒアリング内容セクション */}

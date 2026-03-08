@@ -117,7 +117,7 @@ const buildAutoDraft = (
   const dateLabel = `${y}/${m}/${d}`;
   const headline = title || `${dateLabel}のお知らせ`;
   const summary = excerpt || `${customerName || '当社'}からの最新情報をお届けします。`;
-  const typeLabel = postType === 'blog' ? 'ブログ' : '最新情報';
+  const typeLabel = '最新情報';
   const chunks = [
     `${customerName || '当社'}の${typeLabel}をお知らせします。`,
     `${dateLabel}に公開しました。`,
@@ -230,9 +230,13 @@ export default function MainPage() {
       if (sessionData?.authenticated) {
         setSession(sessionData);
         const loadedPosts = Array.isArray(sessionData.posts) ? sessionData.posts : [];
-        setPosts(loadedPosts);
-        if (loadedPosts.length > 0) {
-          setSelectedPostId(loadedPosts[0].id);
+        const normalizedPosts: PostItem[] = loadedPosts.map((post) => ({
+          ...post,
+          postType: 'news' as const,
+        }));
+        setPosts(normalizedPosts);
+        if (normalizedPosts.length > 0) {
+          setSelectedPostId(normalizedPosts[0].id);
         }
       } else if (!options?.preserveOnFailure && !loginInFlightRef.current) {
         setSession(sessionData);
@@ -487,8 +491,13 @@ export default function MainPage() {
       return generated ? { ...post, slug: generated } : post;
     });
 
+    const newsOnlyPosts = normalizedPosts.map((post) => ({
+      ...post,
+      postType: 'news',
+    }));
+
     const slugMap = new Map<string, number>();
-    for (const post of normalizedPosts) {
+    for (const post of newsOnlyPosts) {
       const slug = String(post.slug || '').trim().toLowerCase();
       if (!slug) {
         setSaveError('スラッグが空の投稿があります。');
@@ -508,7 +517,7 @@ export default function MainPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ posts: normalizedPosts }),
+        body: JSON.stringify({ posts: newsOnlyPosts }),
       });
       const data = await res.json();
       if (res.status === 401) {
@@ -519,7 +528,7 @@ export default function MainPage() {
         setSaveError(data?.error || '保存に失敗しました。');
         return;
       }
-      setPosts(Array.isArray(data.posts) ? data.posts : normalizedPosts);
+      setPosts(Array.isArray(data.posts) ? data.posts : newsOnlyPosts);
     } catch {
       setSaveError('通信エラーが発生しました。');
     } finally {
@@ -689,7 +698,7 @@ if (isLoading) {
                           </span>
                         </div>
                         <p className="text-[10px] text-slate-300 font-mono truncate tracking-tight uppercase">
-                          {(post.postType === 'blog' ? 'ブログ' : '最新情報')} / {post.slug || '未設定'}
+                          最新情報 / {post.slug || '未設定'}
                         </p>
                       </button>
                     ))}
@@ -716,15 +725,11 @@ if (isLoading) {
                 <div className="p-8 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-[#00B7CE]/10 rounded-2xl flex items-center justify-center text-[#00B7CE]">
-                      {selectedPost.postType === 'blog' ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 2v4a2 2 0 002 2h4" /></svg>
-                      ) : (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                      )}
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                     </div>
                     <div>
                       <h2 className="text-xl font-black text-slate-900 tracking-tight">コンテンツ編集</h2>
-                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">{selectedPost.postType === 'blog' ? 'ブログ' : '最新情報'} 編集</p>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">最新情報 編集</p>
                     </div>
                   </div>
                   <button
@@ -767,21 +772,23 @@ if (isLoading) {
 
                   {/* Settings */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {[
-                      { label: 'タイプ', key: 'postType', options: [{v:'blog', l:'ブログ'}, {v:'news', l:'最新情報'}] },
-                      { label: '公開状態', key: 'status', options: [{v:'draft', l:'📁 下書き'}, {v:'published', l:'🚀 公開'}] }
-                    ].map((field) => (
-                      <div key={field.label} className="space-y-3">
-                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{field.label}</label>
-                        <select
-                          value={selectedPost[field.key as keyof PostItem] as string}
-                          onChange={(event) => updatePost(selectedPost.id, { [field.key]: event.target.value })}
-                          className="w-full appearance-none px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none cursor-pointer focus:bg-white focus:border-[#00B7CE] transition-all"
-                        >
-                          {field.options.map(opt => <option key={opt.v} value={opt.v}>{opt.l}</option>)}
-                        </select>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">タイプ</label>
+                      <div className="w-full px-6 py-4 bg-slate-50/60 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-600">
+                        最新情報
                       </div>
-                    ))}
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">公開状態</label>
+                      <select
+                        value={selectedPost.status}
+                        onChange={(event) => updatePost(selectedPost.id, { status: event.target.value as PostStatus })}
+                        className="w-full appearance-none px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none cursor-pointer focus:bg-white focus:border-[#00B7CE] transition-all"
+                      >
+                        <option value="draft">📁 下書き</option>
+                        <option value="published">🚀 公開</option>
+                      </select>
+                    </div>
                     <div className="space-y-3">
                       <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">公開日時</label>
                       <input
@@ -948,7 +955,7 @@ if (isLoading) {
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">プレビュー</h3>
                     <article className="max-w-2xl mx-auto border border-white bg-white/40 rounded-[2.5rem] p-10 shadow-sm">
                       <div className="flex items-center gap-3 text-[10px] font-black text-[#00B7CE]/50 uppercase tracking-[0.2em] mb-4">
-                        <span>{selectedPost.postType === 'blog' ? 'ブログ' : '最新情報'}</span>
+                        <span>最新情報</span>
                         <div className="w-1 h-1 rounded-full bg-slate-200" />
                         <span>{toDatetimeLocal(selectedPost.publishedAt).split('T')[0]}</span>
                       </div>

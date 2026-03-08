@@ -1518,11 +1518,6 @@ ${activePageHtml}
     return source.replace(re, nextSection);
   };
 
-  const removeSectionById = (source: string, sectionId: string) => {
-    const re = new RegExp(`<section[^>]*id=["']${sectionId}["'][^>]*>[\s\S]*?</section>`, 'gi');
-    return source.replace(re, '');
-  };
-
   const insertSectionAfterId = (source: string, afterId: string, sectionHtml: string) => {
     if (!sectionHtml) return source;
     const re = new RegExp(`(<section[^>]*id=["']${afterId}["'][^>]*>[\s\S]*?</section>)`, 'i');
@@ -1591,11 +1586,8 @@ ${activePageHtml}
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
       const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
         || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
-      output = removeSectionById(output, 'news');
-      output = removeSectionById(output, 'blog');
-      output = insertSectionAfterId(output, 'top', newsSection);
-      output = insertSectionAfterId(output, 'news', blogSection);
-      output = removeAutoPlaceholderSections(output);
+      output = replaceSectionBlock(output, 'news', newsSection);
+      output = replaceSectionBlock(output, 'blog', blogSection);
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';

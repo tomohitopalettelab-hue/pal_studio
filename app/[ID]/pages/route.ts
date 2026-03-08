@@ -56,10 +56,6 @@ const replaceSectionBlock = (source: string, sectionId: string, nextSection: str
   return source.replace(re, nextSection);
 };
 
-const removeSectionById = (source: string, sectionId: string) => {
-  const re = new RegExp(`<section[^>]*id=["']${sectionId}["'][^>]*>[\s\S]*?</section>`, 'gi');
-  return source.replace(re, '');
-};
 
 const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
   if (!sectionHtml) return source;
@@ -157,18 +153,15 @@ export async function GET(
       customer?.defaultEyecatchUrl
     );
     if (newsSection) {
-      html = removeSectionById(html, 'news');
-      html = insertSectionAfterId(html, 'top', newsSection);
+      html = replaceSectionBlock(html, 'news', newsSection);
     } else {
       html = hideSection(html, 'news');
     }
     if (blogSection) {
-      html = removeSectionById(html, 'blog');
-      html = insertSectionAfterId(html, 'news', blogSection);
+      html = replaceSectionBlock(html, 'blog', blogSection);
     } else {
       html = hideSection(html, 'blog');
     }
-    html = removeAutoPlaceholderSections(html);
     html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
     html = applyContactEmail(html, customer?.contactEmail);
     html = applyLogoToHeader(html, customer?.logoUrl);

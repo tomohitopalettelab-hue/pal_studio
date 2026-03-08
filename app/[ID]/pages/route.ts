@@ -56,6 +56,11 @@ const replaceSectionBlock = (source: string, sectionId: string, nextSection: str
   return source.replace(re, nextSection);
 };
 
+const removeSectionById = (source: string, sectionId: string) => {
+  const re = new RegExp(`<section[^>]*id=["']${sectionId}["'][^>]*>[\s\S]*?</section>`, 'gi');
+  return source.replace(re, '');
+};
+
 const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
   if (!sectionHtml) return source;
   if (/<\/main>/i.test(source)) {
@@ -152,14 +157,14 @@ export async function GET(
       customer?.defaultEyecatchUrl
     );
     if (newsSection) {
-      const replacedNews = replaceSectionBlock(html, 'news', newsSection);
-      html = replacedNews === html ? insertSectionAfterId(html, 'top', newsSection) : replacedNews;
+      html = removeSectionById(html, 'news');
+      html = insertSectionAfterId(html, 'top', newsSection);
     } else {
       html = hideSection(html, 'news');
     }
     if (blogSection) {
-      const replacedBlog = replaceSectionBlock(html, 'blog', blogSection);
-      html = replacedBlog === html ? insertSectionAfterId(html, 'news', blogSection) : replacedBlog;
+      html = removeSectionById(html, 'blog');
+      html = insertSectionAfterId(html, 'news', blogSection);
     } else {
       html = hideSection(html, 'blog');
     }

@@ -22,6 +22,8 @@ import {
   buildPostArchiveListHtml,
   replaceSectionContent,
   applyContactEmail,
+  applyLogoToHeader,
+  buildRelatedNewsSectionHtml,
 } from '../[ID]/_lib/post-templates';
 
 type Customer = {
@@ -100,6 +102,8 @@ export default function PaletteLab() {
   const [labMode, setLabMode] = useState<'work' | 'templates'>('work');
   const [aiInstruction, setAiInstruction] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
   
   // 画像編集用ステート
@@ -915,6 +919,8 @@ ${activePageHtml}
   const handleInitialGeneration = async () => {
     if (!selectedCustomer) return;
     setIsApplying(true);
+    setIsGeneratingDraft(true);
+    setGenerationProgress(1);
     try {
       // お客様回答と（必要なら）代替データを扱うための変数
       let templateSelectionAnswers = selectedCustomer.answers || [];
@@ -938,6 +944,8 @@ ${activePageHtml}
         } else {
           alert("ヒアリング内容がありません。mainで完全なヒアリングを行ってください。");
           setIsApplying(false);
+          setIsGeneratingDraft(false);
+          setGenerationProgress(0);
           return;
         }
       }
@@ -951,7 +959,8 @@ ${activePageHtml}
         ? selectedCustomerPages
         : (activePage ? [activePage] : []);
 
-      for (const page of pagesToGenerate) {
+      for (let i = 0; i < pagesToGenerate.length; i++) {
+        const page = pagesToGenerate[i];
         const pageSlug = String(page?.slug || 'top');
         const pageTitle = String(page?.title || deriveTitleFromSlug(pageSlug));
         const variantId = String(page?.templateVariantId || '').trim();
@@ -1121,12 +1130,17 @@ ${activePageHtml}
               : c
           ));
         }
+
+        const progressValue = Math.max(1, Math.round(((i + 1) / pagesToGenerate.length) * 100));
+        setGenerationProgress(progressValue);
       }
     } catch (error: any) {
       console.error("Generation Error:", error);
       alert(`初期生成に失敗しました: ${error.message}`);
     } finally {
       setIsApplying(false);
+      setIsGeneratingDraft(false);
+      setGenerationProgress(0);
     }
   };
 
@@ -1482,6 +1496,14 @@ ${activePageHtml}
     return source.replace(re, nextSection);
   };
 
+  const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
+    if (!sectionHtml) return source;
+    if (/<\/main>/i.test(source)) {
+      return source.replace(/<\/main>/i, `${sectionHtml}</main>`);
+    }
+    return `${source}${sectionHtml}`;
+  };
+
   const getPublishedPostsForPreview = (postType: 'news' | 'blog') => {
     const rawPosts = Array.isArray((selectedCustomer as any)?.posts)
       ? (selectedCustomer as any).posts
@@ -1507,6 +1529,7 @@ ${activePageHtml}
     if (!selectedCustomer || !html) return html;
     const defaultEyecatchUrl = selectedCustomer.defaultEyecatchUrl;
     const contactEmail = selectedCustomer.contactEmail;
+    const logoUrl = selectedCustomer.logoUrl;
     const pageSlug = String(activePage?.slug || selectedSitePageSlug || 'top');
     const newsPosts = getPublishedPostsForPreview('news');
     const blogPosts = getPublishedPostsForPreview('blog');
@@ -1517,8 +1540,10 @@ ${activePageHtml}
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
       const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
         || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
-      output = replaceSectionBlock(output, 'news', newsSection);
-      output = replaceSectionBlock(output, 'blog', blogSection);
+      const replacedNews = replaceSectionBlock(output, 'news', newsSection);
+      output = replacedNews === output ? insertSectionBeforeMainClose(output, newsSection) : replacedNews;
+      const replacedBlog = replaceSectionBlock(output, 'blog', blogSection);
+      output = replacedBlog === output ? insertSectionBeforeMainClose(output, blogSection) : replacedBlog;
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';
@@ -1535,8 +1560,12 @@ ${activePageHtml}
       const bodyHtml = post
         ? buildPostDetailBodyHtml(post)
         : '';
+      const relatedHtml = buildRelatedNewsSectionHtml(newsPosts.slice(1), '/news', defaultEyecatchUrl);
       output = replaceSectionContent(output, 'top', topHtml);
       output = replaceSectionContent(output, 'concept', bodyHtml);
+      if (relatedHtml) {
+        output = replaceSectionContent(output, 'related', relatedHtml);
+      }
     } else if (pageSlug === 'blog-page') {
       const post = blogPosts[0];
       const topHtml = post
@@ -1553,7 +1582,8 @@ ${activePageHtml}
       }
     }
 
-    return applyContactEmail(output, contactEmail);
+    const withEmail = applyContactEmail(output, contactEmail);
+    return applyLogoToHeader(withEmail, logoUrl);
   };
 
   // ファイルアップロードハンドラ
@@ -2463,7 +2493,9 @@ ${activePageHtml}
                       disabled={isApplying}
                       className="px-4 py-2 rounded-md bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white text-[10px] font-black uppercase tracking-wider shadow-lg disabled:opacity-50"
                     >
-                      Generate Draft
+                      {isGeneratingDraft && generationProgress > 0
+                        ? `Generate Draft ${generationProgress}%`
+                        : 'Generate Draft'}
                     </button>
                     <div className="flex items-center gap-2">
                       <select

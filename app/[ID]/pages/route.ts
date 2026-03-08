@@ -8,6 +8,7 @@ import {
   syncNavWithSitePagesHtml,
   ensureHtmlDocument,
   applyContactEmail,
+  applyLogoToHeader,
 } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -53,6 +54,14 @@ const replaceSectionBlock = (source: string, sectionId: string, nextSection: str
   const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'][^>]*>)[\s\S]*?(</section>)`, 'i');
   if (!re.test(source)) return source;
   return source.replace(re, nextSection);
+};
+
+const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
+  if (!sectionHtml) return source;
+  if (/<\/main>/i.test(source)) {
+    return source.replace(/<\/main>/i, `${sectionHtml}</main>`);
+  }
+  return `${source}${sectionHtml}`;
 };
 
 const hideSection = (source: string, sectionId: string) => {
@@ -117,17 +126,20 @@ export async function GET(
       customer?.defaultEyecatchUrl
     );
     if (newsSection) {
-      html = replaceSectionBlock(html, 'news', newsSection);
+      const replacedNews = replaceSectionBlock(html, 'news', newsSection);
+      html = replacedNews === html ? insertSectionBeforeMainClose(html, newsSection) : replacedNews;
     } else {
       html = hideSection(html, 'news');
     }
     if (blogSection) {
-      html = replaceSectionBlock(html, 'blog', blogSection);
+      const replacedBlog = replaceSectionBlock(html, 'blog', blogSection);
+      html = replacedBlog === html ? insertSectionBeforeMainClose(html, blogSection) : replacedBlog;
     } else {
       html = hideSection(html, 'blog');
     }
     html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
     html = applyContactEmail(html, customer?.contactEmail);
+    html = applyLogoToHeader(html, customer?.logoUrl);
     const output = ensureHtmlDocument(html, {
       faviconUrl: customer?.faviconUrl,
       headHtml: linkSyncScript,

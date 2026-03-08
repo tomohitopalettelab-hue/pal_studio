@@ -12,9 +12,11 @@ import {
   replaceSectionContent,
   buildPostDetailTopHtml,
   buildPostDetailBodyHtml,
+  buildRelatedNewsSectionHtml,
   replaceHeaderHtml,
   syncNavWithSitePagesHtml,
   applyContactEmail,
+  applyLogoToHeader,
 } from '../../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -62,13 +64,21 @@ export async function GET(
     const bodyHtml = buildPostDetailBodyHtml(post);
     const withTop = replaceSectionContent(withHeader, 'top', topHtml);
     const withBody = replaceSectionContent(withTop, 'concept', bodyHtml);
+    const relatedPosts = posts
+      .filter((item) => item.id !== post.id && String(item.postType || 'news') === 'news')
+      .filter((item) => String(item.status || '') === 'published');
+    const relatedHtml = buildRelatedNewsSectionHtml(relatedPosts, `${publishBasePath}/news`, customer?.defaultEyecatchUrl);
+    const withRelated = relatedHtml
+      ? replaceSectionContent(withBody, 'related', relatedHtml)
+      : withBody;
     const withNav = syncNavWithSitePagesHtml(
-      withBody || withHeader,
+      withRelated || withHeader,
       getCustomerPagesForNav(customer),
       publishBasePath,
     );
     const withEmail = applyContactEmail(withNav || bodyHtml, customer?.contactEmail);
-    const output = ensureHtmlDocument(withEmail, { faviconUrl: customer?.faviconUrl });
+    const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
+    const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl });
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

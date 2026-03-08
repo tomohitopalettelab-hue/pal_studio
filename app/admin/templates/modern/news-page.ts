@@ -101,32 +101,9 @@ export const modernNewsPageTemplate: TemplateVariant = {
         </section>
       </article>
 
-      <section id="service" class="py-32 bg-[#f8fafc] px-6 md:px-10">
+      <section id="related" class="py-32 bg-[#f8fafc] px-6 md:px-10">
         <div class="max-w-6xl mx-auto">
-          <div class="flex items-end justify-between mb-16">
-            <h3 class="text-3xl md:text-4xl font-black tracking-tighter uppercase">Related News</h3>
-            <a data-page-slug="news" href="/news" class="text-[9px] font-bold uppercase tracking-[0.3em] border-b border-black pb-2 hover:text-[var(--accent-color)] transition-all">Back to List</a>
-          </div>
-          <div class="grid md:grid-cols-2 gap-10 md:gap-16">
-            <a data-page-slug="news-page" href="/news-page" class="group block">
-              <article class="cursor-pointer">
-                <div class="aspect-video overflow-hidden mb-6">
-                  <img src="https://images.unsplash.com/photo-1542744095-2ad4870706d8?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Related 01">
-                </div>
-                <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 mb-2 uppercase">2026.02.21</p>
-                <h4 class="text-xl font-bold group-hover:text-[var(--accent-color)] transition-colors">次世代デザイン・サミット 2026 登壇決定</h4>
-              </article>
-            </a>
-            <a data-page-slug="news-page" href="/news-page" class="group block">
-              <article class="cursor-pointer">
-                <div class="aspect-video overflow-hidden mb-6">
-                  <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Related 02">
-                </div>
-                <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 mb-2 uppercase">2026.02.10</p>
-                <h4 class="text-xl font-bold group-hover:text-[var(--accent-color)] transition-colors">新規サービス「Pal-Opt」ベータ版公開</h4>
-              </article>
-            </a>
-          </div>
+          <p class="text-sm text-slate-400">関連する最新情報は公開投稿から自動生成されます。</p>
         </div>
       </section>
 

@@ -16,6 +16,7 @@ import {
   replaceHeaderHtml,
   syncNavWithSitePagesHtml,
   applyContactEmail,
+  applyLogoToHeader,
 } from '../../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -76,7 +77,8 @@ export async function GET(
       publishBasePath,
     );
     const withEmail = applyContactEmail(withNav || bodyHtml, customer?.contactEmail);
-    const output = ensureHtmlDocument(withEmail, { faviconUrl: customer?.faviconUrl });
+    const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
+    const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl });
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

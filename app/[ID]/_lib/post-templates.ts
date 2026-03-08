@@ -214,6 +214,17 @@ export const applyContactEmail = (html: string, contactEmail?: string) => {
   return String(html || '').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, email);
 };
 
+export const applyLogoToHeader = (html: string, logoUrl?: string) => {
+  const url = String(logoUrl || '').trim();
+  if (!url) return html;
+  const source = String(html || '');
+  if (/data-logo=/i.test(source)) return source;
+  return source.replace(
+    /<div class="flex items-center gap-4 group cursor-pointer">/i,
+    `<div class="flex items-center gap-4 group cursor-pointer"><img data-logo src="${escapeHtml(url)}" alt="Logo" class="h-8 md:h-10 w-auto object-contain" />`
+  );
+};
+
 export const buildPostListHtml = (
   posts: PostItem[],
   basePath: string,
@@ -394,6 +405,47 @@ export const buildPostArchiveListHtml = (posts: PostItem[], basePath: string) =>
   return `
     <div class="space-y-8">
       ${items}
+    </div>
+  `;
+};
+
+export const buildRelatedNewsSectionHtml = (
+  posts: PostItem[],
+  basePath: string,
+  defaultImageUrl?: string
+) => {
+  if (posts.length === 0) return '';
+  const items = posts.slice(0, 2).map((post) => {
+    const title = escapeHtml(post.title || '');
+    const date = escapeHtml(formatDate(post.publishedAt));
+    const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
+    const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="${imageAlt}">`
+      : '';
+
+    return `
+      <a href="${basePath}/${encodeURIComponent(post.slug)}" class="group block">
+        <article class="cursor-pointer">
+          <div class="aspect-video overflow-hidden mb-6">
+            ${image}
+          </div>
+          <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 mb-2 uppercase">${date}</p>
+          <h4 class="text-xl font-bold group-hover:text-[var(--accent-color)] transition-colors">${title}</h4>
+        </article>
+      </a>
+    `;
+  }).join('');
+
+  return `
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-end justify-between mb-16">
+        <h3 class="text-3xl md:text-4xl font-black tracking-tighter uppercase">Related News</h3>
+        <a href="${basePath}" class="text-[9px] font-bold uppercase tracking-[0.3em] border-b border-black pb-2 hover:text-[var(--accent-color)] transition-all">Back to List</a>
+      </div>
+      <div class="grid md:grid-cols-2 gap-10 md:gap-16">
+        ${items}
+      </div>
     </div>
   `;
 };

@@ -9,41 +9,68 @@ export const corporateBlogPageTemplate: TemplateVariant = {
   html: `
 <div class="template-root" style="--accent-color: #1e40af;">
   <div class="min-h-screen font-sans text-slate-900 bg-white">
-    <header class="px-8 py-10 border-b border-slate-200 relative overflow-hidden">
-      <p class="text-[10px] uppercase tracking-[0.4em] text-slate-400">Corporate Template</p>
-      <h1 class="text-3xl font-black mt-2">ブログ記事</h1>
-      <p class="text-sm text-slate-500 mt-3">信頼感のある構成で整理したプレビューです。</p>
-      <div class="mt-6 h-1 w-16 bg-[var(--accent-color)] rounded-full"></div>
+    <header class="border-b border-slate-200 bg-white/90 backdrop-blur-xl">
+      <div class="max-w-6xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between gap-6">
+        <div class="text-xs font-black tracking-[0.3em] uppercase">Corporate.</div>
+        <nav data-sync="site-pages" class="hidden md:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500"></nav>
+      </div>
+      <div class="max-w-6xl mx-auto px-6 lg:px-10 pb-10">
+        <p class="text-[10px] uppercase tracking-[0.4em] text-slate-400">Blog</p>
+        <h1 class="text-4xl md:text-5xl font-black mt-3">ブログ記事</h1>
+        <p class="text-sm text-slate-500 mt-4">実務に役立つ知見をまとめています。</p>
+        <div class="mt-6 h-1 w-16 bg-[var(--accent-color)] rounded-full"></div>
+      </div>
     </header>
-    <main class="max-w-5xl mx-auto px-6 py-12 space-y-10 pb-16">
-      <section id="top" class="space-y-4">
-        <p class="text-xs uppercase tracking-widest text-slate-400">2026.03.07</p>
-        <h2 class="text-2xl font-bold">ブログタイトルが入ります</h2>
-        <p class="text-sm text-slate-500">リード文がここに入ります。</p>
+
+    <main class="max-w-6xl mx-auto px-6 lg:px-10 py-12 space-y-12 pb-20">
+      <section id="top" class="grid gap-8 lg:grid-cols-[2fr,1fr]">
+        <article class="space-y-4">
+          <p class="text-xs uppercase tracking-widest text-slate-400">2026.03.07</p>
+          <h2 class="text-3xl font-bold">成果を出す導線設計の考え方</h2>
+          <p class="text-sm text-slate-500">業種別の導線設計と運用のポイントを整理します。</p>
+        </article>
+        <aside class="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+          <p class="text-xs uppercase tracking-widest text-slate-400">Author</p>
+          <p class="text-sm font-bold mt-2">運用支援チーム</p>
+          <p class="text-sm text-slate-500 mt-2">実績データをもとに解説。</p>
+        </aside>
       </section>
+
       <section id="concept" class="space-y-4">
         <h3 class="text-lg font-bold">本文</h3>
-        <p class="text-sm text-slate-600">本文テキストがここに入ります。</p>
-        <p class="text-sm text-slate-600">続きの本文テキストがここに入ります。</p>
+        <p class="text-sm text-slate-600">導入部で背景と課題を整理し、改善の狙いを説明します。</p>
+        <p class="text-sm text-slate-600">具体的な事例と施策をわかりやすく記載します。</p>
       </section>
-      <section id="features" class="space-y-3">
-        <h3 class="text-lg font-bold">関連情報</h3>
-        <p class="text-sm text-slate-600">関連する情報を記載します。</p>
-      </section>
-      <section id="service" class="space-y-3">
-        <h3 class="text-lg font-bold">他のブログ</h3>
-        <ul class="space-y-2 text-sm text-slate-600">
-          <li>2026.02.21 / 更新情報のタイトル</li>
-          <li>2026.02.10 / イベント開催のお知らせ</li>
+
+      <section id="features" class="space-y-4">
+        <h3 class="text-lg font-bold">ポイント</h3>
+        <ul class="space-y-2 text-sm text-slate-600 list-disc list-inside">
+          <li>CTAの配置と優先順位</li>
+          <li>回遊性を高める情報設計</li>
+          <li>更新に強いページ構成</li>
         </ul>
       </section>
-      <section id="works" class="space-y-3">
-        <h3 class="text-lg font-bold">次の更新</h3>
-        <p class="text-sm text-slate-600">次回の案内を記載します。</p>
+
+      <section id="service" class="space-y-4">
+        <h3 class="text-lg font-bold">関連記事</h3>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <p class="text-xs text-slate-400">2026.02.21</p>
+            <p class="text-sm font-bold mt-2">問い合わせを増やす情報設計</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-5">
+            <p class="text-xs text-slate-400">2026.02.10</p>
+            <p class="text-sm font-bold mt-2">継続的な改善フロー</p>
+          </div>
+        </div>
       </section>
-      <section id="company" class="space-y-3">
-        <h3 class="text-lg font-bold">お問い合わせ</h3>
-        <p class="text-sm text-slate-600">ブログに関する問い合わせ先を記載します。</p>
+
+      <section id="company" class="rounded-3xl border border-slate-200 bg-slate-50 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <p class="text-sm font-bold">記事に関するご相談</p>
+          <p class="text-sm text-slate-500 mt-2">お気軽にお問い合わせください。</p>
+        </div>
+        <button class="px-6 py-3 bg-[var(--accent-color)] text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full">Contact</button>
       </section>
     </main>
   </div>

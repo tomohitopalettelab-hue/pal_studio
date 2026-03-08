@@ -7,38 +7,76 @@ export const modernContactTemplate: TemplateVariant = {
   pageSlug: 'contact',
   description: 'Modern / Contact page layout',
   html: `
-<div class="template-root" style="--accent-color: #00B7CE;">
+<div class="template-root" style="--accent-color: #3b82f6;">
   <div class="min-h-screen font-sans text-slate-900 bg-white">
-    <header class="px-8 py-10 border-b border-slate-200 relative overflow-hidden">
-      <p class="text-[10px] uppercase tracking-[0.4em] text-slate-400">Modern Template</p>
-      <h1 class="text-3xl font-black mt-2">お問い合わせ</h1>
-      <p class="text-sm text-slate-500 mt-3">スマートなトーンで構成したプレビューです。</p>
-      <div class="mt-6 h-1 w-16 bg-[var(--accent-color)] rounded-full"></div>
+    <header class="border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+      <div class="max-w-6xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between gap-6">
+        <div class="text-sm font-black tracking-[0.3em] uppercase">Studio.</div>
+        <nav data-sync="site-pages" class="hidden md:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500"></nav>
+      </div>
+      <div class="max-w-6xl mx-auto px-6 lg:px-10 pb-10">
+        <p class="text-[10px] uppercase tracking-[0.4em] text-slate-400">Contact</p>
+        <h1 class="text-4xl md:text-5xl font-black mt-3">お問い合わせ</h1>
+        <p class="text-sm text-slate-500 mt-4">課題整理の相談から制作のご相談まで承ります。</p>
+        <div class="mt-6 h-1 w-16 bg-[var(--accent-color)] rounded-full"></div>
+      </div>
     </header>
-    <main class="max-w-5xl mx-auto px-6 py-12 space-y-10 pb-16">
-      <section id="top" class="space-y-4">
-        <h2 class="text-2xl font-bold">ご相談はこちら</h2>
-        <p class="text-sm text-slate-600">お問い合わせフォームへの案内文を記載します。</p>
+
+    <main class="max-w-6xl mx-auto px-6 lg:px-10 py-12 space-y-12 pb-20">
+      <section id="top" class="grid gap-8 lg:grid-cols-[1.2fr,1fr]">
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold">ご相談内容</h2>
+          <p class="text-sm text-slate-600">要件が固まっていなくても問題ありません。現状の課題と目的を共有してください。</p>
+          <div class="rounded-3xl border border-slate-200 p-6 bg-slate-50">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400">対応範囲</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-600 list-disc list-inside">
+              <li>サイトリニューアル / 新規制作</li>
+              <li>ブランド設計 / 情報整理</li>
+              <li>運用改善 / 施策設計</li>
+            </ul>
+          </div>
+        </div>
+        <div class="rounded-3xl border border-slate-200 p-6 bg-white">
+          <h3 class="text-lg font-bold">お問い合わせフォーム</h3>
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="grid gap-2">
+              <label class="text-xs text-slate-500">会社名</label>
+              <div class="h-10 rounded-full border border-slate-200 bg-slate-50"></div>
+            </div>
+            <div class="grid gap-2">
+              <label class="text-xs text-slate-500">お名前</label>
+              <div class="h-10 rounded-full border border-slate-200 bg-slate-50"></div>
+            </div>
+            <div class="grid gap-2">
+              <label class="text-xs text-slate-500">お問い合わせ内容</label>
+              <div class="h-28 rounded-2xl border border-slate-200 bg-slate-50"></div>
+            </div>
+            <button class="mt-2 px-6 py-3 bg-[var(--accent-color)] text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full">Send</button>
+          </div>
+        </div>
       </section>
-      <section id="concept" class="space-y-3">
-        <h3 class="text-lg font-bold">対応内容</h3>
-        <p class="text-sm text-slate-600">対応できる内容や範囲を記載します。</p>
+
+      <section id="company" class="grid gap-6 md:grid-cols-3">
+        <div class="rounded-2xl border border-slate-200 p-5">
+          <p class="text-xs text-slate-400">Mail</p>
+          <p class="text-sm font-bold mt-2">hello@studio-modern.com</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 p-5">
+          <p class="text-xs text-slate-400">Phone</p>
+          <p class="text-sm font-bold mt-2">03-0000-0000</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 p-5">
+          <p class="text-xs text-slate-400">Office</p>
+          <p class="text-sm font-bold mt-2">Tokyo / Shibuya</p>
+        </div>
       </section>
-      <section id="features" class="space-y-3">
-        <h3 class="text-lg font-bold">対応フロー</h3>
-        <p class="text-sm text-slate-600">お問い合わせから返信までの流れを記載します。</p>
-      </section>
-      <section id="service" class="space-y-3">
-        <h3 class="text-lg font-bold">連絡先</h3>
-        <p class="text-sm text-slate-600">電話・メールなどの連絡先を記載します。</p>
-      </section>
-      <section id="works" class="space-y-3">
-        <h3 class="text-lg font-bold">よくある質問</h3>
-        <p class="text-sm text-slate-600">FAQの案内を記載します。</p>
-      </section>
-      <section id="company" class="space-y-3">
-        <h3 class="text-lg font-bold">会社情報</h3>
-        <p class="text-sm text-slate-600">所在地や営業時間などを記載します。</p>
+
+      <section class="rounded-3xl border border-slate-200 bg-slate-50 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <p class="text-sm font-bold">制作のご相談はこちら</p>
+          <p class="text-sm text-slate-500 mt-2">ヒアリングの場をご用意します。</p>
+        </div>
+        <button class="px-6 py-3 bg-[var(--accent-color)] text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full">Book a Call</button>
       </section>
     </main>
   </div>

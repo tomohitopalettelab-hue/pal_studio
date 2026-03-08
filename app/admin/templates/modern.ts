@@ -12,6 +12,7 @@ export const modernTemplate: Template = {
     <div class="fixed inset-0 pointer-events-none z-[999] opacity-[0.015]" style="background-image: url('https://www.transparenttextures.com/patterns/p6.png');"></div>
 
     <header class="fixed w-full z-[100] transition-all duration-700 bg-[var(--bg-color)]/80 backdrop-blur-xl border-b border-black/[0.03]">
+      <input type="checkbox" id="menu-toggle" class="sr-only peer" />
       <div class="max-w-[1600px] mx-auto px-6 md:px-10 h-20 md:h-24 flex items-center justify-between">
         <div class="flex items-center gap-4 group cursor-pointer">
           <div class="relative w-8 h-8 md:w-10 md:h-10 bg-[var(--main-color)] flex items-center justify-center overflow-hidden">
@@ -37,8 +38,6 @@ export const modernTemplate: Template = {
           </div>
         </label>
       </div>
-
-      <input type="checkbox" id="menu-toggle" class="hidden peer" />
       
       <div class="fixed inset-0 bg-[var(--main-dark)] translate-x-full peer-checked:translate-x-0 transition-transform duration-500 ease-in-out lg:hidden z-[105] flex flex-col items-center justify-center">
         <nav class="flex flex-col items-center gap-8 text-white text-xs font-bold uppercase tracking-[0.5em]">
@@ -273,9 +272,9 @@ export const modernTemplate: Template = {
   }
   
   /* Mobile Menu Icon Animation */
-  #menu-toggle:checked + label span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-  #menu-toggle:checked + label span:nth-child(2) { opacity: 0; }
-  #menu-toggle:checked + label span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+  #menu-toggle:checked ~ div label span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+  #menu-toggle:checked ~ div label span:nth-child(2) { opacity: 0; }
+  #menu-toggle:checked ~ div label span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
   
   /* Smooth Scroll */
   html { scroll-behavior: smooth; }

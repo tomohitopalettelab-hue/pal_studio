@@ -14,6 +14,7 @@ import {
   buildPostDetailBodyHtml,
   replaceHeaderHtml,
   syncNavWithSitePagesHtml,
+  applyContactEmail,
 } from '../../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -57,7 +58,7 @@ export async function GET(
     const baseHtml = selectVariantHtml('news-page', templateId);
     const headerHtml = extractHeaderHtml(getCustomerTopHtml(customer));
     const withHeader = replaceHeaderHtml(baseHtml, headerHtml) || baseHtml;
-    const topHtml = buildPostDetailTopHtml(post);
+    const topHtml = buildPostDetailTopHtml(post, customer?.defaultEyecatchUrl);
     const bodyHtml = buildPostDetailBodyHtml(post);
     const withTop = replaceSectionContent(withHeader, 'top', topHtml);
     const withBody = replaceSectionContent(withTop, 'concept', bodyHtml);
@@ -66,7 +67,8 @@ export async function GET(
       getCustomerPagesForNav(customer),
       publishBasePath,
     );
-    const output = ensureHtmlDocument(withNav || bodyHtml);
+    const withEmail = applyContactEmail(withNav || bodyHtml, customer?.contactEmail);
+    const output = ensureHtmlDocument(withEmail, { faviconUrl: customer?.faviconUrl });
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

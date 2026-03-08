@@ -27,6 +27,9 @@ type Customer = {
   updatedAt: string;
   selectedTemplateId?: string;
   publishPathTemplate?: string;
+  defaultEyecatchUrl?: string;
+  faviconUrl?: string;
+  contactEmail?: string;
   description?: string;
   isTemplate?: boolean;
   draftGenerated?: boolean;
@@ -706,6 +709,9 @@ export default function PaletteLab() {
       name: selectedCustomer.name,
       status: selectedCustomer.status,
       publishPathTemplate: selectedCustomer.publishPathTemplate,
+      defaultEyecatchUrl: selectedCustomer.defaultEyecatchUrl,
+      faviconUrl: selectedCustomer.faviconUrl,
+      contactEmail: selectedCustomer.contactEmail,
       description: selectedCustomer.description,
       htmlCode: selectedCustomer.htmlCode,
       pages: getCustomerPages(selectedCustomer),
@@ -715,6 +721,9 @@ export default function PaletteLab() {
       name: originalCustomer.name,
       status: originalCustomer.status,
       publishPathTemplate: originalCustomer.publishPathTemplate,
+      defaultEyecatchUrl: originalCustomer.defaultEyecatchUrl,
+      faviconUrl: originalCustomer.faviconUrl,
+      contactEmail: originalCustomer.contactEmail,
       description: originalCustomer.description,
       htmlCode: originalCustomer.htmlCode,
       pages: getCustomerPages(originalCustomer),
@@ -994,6 +1003,10 @@ ${activePageHtml}
           )));
         }
 
+        const topNewsInstruction = pageSlug === 'top'
+          ? '\n      6. topページでは、ニュースセクション（id="news"）をヒーローセクション（id="top"）の下に配置してください。セクション内部の構造は維持してください。\n'
+          : '';
+
         const prompt = `
       あなたはWebデザイナーです。以下の「ヒアリング内容」の**テーマ**を理解した上で、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。
 
@@ -1018,6 +1031,7 @@ ${activePageHtml}
       3. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像、またはUnsplash等の実在するURLに差し替えてください。
       4. 配色はTailwind CSSのクラスを変更して調整してください（例: bg-indigo-600 -> bg-pink-500 など）。
       5. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
+      ${topNewsInstruction}
 
       【ヒアリング内容】
       ${answerSummary}
@@ -1886,6 +1900,49 @@ ${activePageHtml}
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         例: /sumidokoro, /{'{id}'}, /{'{id}'}/pages, /main?cid={'{id}'}（未設定時は /{'{id}'}/pages）
                       </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 space-y-2">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">サイト設定</p>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Default Eyecatch URL</label>
+                        <input
+                          type="text"
+                          value={selectedCustomer.defaultEyecatchUrl || ''}
+                          onChange={(e) => {
+                            const defaultEyecatchUrl = e.target.value;
+                            setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl } : c));
+                          }}
+                          className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                          placeholder="https://example.com/eyecatch.jpg"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Favicon URL</label>
+                        <input
+                          type="text"
+                          value={selectedCustomer.faviconUrl || ''}
+                          onChange={(e) => {
+                            const faviconUrl = e.target.value;
+                            setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl } : c));
+                          }}
+                          className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                          placeholder="https://example.com/favicon.ico"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Contact Email</label>
+                        <input
+                          type="email"
+                          value={selectedCustomer.contactEmail || ''}
+                          onChange={(e) => {
+                            const contactEmail = e.target.value;
+                            setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, contactEmail } : c));
+                          }}
+                          className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                          placeholder="info@example.com"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}

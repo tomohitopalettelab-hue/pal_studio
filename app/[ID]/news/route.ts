@@ -13,6 +13,7 @@ import {
   buildPostListHtml,
   replaceHeaderHtml,
   syncNavWithSitePagesHtml,
+  applyContactEmail,
 } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -62,14 +63,20 @@ export async function GET(
     const baseHtml = selectVariantHtml('news', templateId);
     const headerHtml = extractHeaderHtml(getCustomerTopHtml(customer));
     const withHeader = replaceHeaderHtml(baseHtml, headerHtml) || baseHtml;
-    const listHtml = buildPostListHtml(published, `${publishBasePath}/news`, 'ニュース');
+    const listHtml = buildPostListHtml(
+      published,
+      `${publishBasePath}/news`,
+      'ニュース',
+      customer?.defaultEyecatchUrl
+    );
     const injected = listHtml ? replaceSectionContent(withHeader, 'top', listHtml) : withHeader;
     const withNav = syncNavWithSitePagesHtml(
       injected,
       getCustomerPagesForNav(customer),
       publishBasePath,
     );
-    const output = ensureHtmlDocument(withNav || listHtml || injected);
+    const withEmail = applyContactEmail(withNav || listHtml || injected, customer?.contactEmail);
+    const output = ensureHtmlDocument(withEmail, { faviconUrl: customer?.faviconUrl });
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

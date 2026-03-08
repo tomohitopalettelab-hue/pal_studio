@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
 import {
-  buildPostListHtml,
   buildTopBlogSectionHtml,
   buildTopNewsSectionHtml,
   getCustomerPagesForNav,
   replaceSectionContent,
   syncNavWithSitePagesHtml,
+  ensureHtmlDocument,
+  applyContactEmail,
 } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -105,8 +106,16 @@ export async function GET(
     let html = String(topHtml);
     const newsPosts = getPublishedPosts(customer, 'news');
     const blogPosts = getPublishedPosts(customer, 'blog');
-    const newsSection = buildTopNewsSectionHtml(newsPosts, baseForPosts);
-    const blogSection = buildTopBlogSectionHtml(blogPosts, baseForPosts);
+    const newsSection = buildTopNewsSectionHtml(
+      newsPosts,
+      baseForPosts,
+      customer?.defaultEyecatchUrl
+    );
+    const blogSection = buildTopBlogSectionHtml(
+      blogPosts,
+      baseForPosts,
+      customer?.defaultEyecatchUrl
+    );
     if (newsSection) {
       html = replaceSectionBlock(html, 'news', newsSection);
     } else {
@@ -118,32 +127,13 @@ export async function GET(
       html = hideSection(html, 'blog');
     }
     html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
+    html = applyContactEmail(html, customer?.contactEmail);
+    const output = ensureHtmlDocument(html, {
+      faviconUrl: customer?.faviconUrl,
+      headHtml: linkSyncScript,
+    });
 
-    // 出力するHTMLに <html> タグが含まれていない場合、自前でラップする。
-    // 同時に charset と Tailwind CDN を挿入し、文字化けとスタイル未適用を防止する。
-    if (!/<html[\s>]/i.test(html)) {
-            html = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
-              `<meta name="viewport" content="width=device-width, initial-scale=1" />` +
-              `<script src="https://cdn.tailwindcss.com"></script>${linkSyncScript}</head><body>${html}</body></html>`;
-    } else {
-      // charset が指定されていない場合は挿入
-      if (!/<meta[^>]+charset=/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
-      }
-      // viewport が指定されていない場合は挿入
-      if (!/<meta[^>]+name=["']viewport["']/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1><meta name="viewport" content="width=device-width, initial-scale=1" />`);
-      }
-      // Tailwind CDN が含まれていなければ追加
-      if (!/cdn\.tailwindcss\.com/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.tailwindcss.com"></script>`);
-      }
-      if (!/palette-link-sync/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1>${linkSyncScript}`);
-      }
-    }
-
-    return new NextResponse(html, {
+    return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },
     });
   } catch (error) {

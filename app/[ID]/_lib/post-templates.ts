@@ -171,12 +171,23 @@ export const replaceSectionContent = (html: string, sectionId: string, content: 
   return html;
 };
 
-export const ensureHtmlDocument = (html: string) => {
+type HtmlDocumentOptions = {
+  faviconUrl?: string;
+  headHtml?: string;
+};
+
+export const ensureHtmlDocument = (html: string, options: HtmlDocumentOptions = {}) => {
   let output = String(html || '');
+  const faviconUrl = String(options.faviconUrl || '').trim();
+  const headHtml = String(options.headHtml || '').trim();
+  const faviconTag = faviconUrl ? `<link rel="icon" href="${escapeHtml(faviconUrl)}" />` : '';
+
   if (!/<html[\s>]/i.test(output)) {
     output = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
              `<meta name="viewport" content="width=device-width, initial-scale=1" />` +
-             `<script src="https://cdn.tailwindcss.com"></script></head><body>${output}</body></html>`;
+             `${faviconTag}` +
+             `<script src="https://cdn.tailwindcss.com"></script>` +
+             `${headHtml}</head><body>${output}</body></html>`;
   } else {
     if (!/<meta[^>]+charset=/i.test(output)) {
       output = output.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
@@ -184,22 +195,41 @@ export const ensureHtmlDocument = (html: string) => {
     if (!/<meta[^>]+name=["']viewport["']/i.test(output)) {
       output = output.replace(/<head([^>]*)>/i, `<head$1><meta name="viewport" content="width=device-width, initial-scale=1" />`);
     }
+    if (faviconTag && !/<link[^>]+rel=["']icon["']/i.test(output)) {
+      output = output.replace(/<head([^>]*)>/i, `<head$1>${faviconTag}`);
+    }
     if (!/cdn\.tailwindcss\.com/i.test(output)) {
       output = output.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.tailwindcss.com"></script>`);
+    }
+    if (headHtml && !output.includes(headHtml)) {
+      output = output.replace(/<head([^>]*)>/i, `<head$1>${headHtml}`);
     }
   }
   return output;
 };
 
-export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel: string) => {
+export const applyContactEmail = (html: string, contactEmail?: string) => {
+  const email = String(contactEmail || '').trim();
+  if (!email || !email.includes('@')) return html;
+  return String(html || '').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, email);
+};
+
+export const buildPostListHtml = (
+  posts: PostItem[],
+  basePath: string,
+  typeLabel: string,
+  defaultImageUrl?: string
+) => {
   if (posts.length === 0) return '';
   const listItems = sortPostsByTag(posts).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
     const date = escapeHtml(formatDate(post.publishedAt));
     const tags = normalizeTags(post.tags);
-    const image = post.imageUrl
-      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full aspect-[4/3] object-cover rounded-xl" />`
+    const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+    const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full aspect-[4/3] object-cover rounded-xl" />`
       : '';
     const tagHtml = tags.length
       ? `<div class="mt-3 flex flex-wrap gap-2">${tags
@@ -234,14 +264,16 @@ export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel
   `;
 };
 
-export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string) => {
+export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string, defaultImageUrl?: string) => {
   if (posts.length === 0) return '';
   const detailHref = `${basePath}/news-page`;
   const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
     const title = escapeHtml(post.title || '');
     const date = escapeHtml(formatDate(post.publishedAt));
-    const image = post.imageUrl
-      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700" />`
+    const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+    const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700" />`
       : '';
 
     return `
@@ -277,14 +309,16 @@ export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string) => 
   `;
 };
 
-export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string) => {
+export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string, defaultImageUrl?: string) => {
   if (posts.length === 0) return '';
   const detailHref = `${basePath}/blog-page`;
   const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
-    const image = post.imageUrl
-      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105" />`
+    const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+    const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105" />`
       : '';
 
     return `
@@ -315,12 +349,14 @@ export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string) => 
   `;
 };
 
-export const buildPostDetailTopHtml = (post: PostItem) => {
+export const buildPostDetailTopHtml = (post: PostItem, defaultImageUrl?: string) => {
   const title = escapeHtml(post.title || '');
   const excerpt = escapeHtml(post.excerpt || '');
   const date = escapeHtml(formatDate(post.publishedAt));
-  const image = post.imageUrl
-    ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full rounded-2xl object-cover" />`
+  const imageUrl = String(post.imageUrl || defaultImageUrl || '').trim();
+  const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+  const image = imageUrl
+    ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full rounded-2xl object-cover" />`
     : '';
 
   return `

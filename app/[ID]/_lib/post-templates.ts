@@ -236,6 +236,7 @@ export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel
 
 export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string) => {
   if (posts.length === 0) return '';
+  const detailHref = `${basePath}/news-page`;
   const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
     const title = escapeHtml(post.title || '');
     const date = escapeHtml(formatDate(post.publishedAt));
@@ -244,15 +245,17 @@ export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string) => 
       : '';
 
     return `
-      <article class="group py-8 md:py-10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10 cursor-pointer">
-        <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200 flex-shrink-0">
-          ${image}
-        </div>
-        <div class="flex-1">
-          <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">${date}</p>
-          <h4 class="text-xl md:text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">${title}</h4>
-        </div>
-      </article>
+      <a href="${detailHref}" class="group block">
+        <article class="py-8 md:py-10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10 cursor-pointer">
+          <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200 flex-shrink-0">
+            ${image}
+          </div>
+          <div class="flex-1">
+            <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">${date}</p>
+            <h4 class="text-xl md:text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">${title}</h4>
+          </div>
+        </article>
+      </a>
     `;
   }).join('');
 
@@ -276,6 +279,7 @@ export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string) => 
 
 export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string) => {
   if (posts.length === 0) return '';
+  const detailHref = `${basePath}/blog-page`;
   const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
@@ -284,13 +288,15 @@ export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string) => 
       : '';
 
     return `
-      <article class="group cursor-pointer">
-        <div class="aspect-video overflow-hidden mb-6 relative">
-          ${image}
-        </div>
-        <h4 class="text-xl md:text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">${title}</h4>
-        <p class="text-[var(--text-light)] text-sm md:text-lg font-light leading-relaxed">${excerpt}</p>
-      </article>
+      <a href="${detailHref}" class="group block">
+        <article class="cursor-pointer">
+          <div class="aspect-video overflow-hidden mb-6 relative">
+            ${image}
+          </div>
+          <h4 class="text-xl md:text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">${title}</h4>
+          <p class="text-[var(--text-light)] text-sm md:text-lg font-light leading-relaxed">${excerpt}</p>
+        </article>
+      </a>
     `;
   }).join('');
 

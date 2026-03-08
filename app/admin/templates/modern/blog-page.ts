@@ -18,10 +18,13 @@ export const modernBlogPageTemplate: TemplateVariant = {
           </div>
           <h1 class="text-lg md:text-xl font-black tracking-[0.2em] uppercase">Studio<span class="text-[var(--accent-color)]">.</span></h1>
         </div>
-        <nav data-sync="site-pages" class="hidden lg:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.4em]">
-          <a href="/" class="hover:text-[var(--accent-color)] transition-colors">Top</a>
-          <a href="/blog" class="text-[var(--accent-color)]">Blog</a>
-          <a href="/contact" class="px-8 py-4 bg-[var(--main-color)] text-white text-[9px] hover:bg-[var(--accent-color)] transition-all">Get in touch</a>
+        <nav data-nav-fixed class="hidden lg:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--text-color)]">
+          <a data-page-slug="top" data-page-hash="concept" href="/#concept" class="hover:text-[var(--accent-color)] transition-colors">Concept</a>
+          <a data-page-slug="top" data-page-hash="service" href="/#service" class="hover:text-[var(--accent-color)] transition-colors">Service</a>
+          <a data-page-slug="top" data-page-hash="works" href="/#works" class="hover:text-[var(--accent-color)] transition-colors">Works</a>
+          <a data-page-slug="news" href="/news" class="hover:text-[var(--accent-color)] transition-colors">News</a>
+          <a data-page-slug="blog" href="/blog" class="hover:text-[var(--accent-color)] transition-colors">Blog</a>
+          <a data-page-slug="contact" href="/contact" class="px-8 py-4 bg-[var(--main-color)] text-white text-[9px] hover:bg-[var(--accent-color)] transition-all">Get in touch</a>
         </nav>
         <label for="menu-toggle-blog-detail" class="lg:hidden cursor-pointer p-2 z-[110]">
           <div class="w-6 h-5 flex flex-col justify-between">
@@ -34,9 +37,12 @@ export const modernBlogPageTemplate: TemplateVariant = {
       <input type="checkbox" id="menu-toggle-blog-detail" class="sr-only peer" />
       <div class="fixed inset-0 bg-[var(--main-dark)] translate-x-full peer-checked:translate-x-0 transition-transform duration-500 lg:hidden z-[105] flex flex-col items-center justify-center text-white">
         <nav class="flex flex-col items-center gap-8 text-xs font-bold uppercase tracking-[0.5em]">
-          <a data-page-slug="top" href="/" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Top</a>
+          <a data-page-slug="top" data-page-hash="concept" href="/#concept" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Concept</a>
+          <a data-page-slug="top" data-page-hash="service" href="/#service" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Service</a>
+          <a data-page-slug="top" data-page-hash="works" href="/#works" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Works</a>
+          <a data-page-slug="news" href="/news" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">News</a>
           <a data-page-slug="blog" href="/blog" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Blog</a>
-          <a data-page-slug="contact" href="/contact" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Contact</a>
+          <a data-page-slug="contact" href="/contact" class="mt-4 px-10 py-5 bg-[var(--accent-color)]" onclick="document.getElementById('menu-toggle-blog-detail').checked=false">Get in touch</a>
         </nav>
       </div>
     </header>

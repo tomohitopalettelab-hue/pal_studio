@@ -353,7 +353,7 @@ export default function PaletteLab() {
       || parsed.querySelector('header nav')
       || parsed.querySelector('nav');
 
-    if (nav) {
+    if (nav && !nav.hasAttribute('data-nav-fixed')) {
       const anchors = Array.from(nav.querySelectorAll('a')) as HTMLAnchorElement[];
       if (anchors.length > 0) {
         const templateAnchor = anchors[0].cloneNode(true) as HTMLAnchorElement;
@@ -374,7 +374,10 @@ export default function PaletteLab() {
     pageLinks.forEach((link) => {
       const slug = link.getAttribute('data-page-slug');
       if (!slug) return;
-      link.setAttribute('href', buildPageHref(slug, basePath));
+      const hash = link.getAttribute('data-page-hash');
+      const baseHref = buildPageHref(slug, basePath);
+      const hashValue = hash ? String(hash).replace(/^#/, '') : '';
+      link.setAttribute('href', hashValue ? `${baseHref}#${hashValue}` : baseHref);
       mutated = true;
     });
 
@@ -1072,6 +1075,12 @@ ${activePageHtml}
               : c
           ));
         } else {
+          const fallbackHtml = normalizeHtmlString(baseHtml) || baseHtml;
+          if (/<[^>]+>/.test(fallbackHtml)) {
+            updateSelectedCustomerPages((pages) => pages.map((p) => (
+              p.slug === pageSlug ? { ...p, htmlCode: fallbackHtml } : p
+            )));
+          }
           setCustomers(prev => prev.map(c => 
             c.id === selectedCustomerId
               ? {

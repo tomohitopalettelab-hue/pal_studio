@@ -66,16 +66,26 @@ export async function GET(
       return new NextResponse('Page not found', { status: 404 });
     }
 
+    const publishBasePath = resolvePublishPath(customer) || basePath;
+    const linkSyncScript = `<script id="palette-link-sync">(function(){var basePath=${JSON.stringify(publishBasePath)};function normalize(s){return String(s||'').replace(/^\\/+/, '')}function build(slug){slug=normalize(slug);if(!slug||slug==='top')return basePath||'/';var baseForSubpages=basePath.endsWith('/pages')?basePath.replace(/\\/pages$/,''):basePath;if(!baseForSubpages)return '/'+slug;return baseForSubpages.replace(/\\/$/,'')+'/'+slug}var links=document.querySelectorAll('a[data-page-slug]');links.forEach(function(link){var slug=link.getAttribute('data-page-slug');if(!slug)return;var hash=link.getAttribute('data-page-hash')||'';hash=hash.replace(/^#/, '');var href=build(slug);link.setAttribute('href', hash?href+'#'+hash:href)});})();</script>`;
+
     let output = String(html);
     if (!/<html[\s>]/i.test(output)) {
       output = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
-               `<script src="https://cdn.tailwindcss.com"></script></head><body>${output}</body></html>`;
+               `<meta name="viewport" content="width=device-width, initial-scale=1" />` +
+               `<script src="https://cdn.tailwindcss.com"></script>${linkSyncScript}</head><body>${output}</body></html>`;
     } else {
       if (!/<meta[^>]+charset=/i.test(output)) {
         output = output.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
       }
+      if (!/<meta[^>]+name=["']viewport["']/i.test(output)) {
+        output = output.replace(/<head([^>]*)>/i, `<head$1><meta name="viewport" content="width=device-width, initial-scale=1" />`);
+      }
       if (!/cdn\.tailwindcss\.com/i.test(output)) {
         output = output.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.tailwindcss.com"></script>`);
+      }
+      if (!/palette-link-sync/i.test(output)) {
+        output = output.replace(/<head([^>]*)>/i, `<head$1>${linkSyncScript}`);
       }
     }
 

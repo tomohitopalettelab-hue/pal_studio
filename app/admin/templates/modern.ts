@@ -43,7 +43,7 @@ export const modernTemplate: Template = {
     </header>
 
     <main>
-      <section id="top" class="section-hero relative min-h-screen flex items-center justify-center px-8 overflow-hidden">
+      <section id="top" class="section-hero relative min-h-screen flex items-center justify-center px-8 pt-32 md:pt-36 overflow-hidden">
         <div class="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000" alt="Hero Background" class="w-full h-full object-cover grayscale opacity-40 transform scale-105 animate-slow-zoom">
           <div class="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white"></div>

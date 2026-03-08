@@ -20,13 +20,9 @@ export const modernTemplate: Template = {
           </div>
           <h1 class="text-xl font-black tracking-[0.2em] uppercase">Studio<span class="text-[var(--accent-color)]">.</span></h1>
         </div>
-        <nav data-sync="site-pages" class="hidden md:flex items-center gap-12 text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--text-color)]">
+        <nav data-sync="site-pages" class="hidden md:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.4em] text-[var(--text-color)]">
           <a href="#concept" class="relative group py-2">
             <span>Concept</span>
-            <span class="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--accent-color)] origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500"></span>
-          </a>
-          <a href="#features" class="relative group py-2">
-            <span>Features</span>
             <span class="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--accent-color)] origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500"></span>
           </a>
           <a href="#service" class="relative group py-2">
@@ -37,7 +33,15 @@ export const modernTemplate: Template = {
             <span>Works</span>
             <span class="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--accent-color)] origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500"></span>
           </a>
-          <a href="#company" class="px-10 py-4 bg-[var(--main-color)] text-white text-[9px] tracking-[0.3em] hover:bg-[var(--accent-color)] transition-all duration-500 shadow-2xl shadow-black/10">Get in touch</a>
+          <a href="#news" class="relative group py-2">
+            <span>News</span>
+            <span class="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--accent-color)] origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500"></span>
+          </a>
+          <a href="#blog" class="relative group py-2">
+            <span>Blog</span>
+            <span class="absolute bottom-0 left-0 w-full h-[1px] bg-[var(--accent-color)] origin-right scale-x-0 group-hover:scale-x-100 group-hover:origin-left transition-transform duration-500"></span>
+          </a>
+          <a href="#company" class="px-8 py-4 bg-[var(--main-color)] text-white text-[9px] tracking-[0.3em] hover:bg-[var(--accent-color)] transition-all duration-500 shadow-2xl shadow-black/10">Get in touch</a>
         </nav>
       </div>
     </header>
@@ -134,9 +138,9 @@ export const modernTemplate: Template = {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
             <div class="group cursor-pointer">
               <div class="aspect-[10/13] bg-[#f0f0f0] overflow-hidden relative mb-10">
-                <div class="absolute inset-0 bg-[var(--main-dark)] translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-                  <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">Explore</span>
+                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Work 01">
+                <div class="absolute inset-0 bg-[var(--main-dark)]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">View Project</span>
                 </div>
               </div>
               <h5 class="text-2xl font-bold tracking-tight mb-2">Aether Dynamic</h5>
@@ -144,9 +148,9 @@ export const modernTemplate: Template = {
             </div>
             <div class="group cursor-pointer md:mt-32">
               <div class="aspect-[10/13] bg-[#f0f0f0] overflow-hidden relative mb-10">
-                <div class="absolute inset-0 bg-[var(--accent-color)] translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-                  <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">Explore</span>
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Work 02">
+                <div class="absolute inset-0 bg-[var(--accent-color)]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">View Project</span>
                 </div>
               </div>
               <h5 class="text-2xl font-bold tracking-tight mb-2">Neo Genesis</h5>
@@ -154,9 +158,9 @@ export const modernTemplate: Template = {
             </div>
             <div class="group cursor-pointer">
               <div class="aspect-[10/13] bg-[#f0f0f0] overflow-hidden relative mb-10">
-                <div class="absolute inset-0 bg-[var(--main-dark)] translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-                  <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">Explore</span>
+                <img src="https://images.unsplash.com/photo-1523726491678-bf852e717f6a?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Work 03">
+                <div class="absolute inset-0 bg-[var(--main-dark)]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">View Project</span>
                 </div>
               </div>
               <h5 class="text-2xl font-bold tracking-tight mb-2">Lumina Systems</h5>
@@ -168,40 +172,79 @@ export const modernTemplate: Template = {
 
       <section id="news" class="py-[var(--section-gap)] px-10 bg-[#f8fafc]">
         <div class="max-w-6xl mx-auto">
-          <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)]">News</p>
-          <h3 class="text-4xl font-black tracking-tight mt-4 mb-12">最新情報</h3>
-          <div class="grid md:grid-cols-3 gap-6">
-            <article class="p-6 bg-white border border-black/5 rounded-2xl">
-              <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">2026.03.08</p>
-              <h4 class="text-xl font-bold mt-3">新サービスを公開しました</h4>
-              <p class="text-sm text-[var(--text-light)] mt-3">新しいプロダクトラインの提供を開始しました。</p>
+          <div class="flex items-end justify-between mb-16">
+            <div>
+              <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)] mb-4">News & Updates</p>
+              <h3 class="text-6xl font-black tracking-tighter uppercase">Latest</h3>
+            </div>
+            <a href="#" class="text-[9px] font-bold uppercase tracking-[0.3em] border-b border-black pb-2 hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">View Archive</a>
+          </div>
+          
+          <div class="grid md:grid-cols-1 divide-y divide-black/5">
+            <article class="group py-10 flex flex-col md:flex-row items-center gap-10 cursor-pointer">
+              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200">
+                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="News 01">
+              </div>
+              <div class="flex-1">
+                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.03.08</p>
+                <h4 class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">新サービス「Ethereal Design Suite」を公開しました</h4>
+              </div>
+              <div class="hidden md:block">
+                <div class="w-12 h-12 border border-black/5 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:text-white transition-all">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor"></path></svg>
+                </div>
+              </div>
             </article>
-            <article class="p-6 bg-white border border-black/5 rounded-2xl">
-              <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">2026.02.18</p>
-              <h4 class="text-xl font-bold mt-3">導入事例を追加</h4>
-              <p class="text-sm text-[var(--text-light)] mt-3">実績ページに最新プロジェクトを掲載しました。</p>
-            </article>
-            <article class="p-6 bg-white border border-black/5 rounded-2xl">
-              <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">2026.01.30</p>
-              <h4 class="text-xl font-bold mt-3">イベント登壇のお知らせ</h4>
-              <p class="text-sm text-[var(--text-light)] mt-3">最新トレンドを紹介するセミナーに登壇します。</p>
+            <article class="group py-10 flex flex-col md:flex-row items-center gap-10 cursor-pointer">
+              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="News 02">
+              </div>
+              <div class="flex-1">
+                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.02.18</p>
+                <h4 class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">Global Design Award 2026 金賞を受賞しました</h4>
+              </div>
+              <div class="hidden md:block">
+                <div class="w-12 h-12 border border-black/5 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:text-white transition-all">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor"></path></svg>
+                </div>
+              </div>
             </article>
           </div>
         </div>
       </section>
 
       <section id="blog" class="py-[var(--section-gap)] px-10 bg-white">
-        <div class="max-w-6xl mx-auto">
-          <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)]">Blog</p>
-          <h3 class="text-4xl font-black tracking-tight mt-4 mb-12">ブログ</h3>
-          <div class="grid md:grid-cols-2 gap-10">
-            <article class="p-8 border border-black/5 rounded-2xl">
-              <h4 class="text-2xl font-bold mb-4">ブランド戦略の考え方</h4>
-              <p class="text-sm text-[var(--text-light)]">設計の初期段階で整理すべき視点を解説します。</p>
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center mb-24">
+            <p class="text-[10px] font-bold tracking-[0.8em] uppercase text-[var(--accent-color)] mb-4">Our Perspectives</p>
+            <h3 class="text-6xl font-black tracking-tighter uppercase">Insights</h3>
+          </div>
+          
+          <div class="grid md:grid-cols-2 gap-16">
+            <article class="group cursor-pointer">
+              <div class="aspect-video overflow-hidden mb-8 relative">
+                <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Blog 01">
+                <div class="absolute top-6 left-6 px-4 py-2 bg-white/90 backdrop-blur text-[9px] font-black uppercase tracking-widest">Design Theory</div>
+              </div>
+              <h4 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">2026年、ブランドに求められるのは「静寂」という価値。</h4>
+              <p class="text-[var(--text-light)] text-lg font-light leading-relaxed">情報の洪水の中で、あえて語らないことで伝わるメッセージの深さについて考察します。</p>
+              <div class="mt-8 flex items-center gap-4">
+                <div class="w-10 h-[1px] bg-black/20 group-hover:w-16 group-hover:bg-[var(--accent-color)] transition-all"></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Read Article</span>
+              </div>
             </article>
-            <article class="p-8 border border-black/5 rounded-2xl">
-              <h4 class="text-2xl font-bold mb-4">プロジェクト運用の裏側</h4>
-              <p class="text-sm text-[var(--text-light)]">スピードと品質を両立するための運用フロー。</p>
+
+            <article class="group cursor-pointer">
+              <div class="aspect-video overflow-hidden mb-8 relative">
+                <img src="https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Blog 02">
+                <div class="absolute top-6 left-6 px-4 py-2 bg-white/90 backdrop-blur text-[9px] font-black uppercase tracking-widest">Business Strategy</div>
+              </div>
+              <h4 class="text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">クリエイティブがビジネス指標に与える実質的なインパクト</h4>
+              <p class="text-[var(--text-light)] text-lg font-light leading-relaxed">デザイン刷新によってLTVが200%向上したスタートアップの事例を元に、戦略的意図を紐解きます。</p>
+              <div class="mt-8 flex items-center gap-4">
+                <div class="w-10 h-[1px] bg-black/20 group-hover:w-16 group-hover:bg-[var(--accent-color)] transition-all"></div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Read Article</span>
+              </div>
             </article>
           </div>
         </div>

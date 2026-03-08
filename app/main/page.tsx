@@ -14,6 +14,7 @@ type PostItem = {
   excerpt: string;
   status: PostStatus;
   postType: 'blog' | 'news';
+  tags?: string[];
   publishedAt: string;
   imageUrl?: string;
   imageAlt?: string;
@@ -69,6 +70,7 @@ const createDraftPost = (): PostItem => {
     excerpt: '',
     status: 'published',
     postType: 'news',
+    tags: [],
     publishedAt: now,
     createdAt: now,
     updatedAt: now,
@@ -117,7 +119,7 @@ const buildAutoDraft = (
   const dateLabel = `${y}/${m}/${d}`;
   const headline = title || `${dateLabel}のお知らせ`;
   const summary = excerpt || `${customerName || '当社'}からの最新情報をお届けします。`;
-  const typeLabel = '最新情報';
+  const typeLabel = postType === 'blog' ? 'ブログ' : '最新情報';
   const chunks = [
     `${customerName || '当社'}の${typeLabel}をお知らせします。`,
     `${dateLabel}に公開しました。`,
@@ -144,6 +146,10 @@ const buildAutoDraft = (
     bodyHtml: textToHtml(bodyText),
   };
 };
+
+const getPostTypeLabel = (postType: PostItem['postType']) => (
+  postType === 'blog' ? 'ブログ' : '最新情報'
+);
 
 const MainScrollStyles = () => (
   <style jsx global>{`
@@ -201,6 +207,7 @@ export default function MainPage() {
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [showGeneratedToast, setShowGeneratedToast] = useState(false);
   const [draftLength, setDraftLength] = useState(400);
+  const [tagInput, setTagInput] = useState('');
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === selectedPostId) || null,
@@ -232,7 +239,8 @@ export default function MainPage() {
         const loadedPosts = Array.isArray(sessionData.posts) ? sessionData.posts : [];
         const normalizedPosts: PostItem[] = loadedPosts.map((post) => ({
           ...post,
-          postType: 'news' as const,
+          postType: post.postType === 'blog' ? 'blog' : 'news',
+          tags: Array.isArray(post.tags) ? post.tags : [],
         }));
         setPosts(normalizedPosts);
         if (normalizedPosts.length > 0) {
@@ -406,6 +414,20 @@ export default function MainPage() {
     );
   };
 
+  const addTagToPost = (postId: string, rawTag: string) => {
+    const tag = String(rawTag || '').trim();
+    if (!tag) return;
+    updatePost(postId, {
+      tags: Array.from(new Set([...(selectedPost?.tags || []), tag])),
+    });
+  };
+
+  const removeTagFromPost = (postId: string, tag: string) => {
+    updatePost(postId, {
+      tags: (selectedPost?.tags || []).filter((t) => t !== tag),
+    });
+  };
+
   const handleGenerateDraft = async () => {
     if (!selectedPost) return;
     const title = String(selectedPost.title || '').trim();
@@ -491,19 +513,15 @@ export default function MainPage() {
       return generated ? { ...post, slug: generated } : post;
     });
 
-    const newsOnlyPosts = normalizedPosts.map((post) => ({
-      ...post,
-      postType: 'news',
-    }));
-
     const slugMap = new Map<string, number>();
-    for (const post of newsOnlyPosts) {
+    for (const post of normalizedPosts) {
       const slug = String(post.slug || '').trim().toLowerCase();
       if (!slug) {
         setSaveError('スラッグが空の投稿があります。');
         return;
       }
-      slugMap.set(slug, (slugMap.get(slug) || 0) + 1);
+      const key = `${post.postType}:${slug}`;
+      slugMap.set(key, (slugMap.get(key) || 0) + 1);
     }
     const duplicates = Array.from(slugMap.entries()).filter(([, count]) => count > 1);
     if (duplicates.length > 0) {
@@ -517,7 +535,7 @@ export default function MainPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ posts: newsOnlyPosts }),
+        body: JSON.stringify({ posts: normalizedPosts }),
       });
       const data = await res.json();
       if (res.status === 401) {
@@ -528,7 +546,7 @@ export default function MainPage() {
         setSaveError(data?.error || '保存に失敗しました。');
         return;
       }
-      setPosts(Array.isArray(data.posts) ? data.posts : newsOnlyPosts);
+      setPosts(Array.isArray(data.posts) ? data.posts : normalizedPosts);
     } catch {
       setSaveError('通信エラーが発生しました。');
     } finally {
@@ -629,7 +647,7 @@ if (isLoading) {
               <div className="w-10 h-1 bg-[#00B7CE] rounded-full" />
               <p className="text-[11px] uppercase tracking-[0.4em] text-[#00B7CE] font-black">Pal Studio</p>
             </div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">ニュース投稿管理</h1>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">投稿管理</h1>
             <div className="flex items-center gap-2 pt-1">
               <span className="text-[11px] bg-white px-3 py-1 rounded-full border border-slate-100 shadow-sm text-slate-500 font-bold">
                 {session.customer?.name || '顧客名未設定'}
@@ -698,7 +716,7 @@ if (isLoading) {
                           </span>
                         </div>
                         <p className="text-[10px] text-slate-300 font-mono truncate tracking-tight uppercase">
-                          最新情報 / {post.slug || '未設定'}
+                          {getPostTypeLabel(post.postType)} / {post.slug || '未設定'}
                         </p>
                       </button>
                     ))}
@@ -729,7 +747,9 @@ if (isLoading) {
                     </div>
                     <div>
                       <h2 className="text-xl font-black text-slate-900 tracking-tight">コンテンツ編集</h2>
-                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">最新情報 編集</p>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
+                        {getPostTypeLabel(selectedPost.postType)} 編集
+                      </p>
                     </div>
                   </div>
                   <button
@@ -774,9 +794,14 @@ if (isLoading) {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="space-y-3">
                       <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">タイプ</label>
-                      <div className="w-full px-6 py-4 bg-slate-50/60 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-600">
-                        最新情報
-                      </div>
+                      <select
+                        value={selectedPost.postType}
+                        onChange={(event) => updatePost(selectedPost.id, { postType: event.target.value as PostItem['postType'], slugAuto: true })}
+                        className="w-full appearance-none px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none cursor-pointer focus:bg-white focus:border-[#00B7CE] transition-all"
+                      >
+                        <option value="news">最新情報</option>
+                        <option value="blog">ブログ</option>
+                      </select>
                     </div>
                     <div className="space-y-3">
                       <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">公開状態</label>
@@ -797,6 +822,48 @@ if (isLoading) {
                         onChange={(event) => updatePost(selectedPost.id, { publishedAt: toIsoFromLocal(event.target.value) })}
                         className="w-full px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#00B7CE] transition-all"
                       />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">タグ</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(selectedPost.tags || []).map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => removeTagFromPost(selectedPost.id, tag)}
+                          className="px-3 py-1 rounded-full bg-[#00B7CE]/10 text-[#00B7CE] text-[10px] font-bold uppercase tracking-widest"
+                          title="クリックで削除"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        value={tagInput}
+                        onChange={(event) => setTagInput(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            event.preventDefault();
+                            addTagToPost(selectedPost.id, tagInput);
+                            setTagInput('');
+                          }
+                        }}
+                        className="flex-1 px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#00B7CE] transition-all"
+                        placeholder="タグを追加"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          addTagToPost(selectedPost.id, tagInput);
+                          setTagInput('');
+                        }}
+                        className="px-5 py-3 bg-white border border-slate-100 rounded-[1.25rem] text-[10px] font-black text-[#00B7CE] hover:border-[#00B7CE]/40 transition-all uppercase"
+                      >
+                        追加
+                      </button>
                     </div>
                   </div>
 
@@ -955,7 +1022,7 @@ if (isLoading) {
                     <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">プレビュー</h3>
                     <article className="max-w-2xl mx-auto border border-white bg-white/40 rounded-[2.5rem] p-10 shadow-sm">
                       <div className="flex items-center gap-3 text-[10px] font-black text-[#00B7CE]/50 uppercase tracking-[0.2em] mb-4">
-                        <span>最新情報</span>
+                        <span>{getPostTypeLabel(selectedPost.postType)}</span>
                         <div className="w-1 h-1 rounded-full bg-slate-200" />
                         <span>{toDatetimeLocal(selectedPost.publishedAt).split('T')[0]}</span>
                       </div>

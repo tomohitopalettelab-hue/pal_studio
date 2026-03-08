@@ -15,6 +15,7 @@ type PostItem = {
   excerpt: string;
   status: PostStatus;
   postType: 'blog' | 'news';
+  tags?: string[];
   publishedAt: string;
   imageUrl?: string;
   imageAlt?: string;
@@ -24,6 +25,9 @@ type PostItem = {
 
 const normalizePost = (input: Partial<PostItem>, fallbackId: string): PostItem => {
   const nowIso = new Date().toISOString();
+  const tags = Array.isArray(input.tags)
+    ? input.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
+    : undefined;
   return {
     id: String(input.id || fallbackId),
     title: String(input.title || ''),
@@ -34,6 +38,7 @@ const normalizePost = (input: Partial<PostItem>, fallbackId: string): PostItem =
     excerpt: String(input.excerpt || ''),
     status: input.status === 'published' ? 'published' : 'draft',
     postType: input.postType === 'blog' ? 'blog' : 'news',
+    tags,
     publishedAt: String(input.publishedAt || ''),
     imageUrl: input.imageUrl ? String(input.imageUrl) : undefined,
     imageAlt: input.imageAlt ? String(input.imageAlt) : undefined,

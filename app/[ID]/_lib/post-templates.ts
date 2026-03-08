@@ -8,6 +8,7 @@ export type PostItem = {
   excerpt: string;
   status: string;
   postType?: 'news' | 'blog' | string;
+  tags?: string[];
   publishedAt: string;
   imageUrl?: string;
   imageAlt?: string;
@@ -127,6 +128,26 @@ export const formatDate = (value: string) => {
   return date.toISOString().slice(0, 10);
 };
 
+const normalizeTags = (tags?: string[]) => {
+  if (!Array.isArray(tags)) return [] as string[];
+  return tags
+    .map((tag) => String(tag || '').trim())
+    .filter(Boolean);
+};
+
+export const sortPostsByTag = (posts: PostItem[]) => {
+  return [...posts].sort((a, b) => {
+    const aTags = normalizeTags(a.tags);
+    const bTags = normalizeTags(b.tags);
+    const aKey = (aTags[0] || '').toLowerCase();
+    const bKey = (bTags[0] || '').toLowerCase();
+    if (aKey && bKey && aKey !== bKey) return aKey.localeCompare(bKey);
+    if (aKey && !bKey) return -1;
+    if (!aKey && bKey) return 1;
+    return String(b.publishedAt || '').localeCompare(String(a.publishedAt || ''));
+  });
+};
+
 export const getCustomerTemplateId = (customer: any) => {
   const raw = String(customer?.selectedTemplateId || customer?.templateId || '').trim();
   return hasTemplateId(raw) ? raw : '';
@@ -172,12 +193,18 @@ export const ensureHtmlDocument = (html: string) => {
 
 export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel: string) => {
   if (posts.length === 0) return '';
-  const listItems = posts.map((post) => {
+  const listItems = sortPostsByTag(posts).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
     const date = escapeHtml(formatDate(post.publishedAt));
+    const tags = normalizeTags(post.tags);
     const image = post.imageUrl
       ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full aspect-[4/3] object-cover rounded-xl" />`
+      : '';
+    const tagHtml = tags.length
+      ? `<div class="mt-3 flex flex-wrap gap-2">${tags
+          .map((tag) => `<span class="text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-slate-100 text-slate-500">${escapeHtml(tag)}</span>`)
+          .join('')}</div>`
       : '';
 
     return `
@@ -187,6 +214,7 @@ export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel
           <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em]">${date}</p>
           <h2 class="text-xl font-black text-slate-900 mt-2">${title}</h2>
           <p class="text-sm text-slate-600 mt-3">${excerpt}</p>
+          ${tagHtml}
           <a href="${basePath}/${encodeURIComponent(post.slug)}" class="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 mt-4">続きを読む</a>
         </div>
       </article>
@@ -203,6 +231,81 @@ export const buildPostListHtml = (posts: PostItem[], basePath: string, typeLabel
         ${listItems}
       </div>
     </div>
+  `;
+};
+
+export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string) => {
+  if (posts.length === 0) return '';
+  const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
+    const title = escapeHtml(post.title || '');
+    const date = escapeHtml(formatDate(post.publishedAt));
+    const image = post.imageUrl
+      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700" />`
+      : '';
+
+    return `
+      <article class="group py-8 md:py-10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10 cursor-pointer">
+        <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200 flex-shrink-0">
+          ${image}
+        </div>
+        <div class="flex-1">
+          <p class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">${date}</p>
+          <h4 class="text-xl md:text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">${title}</h4>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  return `
+    <section id="news" class="py-[var(--section-gap-mobile)] md:py-[var(--section-gap)] px-6 md:px-10 bg-[#f8fafc]">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 md:mb-16 gap-4">
+          <div>
+            <p class="text-[9px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)] mb-2">News & Updates</p>
+            <h3 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">Latest</h3>
+          </div>
+          <a href="${basePath}/news" class="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.3em] border-b border-black pb-1 hover:text-[var(--accent-color)] transition-all">View Archive</a>
+        </div>
+        <div class="grid grid-cols-1 divide-y divide-black/5 border-t border-black/5">
+          ${items}
+        </div>
+      </div>
+    </section>
+  `;
+};
+
+export const buildTopBlogSectionHtml = (posts: PostItem[], basePath: string) => {
+  if (posts.length === 0) return '';
+  const items = sortPostsByTag(posts).slice(0, 2).map((post) => {
+    const title = escapeHtml(post.title || '');
+    const excerpt = escapeHtml(post.excerpt || '');
+    const image = post.imageUrl
+      ? `<img src="${escapeHtml(post.imageUrl)}" alt="${escapeHtml(post.imageAlt || '')}" class="w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-105" />`
+      : '';
+
+    return `
+      <article class="group cursor-pointer">
+        <div class="aspect-video overflow-hidden mb-6 relative">
+          ${image}
+        </div>
+        <h4 class="text-xl md:text-3xl font-bold mb-4 group-hover:text-[var(--accent-color)] transition-colors leading-tight">${title}</h4>
+        <p class="text-[var(--text-light)] text-sm md:text-lg font-light leading-relaxed">${excerpt}</p>
+      </article>
+    `;
+  }).join('');
+
+  return `
+    <section id="blog" class="py-[var(--section-gap-mobile)] md:py-[var(--section-gap)] px-6 md:px-10 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-12 md:mb-24">
+          <p class="text-[9px] font-bold tracking-[0.8em] uppercase text-[var(--accent-color)] mb-4">Our Perspectives</p>
+          <h3 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">Insights</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+          ${items}
+        </div>
+      </div>
+    </section>
   `;
 };
 

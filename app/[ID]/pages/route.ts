@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
 import {
   buildPostListHtml,
+  buildTopBlogSectionHtml,
+  buildTopNewsSectionHtml,
   getCustomerPagesForNav,
   replaceSectionContent,
   syncNavWithSitePagesHtml,
@@ -43,6 +45,13 @@ const getCustomerPageHtml = (customer: any, slug: string) => {
   if (found && found.htmlCode) return String(found.htmlCode);
   if (target === 'top' && customer?.htmlCode) return String(customer.htmlCode);
   return '';
+};
+
+const replaceSectionBlock = (source: string, sectionId: string, nextSection: string) => {
+  if (!source || !nextSection) return source;
+  const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'][^>]*>)[\s\S]*?(</section>)`, 'i');
+  if (!re.test(source)) return source;
+  return source.replace(re, nextSection);
 };
 
 const hideSection = (source: string, sectionId: string) => {
@@ -96,15 +105,15 @@ export async function GET(
     let html = String(topHtml);
     const newsPosts = getPublishedPosts(customer, 'news');
     const blogPosts = getPublishedPosts(customer, 'blog');
-    const newsHtml = buildPostListHtml(newsPosts, `${baseForPosts}/news`, 'ニュース');
-    const blogHtml = buildPostListHtml(blogPosts, `${baseForPosts}/blog`, 'ブログ');
-    if (newsHtml) {
-      html = replaceSectionContent(html, 'news', newsHtml);
+    const newsSection = buildTopNewsSectionHtml(newsPosts, baseForPosts);
+    const blogSection = buildTopBlogSectionHtml(blogPosts, baseForPosts);
+    if (newsSection) {
+      html = replaceSectionBlock(html, 'news', newsSection);
     } else {
       html = hideSection(html, 'news');
     }
-    if (blogHtml) {
-      html = replaceSectionContent(html, 'blog', blogHtml);
+    if (blogSection) {
+      html = replaceSectionBlock(html, 'blog', blogSection);
     } else {
       html = hideSection(html, 'blog');
     }

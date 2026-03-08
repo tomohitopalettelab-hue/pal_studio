@@ -40,9 +40,15 @@ export async function GET(
 
     const posts = (Array.isArray(customer.posts) ? customer.posts : []) as PostItem[];
     const now = new Date();
+    const tagFilter = String(request.nextUrl?.searchParams.get('tag') || '').trim();
     const published = posts
       .filter((post) => String(post.status || '') === 'published')
       .filter((post) => String(post.postType || 'blog') === 'blog')
+      .filter((post) => {
+        if (!tagFilter) return true;
+        const tags = Array.isArray(post.tags) ? post.tags.map((tag) => String(tag || '').trim()) : [];
+        return tags.includes(tagFilter);
+      })
       .filter((post) => {
         if (!post.publishedAt) return true;
         const date = new Date(post.publishedAt);

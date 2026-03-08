@@ -1175,8 +1175,15 @@ ${activePageHtml}
         if (/<[^>]+>/.test(normalized)) {
           let generatedHtml = normalized || html;
           if (pageSlug === 'top') {
+            if (!isRenderableHtml(generatedHtml)) {
+              generatedHtml = baseHtml || generatedHtml;
+            }
             generatedHtml = ensureTopSections(generatedHtml, baseHtml);
             generatedHtml = restoreBaseIfMissingSections(generatedHtml, baseHtml);
+          }
+          if (!isRenderableHtml(generatedHtml)) {
+            const fallbackHtml = normalizeHtmlString(baseHtml) || baseHtml;
+            generatedHtml = fallbackHtml || generatedHtml;
           }
           updateSelectedCustomerPages((pages) => pages.map((p) => (
             p.slug === pageSlug ? { ...p, htmlCode: generatedHtml } : p
@@ -1644,6 +1651,32 @@ ${activePageHtml}
     const newsPosts = getPublishedPostsForPreview('news');
     const blogPosts = getPublishedPostsForPreview('blog');
     let output = String(html);
+
+    const resolvePreviewBaseHtml = () => {
+      const variant = hasTemplateVariantId(activePageTemplateId)
+        ? getTemplateVariantById(activePageTemplateId)
+        : null;
+      const templateId = variant?.templateId
+        || (hasTemplateId(activePageTemplateId) ? activePageTemplateId : '')
+        || (hasTemplateId(String(activePage?.templateId || '')) ? String(activePage?.templateId || '') : '')
+        || (hasTemplateId(selectedTemplateId) ? selectedTemplateId : TEMPLATE_DEFAULT_ID);
+      const template = getTemplateById(templateId || TEMPLATE_DEFAULT_ID);
+      if (variant?.html) return String(variant.html);
+      const fallbackVariant = templateVariants.find((item) => (
+        item.pageSlug === pageSlug && item.templateId === template.id
+      ));
+      return String(fallbackVariant?.html || template.html || '');
+    };
+
+    if (pageSlug === 'top') {
+      const missingCore = !hasSectionId(output, 'top')
+        || !hasSectionId(output, 'news')
+        || !hasSectionId(output, 'blog');
+      if (missingCore || !isRenderableHtml(output)) {
+        const baseHtml = resolvePreviewBaseHtml();
+        if (baseHtml) output = baseHtml;
+      }
+    }
 
     if (pageSlug === 'top') {
       const newsSection = buildTopNewsSectionHtml(newsPosts, '/news', defaultEyecatchUrl)

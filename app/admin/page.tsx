@@ -791,6 +791,16 @@ export default function PaletteLab() {
     return match ? match[1] : '';
   };
 
+  const getSectionIds = (source: string) => {
+    const ids: string[] = [];
+    const re = /<section[^>]*id=["']([^"']+)["'][^>]*>/gi;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(String(source || ''))) !== null) {
+      ids.push(match[1]);
+    }
+    return ids;
+  };
+
   const ensureTopSections = (html: string, baseHtml: string) => {
     let output = String(html || '');
     const topSection = extractSectionById(baseHtml, 'top');
@@ -801,12 +811,24 @@ export default function PaletteLab() {
       output = `${topSection}${output}`;
     }
     if (!hasSectionId(output, 'news') && newsSection) {
-      output = output.replace(/<\/section>/i, `$&${newsSection}`);
+      output = output.replace(/<section[^>]*id=["']top["'][^>]*>[\s\S]*?<\/section>/i, `$&${newsSection}`);
     }
     if (!hasSectionId(output, 'blog') && blogSection) {
       output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSection}`);
     }
     return output;
+  };
+
+  const restoreBaseIfMissingSections = (html: string, baseHtml: string) => {
+    const baseIds = getSectionIds(baseHtml);
+    if (baseIds.length === 0) return html;
+    const missing = baseIds.filter((id) => !hasSectionId(html, id));
+    if (missing.length === 0) return html;
+    if (missing.length >= Math.ceil(baseIds.length * 0.4)) return baseHtml;
+    if (missing.includes('top') || missing.includes('news') || missing.includes('blog')) {
+      return baseHtml;
+    }
+    return html;
   };
 
   // テンプレート自動選択ロジック
@@ -1154,6 +1176,7 @@ ${activePageHtml}
           let generatedHtml = normalized || html;
           if (pageSlug === 'top') {
             generatedHtml = ensureTopSections(generatedHtml, baseHtml);
+            generatedHtml = restoreBaseIfMissingSections(generatedHtml, baseHtml);
           }
           updateSelectedCustomerPages((pages) => pages.map((p) => (
             p.slug === pageSlug ? { ...p, htmlCode: generatedHtml } : p

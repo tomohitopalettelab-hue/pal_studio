@@ -104,6 +104,7 @@ export default function PaletteLab() {
   const [isApplying, setIsApplying] = useState(false);
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
+  const generationTimerRef = useRef<number | null>(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
   
   // 画像編集用ステート
@@ -306,7 +307,13 @@ export default function PaletteLab() {
       }
     };
     window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
+    return () => {
+      window.removeEventListener('message', handler);
+      if (generationTimerRef.current !== null) {
+        window.clearInterval(generationTimerRef.current);
+        generationTimerRef.current = null;
+      }
+    };
   }, []);
 
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
@@ -921,6 +928,16 @@ ${activePageHtml}
     setIsApplying(true);
     setIsGeneratingDraft(true);
     setGenerationProgress(1);
+    if (generationTimerRef.current !== null) {
+      window.clearInterval(generationTimerRef.current);
+    }
+    generationTimerRef.current = window.setInterval(() => {
+      setGenerationProgress((prev) => {
+        if (!isGeneratingDraft) return prev;
+        if (prev >= 95) return prev;
+        return prev + 1;
+      });
+    }, 500);
     try {
       // お客様回答と（必要なら）代替データを扱うための変数
       let templateSelectionAnswers = selectedCustomer.answers || [];
@@ -1134,12 +1151,17 @@ ${activePageHtml}
         const progressValue = Math.max(1, Math.round(((i + 1) / pagesToGenerate.length) * 100));
         setGenerationProgress(progressValue);
       }
+      setGenerationProgress(100);
     } catch (error: any) {
       console.error("Generation Error:", error);
       alert(`初期生成に失敗しました: ${error.message}`);
     } finally {
       setIsApplying(false);
       setIsGeneratingDraft(false);
+      if (generationTimerRef.current !== null) {
+        window.clearInterval(generationTimerRef.current);
+        generationTimerRef.current = null;
+      }
       setGenerationProgress(0);
     }
   };
@@ -1496,6 +1518,30 @@ ${activePageHtml}
     return source.replace(re, nextSection);
   };
 
+  const insertSectionAfterId = (source: string, afterId: string, sectionHtml: string) => {
+    if (!sectionHtml) return source;
+    const re = new RegExp(`(<section[^>]*id=["']${afterId}["'][^>]*>[\s\S]*?</section>)`, 'i');
+    if (re.test(source)) {
+      return source.replace(re, `$1${sectionHtml}`);
+    }
+    if (/<\/main>/i.test(source)) {
+      return source.replace(/<\/main>/i, `${sectionHtml}</main>`);
+    }
+    return `${source}${sectionHtml}`;
+  };
+
+  const removeAutoPlaceholderSections = (source: string) => {
+    const patterns = [
+      '最新情報は公開投稿から自動生成されます。',
+      'ブログ記事は公開投稿から自動生成されます。'
+    ];
+    let output = source;
+    patterns.forEach((text) => {
+      const re = new RegExp(`<section[^>]*>[\\s\\S]*?${text}[\\s\\S]*?</section>`, 'i');
+      output = output.replace(re, '');
+    });
+    return output;
+  };
   const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
     if (!sectionHtml) return source;
     if (/<\/main>/i.test(source)) {
@@ -1541,9 +1587,14 @@ ${activePageHtml}
       const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
         || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
       const replacedNews = replaceSectionBlock(output, 'news', newsSection);
-      output = replacedNews === output ? insertSectionBeforeMainClose(output, newsSection) : replacedNews;
+      output = replacedNews === output
+        ? insertSectionAfterId(output, 'top', newsSection)
+        : replacedNews;
       const replacedBlog = replaceSectionBlock(output, 'blog', blogSection);
-      output = replacedBlog === output ? insertSectionBeforeMainClose(output, blogSection) : replacedBlog;
+      output = replacedBlog === output
+        ? insertSectionAfterId(output, 'news', blogSection)
+        : replacedBlog;
+      output = removeAutoPlaceholderSections(output);
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';

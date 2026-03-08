@@ -64,6 +64,28 @@ const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
   return `${source}${sectionHtml}`;
 };
 
+const insertSectionAfterId = (source: string, afterId: string, sectionHtml: string) => {
+  if (!sectionHtml) return source;
+  const re = new RegExp(`(<section[^>]*id=["']${afterId}["'][^>]*>[\s\S]*?</section>)`, 'i');
+  if (re.test(source)) {
+    return source.replace(re, `$1${sectionHtml}`);
+  }
+  return insertSectionBeforeMainClose(source, sectionHtml);
+};
+
+const removeAutoPlaceholderSections = (source: string) => {
+  const patterns = [
+    '最新情報は公開投稿から自動生成されます。',
+    'ブログ記事は公開投稿から自動生成されます。'
+  ];
+  let output = source;
+  patterns.forEach((text) => {
+    const re = new RegExp(`<section[^>]*>[\\s\\S]*?${text}[\\s\\S]*?</section>`, 'i');
+    output = output.replace(re, '');
+  });
+  return output;
+};
+
 const hideSection = (source: string, sectionId: string) => {
   const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'])`, 'i');
   if (!re.test(source)) return source;
@@ -131,16 +153,17 @@ export async function GET(
     );
     if (newsSection) {
       const replacedNews = replaceSectionBlock(html, 'news', newsSection);
-      html = replacedNews === html ? insertSectionBeforeMainClose(html, newsSection) : replacedNews;
+      html = replacedNews === html ? insertSectionAfterId(html, 'top', newsSection) : replacedNews;
     } else {
       html = hideSection(html, 'news');
     }
     if (blogSection) {
       const replacedBlog = replaceSectionBlock(html, 'blog', blogSection);
-      html = replacedBlog === html ? insertSectionBeforeMainClose(html, blogSection) : replacedBlog;
+      html = replacedBlog === html ? insertSectionAfterId(html, 'news', blogSection) : replacedBlog;
     } else {
       html = hideSection(html, 'blog');
     }
+    html = removeAutoPlaceholderSections(html);
     html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
     html = applyContactEmail(html, customer?.contactEmail);
     html = applyLogoToHeader(html, customer?.logoUrl);

@@ -6,7 +6,7 @@ export const modernTemplate: Template = {
   tags: ['simple', 'clean', 'business', 'startup'],
   description: '汎用性の高いモダンでクリーンなデザイン。セクション固定構成に対応。',
   html: `
-<div class="template-root" style="--main-color: #050505; --main-dark: #000000; --accent-color: #6366f1; --text-color: #080808; --text-light: #6b7280; --bg-color: #ffffff; --section-gap: 14rem;">
+<div class="template-root" style="--main-color: #0f172a; --main-dark: #111827; --accent-color: #3b82f6; --text-color: #0f172a; --text-light: #64748b; --bg-color: #ffffff; --section-gap: 14rem;">
   <div class="min-h-screen font-sans text-[var(--text-color)] bg-[var(--bg-color)] selection:bg-[var(--accent-color)] selection:text-white antialiased leading-relaxed">
     
     <div class="fixed inset-0 pointer-events-none z-[999] opacity-[0.015]" style="background-image: url('https://www.transparenttextures.com/patterns/p6.png');"></div>
@@ -60,7 +60,7 @@ export const modernTemplate: Template = {
             </p>
             <div class="group relative flex flex-col items-center">
                 <span class="text-[9px] font-bold tracking-[0.5em] uppercase mb-4 opacity-30">Scroll Down</span>
-                <div class="w-[1px] h-32 bg-gradient-to-b from-black to-transparent opacity-20 group-hover:h-40 transition-all duration-700"></div>
+                <div class="w-[1px] h-32 bg-gradient-to-b from-slate-700 to-transparent opacity-20 group-hover:h-40 transition-all duration-700"></div>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@ export const modernTemplate: Template = {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
             <div class="group cursor-pointer">
               <div class="aspect-[10/13] bg-[#f0f0f0] overflow-hidden relative mb-10">
-                <div class="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
+                <div class="absolute inset-0 bg-[var(--main-dark)] translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
                   <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">Explore</span>
                 </div>
@@ -154,7 +154,7 @@ export const modernTemplate: Template = {
             </div>
             <div class="group cursor-pointer">
               <div class="aspect-[10/13] bg-[#f0f0f0] overflow-hidden relative mb-10">
-                <div class="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
+                <div class="absolute inset-0 bg-[var(--main-dark)] translate-y-full group-hover:translate-y-0 transition-transform duration-[800ms] cubic-bezier(0.23, 1, 0.32, 1)"></div>
                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
                   <span class="text-white text-[10px] font-bold tracking-[0.5em] border border-white/30 px-8 py-4 uppercase">Explore</span>
                 </div>
@@ -166,7 +166,7 @@ export const modernTemplate: Template = {
         </div>
       </section>
 
-      <section id="company" class="section-company py-[var(--section-gap)] px-10 bg-[#080808] text-white overflow-hidden relative">
+      <section id="company" class="section-company py-[var(--section-gap)] px-10 bg-[var(--main-dark)] text-white overflow-hidden relative">
         <div class="max-w-5xl mx-auto relative z-10">
           <h3 class="text-[10px] font-bold tracking-[0.8em] uppercase mb-24 text-white/30 text-center">Corporate Profile</h3>
           <div class="space-y-0 border-y border-white/10">

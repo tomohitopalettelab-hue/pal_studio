@@ -5,117 +5,199 @@ export const modernAboutTemplate: TemplateVariant = {
   templateId: 'template-modern',
   name: 'About',
   pageSlug: 'about',
-  description: 'Modern / About page layout',
+  description: 'Modern / Corporate profile with high-end typography',
   html: `
-<div class="template-root" style="--accent-color: #3b82f6;">
-  <div class="min-h-screen font-sans text-slate-900 bg-white">
-    <header class="border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
-      <div class="max-w-6xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between gap-6">
-        <div class="text-sm font-black tracking-[0.3em] uppercase">Studio.</div>
-        <nav data-sync="site-pages" class="hidden md:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500"></nav>
+<div class="template-root" style="--main-color: #0f172a; --main-dark: #111827; --accent-color: #3b82f6; --text-color: #0f172a; --text-light: #64748b; --bg-color: #ffffff;">
+  <div class="min-h-screen font-sans text-[var(--text-color)] bg-[var(--bg-color)] selection:bg-[var(--accent-color)] selection:text-white antialiased leading-relaxed">
+    
+    <header class="fixed w-full z-[100] bg-[var(--bg-color)]/80 backdrop-blur-xl border-b border-black/[0.03]">
+      <div class="max-w-[1600px] mx-auto px-6 md:px-10 h-20 md:h-24 flex items-center justify-between">
+        <div class="flex items-center gap-4 group cursor-pointer">
+          <div class="relative w-8 h-8 md:w-10 md:h-10 bg-[var(--main-color)] flex items-center justify-center overflow-hidden">
+            <span class="text-white font-bold text-sm md:text-base">M</span>
+          </div>
+          <h1 class="text-lg md:text-xl font-black tracking-[0.2em] uppercase">Studio<span class="text-[var(--accent-color)]">.</span></h1>
+        </div>
+        <nav data-sync="site-pages" class="hidden lg:flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.4em]">
+          <a href="/" class="hover:text-[var(--accent-color)] transition-colors">Top</a>
+          <a href="/about" class="text-[var(--accent-color)]">About</a>
+          <a href="/contact" class="px-8 py-4 bg-[var(--main-color)] text-white text-[9px] hover:bg-[var(--accent-color)] transition-all">Get in touch</a>
+        </nav>
+        <label for="menu-toggle-about" class="lg:hidden cursor-pointer p-2 z-[110]">
+          <div class="w-6 h-5 flex flex-col justify-between">
+            <span class="w-full h-[2px] bg-[var(--main-color)]"></span>
+            <span class="w-full h-[2px] bg-[var(--main-color)]"></span>
+            <span class="w-full h-[2px] bg-[var(--main-color)]"></span>
+          </div>
+        </label>
       </div>
-      <div class="max-w-6xl mx-auto px-6 lg:px-10 pb-10">
-        <p class="text-[10px] uppercase tracking-[0.4em] text-slate-400">About</p>
-        <h1 class="text-4xl md:text-5xl font-black mt-3">会社の背景と指針</h1>
-        <p class="text-sm text-slate-500 mt-4 max-w-2xl">
-          私たちは「成果が続くデザイン」を軸に、戦略設計から運用まで一貫して伴走します。
-        </p>
-        <div class="mt-6 h-1 w-16 bg-[var(--accent-color)] rounded-full"></div>
+      <input type="checkbox" id="menu-toggle-about" class="sr-only peer" />
+      <div class="fixed inset-0 bg-[var(--main-dark)] translate-x-full peer-checked:translate-x-0 transition-transform duration-500 lg:hidden z-[105] flex flex-col items-center justify-center text-white">
+        <nav class="flex flex-col items-center gap-8 text-xs font-bold uppercase tracking-[0.5em]">
+          <a data-page-slug="top" href="/" onclick="document.getElementById('menu-toggle-about').checked=false">Top</a>
+          <a data-page-slug="about" href="/about" onclick="document.getElementById('menu-toggle-about').checked=false">About</a>
+          <a data-page-slug="contact" href="/contact" onclick="document.getElementById('menu-toggle-about').checked=false">Contact</a>
+        </nav>
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 lg:px-10 py-12 space-y-16 pb-20">
-      <section id="top" class="grid gap-8 lg:grid-cols-2 items-start">
-        <div class="space-y-4">
-          <h2 class="text-2xl font-bold">ミッション</h2>
-          <p class="text-sm text-slate-600 leading-relaxed">ブランドの本質を言語化し、体験として設計すること。プロジェクトの「意図」と「成果」を一致させます。</p>
-          <div class="grid grid-cols-3 gap-4 pt-4">
-            <div class="rounded-2xl border border-slate-200 p-4">
-              <p class="text-[10px] text-slate-400">Projects</p>
-              <p class="text-xl font-black">120+</p>
+    <main class="pt-32 md:pt-48">
+      <section class="px-6 md:px-10 mb-20 md:mb-32 text-center">
+        <div class="max-w-4xl mx-auto">
+          <p class="text-[10px] font-bold tracking-[0.8em] text-[var(--accent-color)] uppercase mb-6">Our Identity</p>
+          <h1 class="text-[clamp(3rem,10vw,8rem)] font-black tracking-tighter leading-none uppercase mb-10">
+            Crafting the <br/><span class="italic font-light text-[var(--main-color)]" style="font-family: serif;">Future.</span>
+          </h1>
+          <p class="text-[var(--text-light)] text-base md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
+            私たちは「成果が続くデザイン」を軸に、戦略設計から運用まで一貫して伴走するクリエイティブスタジオです。
+          </p>
+        </div>
+      </section>
+
+      <section class="px-6 md:px-10 py-24 md:py-40 bg-slate-50">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 md:gap-32 items-center">
+          <div class="space-y-12">
+            <div>
+              <span class="text-[10px] font-bold tracking-[0.4em] text-[var(--accent-color)] uppercase mb-6 block">01 / Mission</span>
+              <h2 class="text-3xl md:text-5xl font-bold tracking-tight leading-tight">ブランドの本質を言語化し、体験として設計する。</h2>
             </div>
-            <div class="rounded-2xl border border-slate-200 p-4">
-              <p class="text-[10px] text-slate-400">Clients</p>
-              <p class="text-xl font-black">80+</p>
-            </div>
-            <div class="rounded-2xl border border-slate-200 p-4">
-              <p class="text-[10px] text-slate-400">Retention</p>
-              <p class="text-xl font-black">92%</p>
+            <p class="text-[var(--text-light)] text-lg font-light leading-relaxed">
+              プロジェクトの「意図」と「成果」を一致させること。単なる見た目の美しさだけでなく、事業成長に貢献するための論理的なアプローチを徹底しています。
+            </p>
+            <div class="grid grid-cols-3 gap-6 md:gap-10 border-t border-black/5 pt-12">
+              <div>
+                <p class="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-2">Projects</p>
+                <p class="text-3xl md:text-4xl font-black tracking-tighter">120<span class="text-sm font-normal text-[var(--accent-color)]">+</span></p>
+              </div>
+              <div>
+                <p class="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-2">Clients</p>
+                <p class="text-3xl md:text-4xl font-black tracking-tighter">80<span class="text-sm font-normal text-[var(--accent-color)]">+</span></p>
+              </div>
+              <div>
+                <p class="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-2">Retention</p>
+                <p class="text-3xl md:text-4xl font-black tracking-tighter">92<span class="text-sm font-normal text-[var(--accent-color)]">%</span></p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="space-y-4">
-          <h3 class="text-xl font-bold">ビジョン</h3>
-          <p class="text-sm text-slate-600 leading-relaxed">デザインの力で、事業の意思決定を軽くする。伝わる情報設計と、長く愛される表現を両立します。</p>
-          <div class="rounded-2xl bg-slate-50 p-6">
-            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.3em]">Value</p>
-            <p class="text-sm text-slate-600 mt-3">「正しく伝わる美しさ」を追求し、成果の出る土台を設計します。</p>
+          <div class="aspect-square bg-slate-200 overflow-hidden shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt="Office Space">
           </div>
         </div>
       </section>
 
-      <section id="concept" class="space-y-6">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xl font-bold">私たちの価値観</h3>
-          <span class="text-[10px] text-slate-400 uppercase tracking-[0.3em]">Principles</span>
-        </div>
-        <div class="grid gap-6 md:grid-cols-3">
-          <div class="rounded-2xl border border-slate-200 p-6">
-            <p class="text-sm font-bold">設計ファースト</p>
-            <p class="text-sm text-slate-600 mt-3">誰に、何を、どの順で伝えるかを起点に制作を進めます。</p>
+      <section class="px-6 md:px-10 py-32 md:py-48">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+            <h3 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">Our Principles</h3>
+            <p class="text-[var(--text-light)] text-sm md:text-base font-light max-w-sm">私たちが大切にしている3つの価値観。これらがすべての制作の土台となります。</p>
           </div>
-          <div class="rounded-2xl border border-slate-200 p-6">
-            <p class="text-sm font-bold">検証と改善</p>
-            <p class="text-sm text-slate-600 mt-3">公開後も計測し、運用改善を前提にした設計を行います。</p>
-          </div>
-          <div class="rounded-2xl border border-slate-200 p-6">
-            <p class="text-sm font-bold">長期の伴走</p>
-            <p class="text-sm text-slate-600 mt-3">一度きりではなく、成長に合わせて最適化します。</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" class="grid gap-8 lg:grid-cols-2">
-        <div class="space-y-4">
-          <h3 class="text-xl font-bold">沿革</h3>
-          <ol class="space-y-4 text-sm text-slate-600">
-            <li class="flex items-start gap-4"><span class="text-slate-400">2018</span> 事業開始、ブランド設計に特化した制作体制を構築。</li>
-            <li class="flex items-start gap-4"><span class="text-slate-400">2021</span> クリエイティブと運用支援を統合するチームへ拡張。</li>
-            <li class="flex items-start gap-4"><span class="text-slate-400">2024</span> 多拠点運用とリモート制作のワークフローを確立。</li>
-          </ol>
-        </div>
-        <div class="space-y-4">
-          <h3 class="text-xl font-bold">主要メンバー</h3>
-          <div class="space-y-3">
-            <div class="rounded-2xl border border-slate-200 p-4">
-              <p class="text-sm font-bold">代表 / クリエイティブディレクター</p>
-              <p class="text-sm text-slate-600 mt-2">ブランド戦略と体験設計を統括。</p>
+          <div class="grid md:grid-cols-3 gap-12 md:gap-16">
+            <div class="space-y-6">
+              <span class="text-[var(--accent-color)] font-mono text-lg font-bold opacity-30">/ 01</span>
+              <h4 class="text-2xl font-bold tracking-tight">設計ファースト</h4>
+              <p class="text-[var(--text-light)] text-sm leading-relaxed">「誰に、何を、どの順で伝えるか」を起点に、迷いのない情報設計を行います。</p>
             </div>
-            <div class="rounded-2xl border border-slate-200 p-4">
-              <p class="text-sm font-bold">プロダクトデザイン責任者</p>
-              <p class="text-sm text-slate-600 mt-2">UI/UXと実装品質の最適化を担当。</p>
+            <div class="space-y-6">
+              <span class="text-[var(--accent-color)] font-mono text-lg font-bold opacity-30">/ 02</span>
+              <h4 class="text-2xl font-bold tracking-tight">検証と改善</h4>
+              <p class="text-[var(--text-light)] text-sm leading-relaxed">公開はスタート地点。データに基づき、運用しながら最適化し続ける姿勢を崩しません。</p>
+            </div>
+            <div class="space-y-6">
+              <span class="text-[var(--accent-color)] font-mono text-lg font-bold opacity-30">/ 03</span>
+              <h4 class="text-2xl font-bold tracking-tight">長期の伴走</h4>
+              <p class="text-[var(--text-light)] text-sm leading-relaxed">一度きりの納品ではなく、クライアントの事業フェーズに合わせた最適な進化を支援します。</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="company" class="grid gap-8 lg:grid-cols-2">
-        <div class="space-y-4">
-          <h3 class="text-xl font-bold">会社概要</h3>
-          <dl class="space-y-3 text-sm text-slate-600">
-            <div class="flex justify-between border-b border-slate-100 pb-2"><dt>会社名</dt><dd>Studio Modern Inc.</dd></div>
-            <div class="flex justify-between border-b border-slate-100 pb-2"><dt>所在地</dt><dd>東京 / 渋谷</dd></div>
-            <div class="flex justify-between border-b border-slate-100 pb-2"><dt>設立</dt><dd>2018年</dd></div>
-            <div class="flex justify-between border-b border-slate-100 pb-2"><dt>事業内容</dt><dd>ブランド設計 / Web制作</dd></div>
+      <section class="px-6 md:px-10 py-32 bg-[var(--main-dark)] text-white">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-24">
+          <div class="lg:col-span-5 space-y-12">
+            <h3 class="text-xs font-bold uppercase tracking-[0.5em] text-[var(--accent-color)] mb-12">Timeline</h3>
+            <ol class="space-y-16 border-l border-white/10 ml-2">
+              <li class="relative pl-12 group">
+                <span class="absolute left-[-5px] top-0 w-2.5 h-2.5 bg-[var(--accent-color)] rounded-full"></span>
+                <p class="text-xs font-bold text-white/40 mb-2">2018</p>
+                <h4 class="text-xl font-bold mb-4">Foundation</h4>
+                <p class="text-white/50 text-sm font-light leading-relaxed text-pretty">事業開始。ブランド設計とビジュアル表現を高い次元で統合する体制を構築。</p>
+              </li>
+              <li class="relative pl-12 group">
+                <span class="absolute left-[-5px] top-0 w-2.5 h-2.5 bg-[var(--accent-color)] rounded-full"></span>
+                <p class="text-xs font-bold text-white/40 mb-2">2021</p>
+                <h4 class="text-xl font-bold mb-4">Strategic Expansion</h4>
+                <p class="text-white/50 text-sm font-light leading-relaxed text-pretty">デジタルマーケティングと運用支援を統合。デザインの「成果」を可視化するフェーズへ。</p>
+              </li>
+            </ol>
+          </div>
+          
+          <div class="lg:col-span-7 space-y-12">
+            <h3 class="text-xs font-bold uppercase tracking-[0.5em] text-[var(--accent-color)] mb-12 text-center md:text-left">Executive Members</h3>
+            <div class="grid md:grid-cols-2 gap-10">
+              <div class="group">
+                <div class="aspect-[3/4] overflow-hidden mb-6 bg-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover" alt="Member 01">
+                </div>
+                <h4 class="text-lg font-bold">佐藤 健太</h4>
+                <p class="text-[10px] uppercase font-bold text-[var(--accent-color)] tracking-widest mt-1">Creative Director</p>
+              </div>
+              <div class="group">
+                <div class="aspect-[3/4] overflow-hidden mb-6 bg-white/5 grayscale group-hover:grayscale-0 transition-all duration-700">
+                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover" alt="Member 02">
+                </div>
+                <h4 class="text-lg font-bold">高橋 明日香</h4>
+                <p class="text-[10px] uppercase font-bold text-[var(--accent-color)] tracking-widest mt-1">Design Lead</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="px-6 md:px-10 py-32 md:py-48">
+        <div class="max-w-4xl mx-auto">
+          <h3 class="text-xs font-bold uppercase tracking-[0.5em] text-[var(--accent-color)] text-center mb-20">Corporate Profile</h3>
+          <dl class="divide-y divide-black/5 border-y border-black/5">
+            <div class="grid md:grid-cols-3 py-10">
+              <dt class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 md:mb-0">Name</dt>
+              <dd class="md:col-span-2 text-xl font-bold tracking-tight">Studio Modern Inc. / 株式会社スタジオモダン</dd>
+            </div>
+            <div class="grid md:grid-cols-3 py-10">
+              <dt class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 md:mb-0">Office</dt>
+              <dd class="md:col-span-2 text-xl font-bold tracking-tight">東京都渋谷区神南 1-2-3 Modern Complex 4F</dd>
+            </div>
+            <div class="grid md:grid-cols-3 py-10">
+              <dt class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 md:mb-0">Services</dt>
+              <dd class="md:col-span-2 text-xl font-bold tracking-tight">ブランド設計、Webサイト制作、UI/UXデザイン、運用コンサルティング</dd>
+            </div>
           </dl>
-        </div>
-        <div class="rounded-3xl bg-slate-50 p-8">
-          <h4 class="text-lg font-bold">ご相談はこちら</h4>
-          <p class="text-sm text-slate-600 mt-3">課題や目的を整理するところからご一緒します。</p>
-          <button class="mt-6 px-6 py-3 bg-[var(--accent-color)] text-white text-xs font-bold tracking-[0.3em] uppercase rounded-full">Contact</button>
+          
+          <div class="mt-32 p-12 md:p-20 bg-slate-50 text-center">
+            <h4 class="text-2xl md:text-3xl font-bold tracking-tight mb-8 leading-tight italic">
+              共にビジネスに「鼓動」を宿しませんか？
+            </h4>
+            <a data-page-slug="contact" href="/contact" class="inline-flex items-center justify-center px-12 py-5 bg-[var(--main-color)] text-white text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[var(--accent-color)] transition-all shadow-xl shadow-black/10">
+              Contact us
+            </a>
+          </div>
         </div>
       </section>
     </main>
+
+    <footer class="py-20 md:py-32 bg-[var(--main-dark)] text-white px-6 md:px-10">
+      <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-16 md:gap-20">
+        <div>
+          <h2 class="text-5xl md:text-[clamp(4rem,10vw,8rem)] font-black tracking-tighter mb-8 md:mb-12 italic opacity-20 uppercase leading-none">Studio.</h2>
+          <p class="text-white/40 text-[9px] font-bold tracking-[0.5em] uppercase">© 2026 Studio Modern.</p>
+        </div>
+        <div class="flex flex-col gap-6 text-[9px] font-bold uppercase tracking-[0.3em]">
+          <div class="flex gap-8">
+            <a href="#" class="hover:text-[var(--accent-color)] transition-colors">Instagram</a>
+            <a href="#" class="hover:text-[var(--accent-color)] transition-colors">X</a>
+            <a href="#" class="hover:text-[var(--accent-color)] transition-colors">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
 </div>
 `

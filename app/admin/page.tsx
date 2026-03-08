@@ -347,24 +347,38 @@ export default function PaletteLab() {
     if (!html) return html;
     const parser = new DOMParser();
     const parsed = parser.parseFromString(html, 'text/html');
+    let mutated = false;
+
     const nav = parsed.querySelector('nav[data-sync="site-pages"]')
       || parsed.querySelector('header nav')
       || parsed.querySelector('nav');
-    if (!nav) return html;
 
-    const anchors = Array.from(nav.querySelectorAll('a')) as HTMLAnchorElement[];
-    if (anchors.length === 0) return html;
+    if (nav) {
+      const anchors = Array.from(nav.querySelectorAll('a')) as HTMLAnchorElement[];
+      if (anchors.length > 0) {
+        const templateAnchor = anchors[0].cloneNode(true) as HTMLAnchorElement;
+        anchors.forEach((anchor) => anchor.remove());
 
-    const templateAnchor = anchors[0].cloneNode(true) as HTMLAnchorElement;
-    anchors.forEach((anchor) => anchor.remove());
+        pages.forEach((page) => {
+          const link = templateAnchor.cloneNode(true) as HTMLAnchorElement;
+          link.setAttribute('href', buildPageHref(page.slug, basePath));
+          link.textContent = page.title || deriveTitleFromSlug(page.slug);
+          nav.appendChild(link);
+        });
 
-    pages.forEach((page) => {
-      const link = templateAnchor.cloneNode(true) as HTMLAnchorElement;
-      link.setAttribute('href', buildPageHref(page.slug, basePath));
-      link.textContent = page.title || deriveTitleFromSlug(page.slug);
-      nav.appendChild(link);
+        mutated = true;
+      }
+    }
+
+    const pageLinks = Array.from(parsed.querySelectorAll('a[data-page-slug]')) as HTMLAnchorElement[];
+    pageLinks.forEach((link) => {
+      const slug = link.getAttribute('data-page-slug');
+      if (!slug) return;
+      link.setAttribute('href', buildPageHref(slug, basePath));
+      mutated = true;
     });
 
+    if (!mutated) return html;
     return /<html[\s>]/i.test(html)
       ? parsed.documentElement.outerHTML
       : parsed.body.innerHTML;
@@ -916,43 +930,65 @@ ${activePageHtml}
         const variantId = String(page?.templateVariantId || '').trim();
         const pageTemplateId = String(page?.templateId || '').trim();
 
-        let recommendedTemplateId: string;
+        let recommendedTemplateId = TEMPLATE_DEFAULT_ID;
         let baseHtml = '';
         let templateLabel = '';
+        let resolvedVariantId = '';
+        let resolvedTemplate = getTemplateById(recommendedTemplateId);
 
         if (hasTemplateVariantId(variantId)) {
           const variant = getTemplateVariantById(variantId);
-          const template = getTemplateById(variant?.templateId || TEMPLATE_DEFAULT_ID);
-          recommendedTemplateId = template.id;
-          baseHtml = String(variant?.html || template.html);
-          templateLabel = `${template.name} / ${variant?.name || 'Variant'}`;
+          resolvedTemplate = getTemplateById(variant?.templateId || TEMPLATE_DEFAULT_ID);
+          recommendedTemplateId = resolvedTemplate.id;
+          baseHtml = String(variant?.html || resolvedTemplate.html);
+          templateLabel = `${resolvedTemplate.name} / ${variant?.name || 'Variant'}`;
+          resolvedVariantId = variant?.id || '';
         } else if (hasTemplateId(pageTemplateId)) {
           recommendedTemplateId = pageTemplateId;
-          const template = getTemplateById(recommendedTemplateId);
-          recommendedTemplateId = template.id;
-          baseHtml = template.html;
-          templateLabel = template.name;
+          resolvedTemplate = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = resolvedTemplate.id;
+          baseHtml = resolvedTemplate.html;
+          templateLabel = resolvedTemplate.name;
         } else if (hasTemplateId(selectedTemplateId)) {
           recommendedTemplateId = selectedTemplateId;
-          const template = getTemplateById(recommendedTemplateId);
-          recommendedTemplateId = template.id;
-          baseHtml = template.html;
-          templateLabel = template.name;
+          resolvedTemplate = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = resolvedTemplate.id;
+          baseHtml = resolvedTemplate.html;
+          templateLabel = resolvedTemplate.name;
         } else if (hasTemplateId(templateIdFromTemplateRecord)) {
           recommendedTemplateId = templateIdFromTemplateRecord;
-          const template = getTemplateById(recommendedTemplateId);
-          recommendedTemplateId = template.id;
-          baseHtml = template.html;
-          templateLabel = template.name;
+          resolvedTemplate = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = resolvedTemplate.id;
+          baseHtml = resolvedTemplate.html;
+          templateLabel = resolvedTemplate.name;
         } else {
           recommendedTemplateId = autoSelectTemplate(templateSelectionAnswers);
-          const template = getTemplateById(recommendedTemplateId);
-          recommendedTemplateId = template.id;
-          baseHtml = template.html;
-          templateLabel = template.name;
+          resolvedTemplate = getTemplateById(recommendedTemplateId);
+          recommendedTemplateId = resolvedTemplate.id;
+          baseHtml = resolvedTemplate.html;
+          templateLabel = resolvedTemplate.name;
+        }
+
+        if (!resolvedVariantId) {
+          const fallbackVariant = templateVariants.find((variant) => (
+            variant.pageSlug === pageSlug && variant.templateId === recommendedTemplateId
+          ));
+          if (fallbackVariant) {
+            baseHtml = String(fallbackVariant.html || baseHtml);
+            templateLabel = `${resolvedTemplate.name} / ${fallbackVariant.name}`;
+            resolvedVariantId = fallbackVariant.id;
+          }
         }
 
         setSelectedTemplateId(recommendedTemplateId);
+
+        if (resolvedVariantId && resolvedVariantId !== variantId) {
+          updateSelectedCustomerPages((pages) => pages.map((p) => (
+            p.slug === pageSlug
+              ? { ...p, templateVariantId: resolvedVariantId, templateId: recommendedTemplateId }
+              : p
+          )));
+        }
 
         const prompt = `
       あなたはWebデザイナーです。以下の「ヒアリング内容」の**テーマ**を理解した上で、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。

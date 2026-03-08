@@ -93,7 +93,7 @@ export default function PaletteLab() {
   const [searchedImages, setSearchedImages] = useState<any[]>([]);
   const [isSearchingImage, setIsSearchingImage] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [imageTab, setImageTab] = useState<'upload' | 'search' | 'generate'>('search');
+  const [imageTab, setImageTab] = useState<'upload' | 'search' | 'generate' | 'media'>('search');
   const [generatedImageUrl, setGeneratedImageUrl] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [generatedImageError, setGeneratedImageError] = useState("");
@@ -1502,6 +1502,9 @@ ${activePageHtml}
               <button onClick={() => setImageTab('upload')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${imageTab === 'upload' ? 'border-b-2 border-indigo-500 text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50'}`}>
                 <Upload className="w-4 h-4" /> アップロード
               </button>
+              <button onClick={() => setImageTab('media')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${imageTab === 'media' ? 'border-b-2 border-indigo-500 text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50'}`}>
+                <ImageIcon className="w-4 h-4" /> メディア
+              </button>
               <button onClick={() => setImageTab('generate')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${imageTab === 'generate' ? 'border-b-2 border-indigo-500 text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50'}`}>
                 <Wand2 className="w-4 h-4" /> AI生成
               </button>
@@ -1544,6 +1547,65 @@ ${activePageHtml}
                   <Upload className="w-12 h-12 text-slate-300 mb-4" />
                   <p className="text-sm font-bold text-slate-500">クリックして画像を選択</p>
                   <p className="text-xs text-slate-400 mt-2">またはドラッグ＆ドロップ</p>
+                </div>
+              )}
+
+              {imageTab === 'media' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-slate-500">アップロード済みメディアから選択できます。</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => loadMediaAssets(activePaletteId)}
+                        disabled={!canUseMedia || mediaLoading}
+                        className="px-3 py-1.5 text-[10px] font-bold rounded-md bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        更新
+                      </button>
+                      <button
+                        onClick={() => mediaInputRef.current?.click()}
+                        disabled={!canUseMedia || isUploadingMedia}
+                        className="px-3 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-50"
+                      >
+                        {isUploadingMedia ? 'アップロード中' : 'アップロード'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!canUseMedia && (
+                    <p className="text-[10px] text-slate-400">顧客IDの認証が完了していません。</p>
+                  )}
+
+                  {canUseMedia && mediaLoading && (
+                    <p className="text-[10px] text-slate-400">読み込み中...</p>
+                  )}
+
+                  {canUseMedia && !mediaLoading && mediaError && (
+                    <p className="text-[10px] text-red-500">{mediaError}</p>
+                  )}
+
+                  {canUseMedia && !mediaLoading && !mediaError && mediaAssets.length === 0 && (
+                    <p className="text-[10px] text-slate-400">まだメディアがありません。</p>
+                  )}
+
+                  {canUseMedia && !mediaLoading && mediaAssets.length > 0 && (
+                    <div className="grid grid-cols-3 gap-3">
+                      {mediaAssets.filter((asset) => String(asset.mimeType || '').startsWith('image/')).map((asset) => (
+                        <button
+                          key={asset.id}
+                          type="button"
+                          onClick={() => handleMediaSelect(asset)}
+                          className="group relative aspect-video bg-slate-200 rounded-lg overflow-hidden hover:ring-2 ring-indigo-500 transition-all"
+                        >
+                          <img src={asset.url} alt={asset.originalName || 'media'} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                          <span className="absolute bottom-1 left-1 text-[8px] text-white opacity-0 group-hover:opacity-100 truncate w-full px-1">
+                            {asset.originalName || asset.fileName}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

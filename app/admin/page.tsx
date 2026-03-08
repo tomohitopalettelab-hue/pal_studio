@@ -780,6 +780,35 @@ export default function PaletteLab() {
     return /<(html|body|main|section|div|header|footer)\b/i.test(normalized);
   };
 
+  const hasSectionId = (source: string, sectionId: string) => {
+    const re = new RegExp(`<section[^>]*id=["']${sectionId}["']`, 'i');
+    return re.test(source);
+  };
+
+  const extractSectionById = (source: string, sectionId: string) => {
+    const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'][^>]*>[\s\S]*?</section>)`, 'i');
+    const match = String(source || '').match(re);
+    return match ? match[1] : '';
+  };
+
+  const ensureTopSections = (html: string, baseHtml: string) => {
+    let output = String(html || '');
+    const topSection = extractSectionById(baseHtml, 'top');
+    const newsSection = extractSectionById(baseHtml, 'news');
+    const blogSection = extractSectionById(baseHtml, 'blog');
+
+    if (!hasSectionId(output, 'top') && topSection) {
+      output = `${topSection}${output}`;
+    }
+    if (!hasSectionId(output, 'news') && newsSection) {
+      output = output.replace(/<\/section>/i, `$&${newsSection}`);
+    }
+    if (!hasSectionId(output, 'blog') && blogSection) {
+      output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSection}`);
+    }
+    return output;
+  };
+
   // テンプレート自動選択ロジック
   const autoSelectTemplate = (answers: { q: string, a: string }[]) => {
     if (!answers || answers.length === 0) return TEMPLATE_DEFAULT_ID;
@@ -1074,10 +1103,11 @@ ${activePageHtml}
 
       【制約事項】
       1. **HTML構造（タグの入れ子構造やクラス名）は極力維持**してください。レイアウトを大きく壊さないでください。
-      2. テキストはヒアリング内容に合わせて魅力的なものに変更してください。【重要】日本語をメインにしてください。
-      3. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像、またはUnsplash等の実在するURLに差し替えてください。
-      4. 配色はTailwind CSSのクラスを変更して調整してください（例: bg-indigo-600 -> bg-pink-500 など）。
-      5. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
+      2. セクション（`<section id="...">`）は**削除しない**でください。必ず残してください。
+      3. テキストはヒアリング内容に合わせて魅力的なものに変更してください。【重要】日本語をメインにしてください。
+      4. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像、またはUnsplash等の実在するURLに差し替えてください。
+      5. 配色はTailwind CSSのクラスを変更して調整してください（例: bg-indigo-600 -> bg-pink-500 など）。
+      6. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
       ${topNewsInstruction}
 
       【ヒアリング内容】
@@ -1121,7 +1151,10 @@ ${activePageHtml}
         const memo = `ページ: /${pageSlug}\nテンプレート: ${templateLabel || '(unknown)'}\nプロンプト:\n${prompt.trim()}`;
 
         if (/<[^>]+>/.test(normalized)) {
-          const generatedHtml = normalized || html;
+          let generatedHtml = normalized || html;
+          if (pageSlug === 'top') {
+            generatedHtml = ensureTopSections(generatedHtml, baseHtml);
+          }
           updateSelectedCustomerPages((pages) => pages.map((p) => (
             p.slug === pageSlug ? { ...p, htmlCode: generatedHtml } : p
           )));

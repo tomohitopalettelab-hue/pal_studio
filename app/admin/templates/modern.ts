@@ -43,10 +43,10 @@ export const modernTemplate: Template = {
     </header>
 
     <main>
-      <section id="top" class="section-hero relative min-h-screen flex items-center justify-center px-8 overflow-hidden bg-[#fafafa]">
+      <section id="top" class="section-hero relative min-h-screen flex items-center justify-center px-8 overflow-hidden">
         <div class="absolute inset-0 z-0">
-          <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-[var(--accent-color)]/[0.03] rounded-full blur-[150px]"></div>
-          <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-500/[0.03] rounded-full blur-[150px]"></div>
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000" alt="Hero Background" class="w-full h-full object-cover grayscale opacity-40 transform scale-105 animate-slow-zoom">
+          <div class="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white"></div>
         </div>
         
         <div class="relative z-10 max-w-7xl mx-auto text-center">
@@ -203,5 +203,15 @@ export const modernTemplate: Template = {
       </div>
     </footer>
   </div>
-</div>`
+</div>
+
+<style>
+  @keyframes slow-zoom {
+    0% { transform: scale(1.05); }
+    100% { transform: scale(1.15); }
+  }
+  .animate-slow-zoom {
+    animation: slow-zoom 20s ease-in-out infinite alternate;
+  }
+</style>`
 };

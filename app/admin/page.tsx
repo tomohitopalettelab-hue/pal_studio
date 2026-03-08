@@ -93,6 +93,7 @@ export default function PaletteLab() {
   
   // 画像編集用ステート
   const [editingImage, setEditingImage] = useState<{ pid: string, src: string, alt: string } | null>(null);
+  const [imagePickTarget, setImagePickTarget] = useState<'defaultEyecatch' | 'favicon' | null>(null);
   const [imageSearchQuery, setImageSearchQuery] = useState("");
   const [searchedImages, setSearchedImages] = useState<any[]>([]);
   const [isSearchingImage, setIsSearchingImage] = useState(false);
@@ -1371,9 +1372,21 @@ ${activePageHtml}
     }
   };
 
+  const openSiteImagePicker = (target: 'defaultEyecatch' | 'favicon') => {
+    setImagePickTarget(target);
+    setEditingImage({ pid: 'site-setting', src: '', alt: target === 'favicon' ? 'favicon' : 'eyecatch' });
+  };
+
   // 画像適用ハンドラ
   const applyNewImage = (newSrc: string) => {
     if (!selectedCustomer || !editingImage) return;
+    if (imagePickTarget) {
+      const key = imagePickTarget === 'favicon' ? 'faviconUrl' : 'defaultEyecatchUrl';
+      setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, [key]: newSrc } : c));
+      setEditingImage(null);
+      setImagePickTarget(null);
+      return;
+    }
 
     // pidからインデックスを抽出 (例: "img-0" -> 0)
     const indexMatch = editingImage.pid.match(/img-(\d+)/);
@@ -1904,31 +1917,85 @@ ${activePageHtml}
 
                     <div className="pt-3 border-t border-slate-100 space-y-2">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">サイト設定</p>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Default Eyecatch URL</label>
-                        <input
-                          type="text"
-                          value={selectedCustomer.defaultEyecatchUrl || ''}
-                          onChange={(e) => {
-                            const defaultEyecatchUrl = e.target.value;
-                            setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl } : c));
-                          }}
-                          className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
-                          placeholder="https://example.com/eyecatch.jpg"
-                        />
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={selectedCustomer.defaultEyecatchUrl || ''}
+                            onChange={(e) => {
+                              const defaultEyecatchUrl = e.target.value;
+                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl } : c));
+                            }}
+                            className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                            placeholder="https://example.com/eyecatch.jpg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => openSiteImagePicker('defaultEyecatch')}
+                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
+                          >
+                            画像選択
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, defaultEyecatchUrl: '' } : c));
+                            }}
+                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
+                          >
+                            クリア
+                          </button>
+                        </div>
+                        {selectedCustomer.defaultEyecatchUrl && (
+                          <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                            <img
+                              src={selectedCustomer.defaultEyecatchUrl}
+                              alt="Default Eyecatch"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Favicon URL</label>
-                        <input
-                          type="text"
-                          value={selectedCustomer.faviconUrl || ''}
-                          onChange={(e) => {
-                            const faviconUrl = e.target.value;
-                            setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl } : c));
-                          }}
-                          className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
-                          placeholder="https://example.com/favicon.ico"
-                        />
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={selectedCustomer.faviconUrl || ''}
+                            onChange={(e) => {
+                              const faviconUrl = e.target.value;
+                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl } : c));
+                            }}
+                            className="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-indigo-500"
+                            placeholder="https://example.com/favicon.ico"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => openSiteImagePicker('favicon')}
+                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-indigo-600 text-white hover:bg-indigo-500"
+                          >
+                            画像選択
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCustomers(prev => prev.map(c => c.id === selectedCustomerId ? { ...c, faviconUrl: '' } : c));
+                            }}
+                            className="px-2.5 py-1.5 text-[10px] font-bold rounded-md bg-slate-100 text-slate-500 hover:bg-slate-200"
+                          >
+                            クリア
+                          </button>
+                        </div>
+                        {selectedCustomer.faviconUrl && (
+                          <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 flex items-center justify-center">
+                            <img
+                              src={selectedCustomer.faviconUrl}
+                              alt="Favicon"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Contact Email</label>

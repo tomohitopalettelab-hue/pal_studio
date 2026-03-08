@@ -70,6 +70,49 @@ export const modernTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-[var(--section-gap)] px-10 bg-[#f8fafc]">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-end justify-between mb-16">
+            <div>
+              <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)] mb-4">News & Updates</p>
+              <h3 class="text-6xl font-black tracking-tighter uppercase">Latest</h3>
+            </div>
+            <a href="#" class="text-[9px] font-bold uppercase tracking-[0.3em] border-b border-black pb-2 hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">View Archive</a>
+          </div>
+          
+          <div class="grid md:grid-cols-1 divide-y divide-black/5">
+            <article class="group py-10 flex flex-col md:flex-row items-center gap-10 cursor-pointer">
+              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200">
+                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="News 01">
+              </div>
+              <div class="flex-1">
+                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.03.08</p>
+                <h4 class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">新サービス「Ethereal Design Suite」を公開しました</h4>
+              </div>
+              <div class="hidden md:block">
+                <div class="w-12 h-12 border border-black/5 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:text-white transition-all">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor"></path></svg>
+                </div>
+              </div>
+            </article>
+            <article class="group py-10 flex flex-col md:flex-row items-center gap-10 cursor-pointer">
+              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="News 02">
+              </div>
+              <div class="flex-1">
+                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.02.18</p>
+                <h4 class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">Global Design Award 2026 金賞を受賞しました</h4>
+              </div>
+              <div class="hidden md:block">
+                <div class="w-12 h-12 border border-black/5 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:text-white transition-all">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor"></path></svg>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="concept" class="section-concept py-[var(--section-gap)] px-10">
         <div class="max-w-7xl mx-auto">
           <div class="grid lg:grid-cols-12 gap-24 items-start">
@@ -166,49 +209,6 @@ export const modernTemplate: Template = {
               <h5 class="text-2xl font-bold tracking-tight mb-2">Lumina Systems</h5>
               <p class="text-[10px] text-[var(--accent-color)] font-bold uppercase tracking-widest">Digital Solutions</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="news" class="py-[var(--section-gap)] px-10 bg-[#f8fafc]">
-        <div class="max-w-6xl mx-auto">
-          <div class="flex items-end justify-between mb-16">
-            <div>
-              <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)] mb-4">News & Updates</p>
-              <h3 class="text-6xl font-black tracking-tighter uppercase">Latest</h3>
-            </div>
-            <a href="#" class="text-[9px] font-bold uppercase tracking-[0.3em] border-b border-black pb-2 hover:text-[var(--accent-color)] hover:border-[var(--accent-color)] transition-all">View Archive</a>
-          </div>
-          
-          <div class="grid md:grid-cols-1 divide-y divide-black/5">
-            <article class="group py-10 flex flex-col md:flex-row items-center gap-10 cursor-pointer">
-              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200">
-                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="News 01">
-              </div>
-              <div class="flex-1">
-                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.03.08</p>
-                <h4 class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">新サービス「Ethereal Design Suite」を公開しました</h4>
-              </div>
-              <div class="hidden md:block">
-                <div class="w-12 h-12 border border-black/5 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:text-white transition-all">
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor"></path></svg>
-                </div>
-              </div>
-            </article>
-            <article class="group py-10 flex flex-col md:flex-row items-center gap-10 cursor-pointer">
-              <div class="w-full md:w-48 aspect-video overflow-hidden bg-slate-200">
-                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="News 02">
-              </div>
-              <div class="flex-1">
-                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase mb-2">2026.02.18</p>
-                <h4 class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors tracking-tight">Global Design Award 2026 金賞を受賞しました</h4>
-              </div>
-              <div class="hidden md:block">
-                <div class="w-12 h-12 border border-black/5 flex items-center justify-center group-hover:bg-[var(--main-color)] group-hover:text-white transition-all">
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor"></path></svg>
-                </div>
-              </div>
-            </article>
           </div>
         </div>
       </section>

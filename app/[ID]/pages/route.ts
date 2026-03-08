@@ -158,19 +158,22 @@ export async function GET(
       customer?.defaultEyecatchUrl
     );
     if (newsSection) {
-      html = hasSectionId(html, 'news')
+      const afterNews = hasSectionId(html, 'news')
         ? replaceSectionBlock(html, 'news', newsSection)
         : insertSectionAfterId(html, 'top', newsSection);
+      html = afterNews;
     } else {
       html = hideSection(html, 'news');
     }
     if (blogSection) {
-      html = hasSectionId(html, 'blog')
+      const afterBlog = hasSectionId(html, 'blog')
         ? replaceSectionBlock(html, 'blog', blogSection)
         : insertSectionAfterId(html, 'news', blogSection);
+      html = afterBlog;
     } else {
       html = hideSection(html, 'blog');
     }
+    html = removeAutoPlaceholderSections(html);
     html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
     html = applyContactEmail(html, customer?.contactEmail);
     html = applyLogoToHeader(html, customer?.logoUrl);

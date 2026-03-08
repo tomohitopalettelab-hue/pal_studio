@@ -105,6 +105,7 @@ export default function PaletteLab() {
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const generationTimerRef = useRef<number | null>(null);
+  const isGeneratingDraftRef = useRef(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   
   // 画像編集用ステート
@@ -927,13 +928,14 @@ ${activePageHtml}
     if (!selectedCustomer) return;
     setIsApplying(true);
     setIsGeneratingDraft(true);
+    isGeneratingDraftRef.current = true;
     setGenerationProgress(1);
     if (generationTimerRef.current !== null) {
       window.clearInterval(generationTimerRef.current);
     }
     generationTimerRef.current = window.setInterval(() => {
       setGenerationProgress((prev) => {
-        if (!isGeneratingDraft) return prev;
+        if (!isGeneratingDraftRef.current) return prev;
         if (prev >= 95) return prev;
         return prev + 1;
       });
@@ -962,7 +964,12 @@ ${activePageHtml}
           alert("ヒアリング内容がありません。mainで完全なヒアリングを行ってください。");
           setIsApplying(false);
           setIsGeneratingDraft(false);
+          isGeneratingDraftRef.current = false;
           setGenerationProgress(0);
+          if (generationTimerRef.current !== null) {
+            window.clearInterval(generationTimerRef.current);
+            generationTimerRef.current = null;
+          }
           return;
         }
       }
@@ -1158,6 +1165,7 @@ ${activePageHtml}
     } finally {
       setIsApplying(false);
       setIsGeneratingDraft(false);
+      isGeneratingDraftRef.current = false;
       if (generationTimerRef.current !== null) {
         window.clearInterval(generationTimerRef.current);
         generationTimerRef.current = null;
@@ -1591,12 +1599,13 @@ ${activePageHtml}
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
       const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
         || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
-      output = hasSectionId(output, 'news')
+      const afterNews = hasSectionId(output, 'news')
         ? replaceSectionBlock(output, 'news', newsSection)
         : insertSectionAfterId(output, 'top', newsSection);
-      output = hasSectionId(output, 'blog')
-        ? replaceSectionBlock(output, 'blog', blogSection)
-        : insertSectionAfterId(output, 'news', blogSection);
+      const afterBlog = hasSectionId(afterNews, 'blog')
+        ? replaceSectionBlock(afterNews, 'blog', blogSection)
+        : insertSectionAfterId(afterNews, 'news', blogSection);
+      output = removeAutoPlaceholderSections(afterBlog);
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';

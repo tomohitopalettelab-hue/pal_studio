@@ -110,6 +110,51 @@ export const japaneseTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-32 px-6">
+        <div class="max-w-5xl mx-auto">
+          <div class="flex items-center gap-6 mb-16">
+            <div class="w-12 h-px bg-[var(--main-color)]"></div>
+            <h3 class="text-lg tracking-[0.5em] font-bold uppercase">お知らせ</h3>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6 text-sm">
+            <article class="border border-[var(--border-color)] p-6">
+              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.03.08</p>
+              <h4 class="text-lg font-bold mt-4">展示会出展</h4>
+              <p class="text-xs leading-loose mt-3 opacity-70">新作の建具を披露します。</p>
+            </article>
+            <article class="border border-[var(--border-color)] p-6">
+              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.02.16</p>
+              <h4 class="text-lg font-bold mt-4">施工事例更新</h4>
+              <p class="text-xs leading-loose mt-3 opacity-70">最新の実績を追加しました。</p>
+            </article>
+            <article class="border border-[var(--border-color)] p-6">
+              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.01.25</p>
+              <h4 class="text-lg font-bold mt-4">受賞のお知らせ</h4>
+              <p class="text-xs leading-loose mt-3 opacity-70">和の建築賞を受賞しました。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-32 px-6 bg-[var(--accent-color)] text-white">
+        <div class="max-w-5xl mx-auto">
+          <div class="flex items-center gap-6 mb-16">
+            <div class="w-12 h-px bg-[var(--main-color)]"></div>
+            <h3 class="text-lg tracking-[0.5em] font-bold uppercase">読み物</h3>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <article class="border border-white/20 p-8">
+              <h4 class="text-xl font-bold mb-3">木の香りと暮らし</h4>
+              <p class="text-xs leading-loose opacity-70">住まいに木を取り入れる魅力を紹介。</p>
+            </article>
+            <article class="border border-white/20 p-8">
+              <h4 class="text-xl font-bold mb-3">伝統技法の魅力</h4>
+              <p class="text-xs leading-loose opacity-70">職人の技と素材の話。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="py-32 px-6 max-w-4xl mx-auto text-sm">
         <div class="border-t border-b border-[var(--accent-color)] py-12 grid md:grid-cols-3 gap-8">
           <div class="md:col-span-1">

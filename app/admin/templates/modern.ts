@@ -166,6 +166,47 @@ export const modernTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-[var(--section-gap)] px-10 bg-[#f8fafc]">
+        <div class="max-w-6xl mx-auto">
+          <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)]">News</p>
+          <h3 class="text-4xl font-black tracking-tight mt-4 mb-12">最新情報</h3>
+          <div class="grid md:grid-cols-3 gap-6">
+            <article class="p-6 bg-white border border-black/5 rounded-2xl">
+              <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">2026.03.08</p>
+              <h4 class="text-xl font-bold mt-3">新サービスを公開しました</h4>
+              <p class="text-sm text-[var(--text-light)] mt-3">新しいプロダクトラインの提供を開始しました。</p>
+            </article>
+            <article class="p-6 bg-white border border-black/5 rounded-2xl">
+              <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">2026.02.18</p>
+              <h4 class="text-xl font-bold mt-3">導入事例を追加</h4>
+              <p class="text-sm text-[var(--text-light)] mt-3">実績ページに最新プロジェクトを掲載しました。</p>
+            </article>
+            <article class="p-6 bg-white border border-black/5 rounded-2xl">
+              <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">2026.01.30</p>
+              <h4 class="text-xl font-bold mt-3">イベント登壇のお知らせ</h4>
+              <p class="text-sm text-[var(--text-light)] mt-3">最新トレンドを紹介するセミナーに登壇します。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-[var(--section-gap)] px-10 bg-white">
+        <div class="max-w-6xl mx-auto">
+          <p class="text-[10px] font-bold tracking-[0.6em] uppercase text-[var(--accent-color)]">Blog</p>
+          <h3 class="text-4xl font-black tracking-tight mt-4 mb-12">ブログ</h3>
+          <div class="grid md:grid-cols-2 gap-10">
+            <article class="p-8 border border-black/5 rounded-2xl">
+              <h4 class="text-2xl font-bold mb-4">ブランド戦略の考え方</h4>
+              <p class="text-sm text-[var(--text-light)]">設計の初期段階で整理すべき視点を解説します。</p>
+            </article>
+            <article class="p-8 border border-black/5 rounded-2xl">
+              <h4 class="text-2xl font-bold mb-4">プロジェクト運用の裏側</h4>
+              <p class="text-sm text-[var(--text-light)]">スピードと品質を両立するための運用フロー。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="section-company py-[var(--section-gap)] px-10 bg-[var(--main-dark)] text-white overflow-hidden relative">
         <div class="max-w-5xl mx-auto relative z-10">
           <h3 class="text-[10px] font-bold tracking-[0.8em] uppercase mb-24 text-white/30 text-center">Corporate Profile</h3>

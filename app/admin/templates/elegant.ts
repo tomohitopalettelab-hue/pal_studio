@@ -121,6 +121,45 @@ export const elegantTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="section-news py-[var(--section-padding)] px-6 bg-white/60">
+        <div class="max-w-5xl mx-auto text-center">
+          <h3 class="text-[11px] tracking-[0.6em] mb-12 text-[var(--sub-color)] uppercase italic">News</h3>
+          <div class="grid md:grid-cols-3 gap-8 text-left">
+            <article class="p-6 bg-white/80 border border-black/[0.05]">
+              <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--text-light)]">2026.03.08</p>
+              <h4 class="text-xl font-light mt-4">新コレクション公開</h4>
+              <p class="text-xs text-[var(--text-light)] mt-3">季節限定のラインナップを公開しました。</p>
+            </article>
+            <article class="p-6 bg-white/80 border border-black/[0.05]">
+              <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--text-light)]">2026.02.20</p>
+              <h4 class="text-xl font-light mt-4">イベント出展</h4>
+              <p class="text-xs text-[var(--text-light)] mt-3">銀座の展示会に参加します。</p>
+            </article>
+            <article class="p-6 bg-white/80 border border-black/[0.05]">
+              <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--text-light)]">2026.01.31</p>
+              <h4 class="text-xl font-light mt-4">受賞のお知らせ</h4>
+              <p class="text-xs text-[var(--text-light)] mt-3">デザインアワードを受賞しました。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="section-blog py-[var(--section-padding)] px-6">
+        <div class="max-w-5xl mx-auto">
+          <h3 class="text-[11px] tracking-[0.6em] mb-12 text-[var(--sub-color)] uppercase italic text-center">Blog</h3>
+          <div class="grid md:grid-cols-2 gap-10">
+            <article class="p-8 border border-black/[0.05]">
+              <h4 class="text-2xl font-extralight italic mb-4">素材選びの美学</h4>
+              <p class="text-sm text-[var(--text-light)]">質感と色彩の調和を引き出すための考え方。</p>
+            </article>
+            <article class="p-8 border border-black/[0.05]">
+              <h4 class="text-2xl font-extralight italic mb-4">空間演出のヒント</h4>
+              <p class="text-sm text-[var(--text-light)]">体験価値を高める導線設計を解説します。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="section-company py-[var(--section-padding)] px-10 max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 gap-32">
           <div>

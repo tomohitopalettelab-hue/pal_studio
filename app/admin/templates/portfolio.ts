@@ -136,6 +136,45 @@ export const portfolioTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-32 px-8 md:px-[10%] bg-[var(--sub-color)]">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-[10px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)] mb-12">News</h2>
+          <div class="grid md:grid-cols-3 gap-8">
+            <article class="border border-slate-100 bg-white p-6">
+              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.03.08</p>
+              <h4 class="text-lg font-bold mt-3">展示会参加</h4>
+              <p class="text-sm text-[var(--accent-color)] mt-2">最新作品を公開します。</p>
+            </article>
+            <article class="border border-slate-100 bg-white p-6">
+              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.02.01</p>
+              <h4 class="text-lg font-bold mt-3">新作公開</h4>
+              <p class="text-sm text-[var(--accent-color)] mt-2">ポートフォリオを更新しました。</p>
+            </article>
+            <article class="border border-slate-100 bg-white p-6">
+              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.01.15</p>
+              <h4 class="text-lg font-bold mt-3">受賞報告</h4>
+              <p class="text-sm text-[var(--accent-color)] mt-2">クリエイティブ賞を受賞しました。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-32 px-8 md:px-[10%]">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-[10px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)] mb-12">Blog</h2>
+          <div class="grid md:grid-cols-2 gap-8">
+            <article class="border border-slate-100 bg-white p-8">
+              <h4 class="text-xl font-bold mb-3">制作プロセスの舞台裏</h4>
+              <p class="text-sm text-[var(--accent-color)]">コンセプトから完成までの流れ。</p>
+            </article>
+            <article class="border border-slate-100 bg-white p-8">
+              <h4 class="text-xl font-bold mb-3">フォトディレクション</h4>
+              <p class="text-sm text-[var(--accent-color)]">ビジュアル設計のポイントを紹介。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="py-48 px-8 md:px-[10%] text-center">
         <h3 class="text-xs font-bold tracking-[0.8em] uppercase opacity-30 mb-12">Company / Contact</h3>
         <a href="mailto:hello@portfolio.com" class="text-3xl md:text-7xl font-bold tracking-tighter hover:opacity-50 transition-opacity">hello@portfolio.com</a>

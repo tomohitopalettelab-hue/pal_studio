@@ -133,6 +133,51 @@ export const darkTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-24 px-6 bg-slate-900/40 border-y border-slate-800">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex justify-between items-end mb-10">
+            <h3 class="text-[var(--main-color)] text-xs tracking-[0.5em] uppercase">News Log</h3>
+            <span class="text-slate-700 text-[8px]">0x03B1_9F2</span>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6">
+            <article class="p-6 border border-slate-800 bg-black/40">
+              <p class="text-[9px] uppercase tracking-[0.3em] text-slate-600">2026.03.08</p>
+              <h4 class="text-lg font-bold mt-3">Protocol Update</h4>
+              <p class="text-xs text-slate-500 mt-3">新しいパフォーマンス改善を適用。</p>
+            </article>
+            <article class="p-6 border border-slate-800 bg-black/40">
+              <p class="text-[9px] uppercase tracking-[0.3em] text-slate-600">2026.02.09</p>
+              <h4 class="text-lg font-bold mt-3">Security Patch</h4>
+              <p class="text-xs text-slate-500 mt-3">監査ログ機能を強化しました。</p>
+            </article>
+            <article class="p-6 border border-slate-800 bg-black/40">
+              <p class="text-[9px] uppercase tracking-[0.3em] text-slate-600">2026.01.27</p>
+              <h4 class="text-lg font-bold mt-3">New Node Added</h4>
+              <p class="text-xs text-slate-500 mt-3">リージョンを追加し冗長性を向上。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex justify-between items-end mb-10">
+            <h3 class="text-[var(--main-color)] text-xs tracking-[0.5em] uppercase">Blog Stream</h3>
+            <span class="text-slate-700 text-[8px]">0x07F4_A12</span>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <article class="p-6 border border-slate-800 bg-black/40">
+              <h4 class="text-xl font-bold mb-3">アーキテクチャ設計</h4>
+              <p class="text-xs text-slate-500">拡張性を担保する構成の考え方。</p>
+            </article>
+            <article class="p-6 border border-slate-800 bg-black/40">
+              <h4 class="text-xl font-bold mb-3">監視運用の最適化</h4>
+              <p class="text-xs text-slate-500">安定稼働のための監視設計。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="py-24 px-6 border-t border-slate-800/50">
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 text-[11px] tracking-widest">
           <div class="space-y-6">

@@ -107,6 +107,43 @@ export const minimalTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-32 px-8 bg-[var(--accent-color)]">
+        <div class="max-w-7xl mx-auto">
+          <h3 class="text-xs font-bold mb-10 tracking-[0.4em] uppercase text-[var(--text-light)]">News</h3>
+          <div class="grid md:grid-cols-3 gap-10">
+            <article class="border-t border-black pt-6">
+              <p class="text-[11px] font-bold tracking-[0.2em] uppercase">2026.03.08</p>
+              <h4 class="text-lg font-light mt-3">新プロジェクト始動</h4>
+              <p class="text-[13px] text-[var(--text-light)] mt-3">新しいコラボレーションが始まりました。</p>
+            </article>
+            <article class="border-t border-black pt-6">
+              <p class="text-[11px] font-bold tracking-[0.2em] uppercase">2026.02.05</p>
+              <h4 class="text-lg font-light mt-3">展示会参加</h4>
+              <p class="text-[13px] text-[var(--text-light)] mt-3">最新作品を展示します。</p>
+            </article>
+            <article class="border-t border-black pt-6">
+              <p class="text-[11px] font-bold tracking-[0.2em] uppercase">2026.01.18</p>
+              <h4 class="text-lg font-light mt-3">サイト刷新</h4>
+              <p class="text-[13px] text-[var(--text-light)] mt-3">新しいビジュアルに更新しました。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-32 px-8 max-w-7xl mx-auto">
+        <h3 class="text-xs font-bold mb-10 tracking-[0.4em] uppercase text-[var(--text-light)]">Blog</h3>
+        <div class="grid md:grid-cols-2 gap-10">
+          <article class="border-t border-black pt-6">
+            <h4 class="text-lg font-light mb-3">余白を活かすデザイン</h4>
+            <p class="text-[13px] text-[var(--text-light)]">ミニマル設計の実例を紹介します。</p>
+          </article>
+          <article class="border-t border-black pt-6">
+            <h4 class="text-lg font-light mb-3">タイポグラフィの選び方</h4>
+            <p class="text-[13px] text-[var(--text-light)]">読みやすさを引き出すポイント。</p>
+          </article>
+        </div>
+      </section>
+
       <section id="company" class="py-32 px-8 border-t border-slate-100 max-w-7xl mx-auto">
         <div class="grid md:grid-cols-2 gap-12 text-sm tracking-widest">
           <div>

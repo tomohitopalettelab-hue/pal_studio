@@ -37,6 +37,7 @@ type PalDbAccount = {
   paletteId: string;
   name: string;
   status: string;
+  isStandard?: boolean;
   updatedAt?: string;
 };
 
@@ -106,9 +107,11 @@ export default function PaletteLab() {
   const [textDraft, setTextDraft] = useState("");
   const [draggingPageSlug, setDraggingPageSlug] = useState<string | null>(null);
   const [dragOverPageSlug, setDragOverPageSlug] = useState<string | null>(null);
+  const [palDbAccounts, setPalDbAccounts] = useState<PalDbAccount[]>([]);
   const mediaInputRef = useRef<HTMLInputElement>(null);
 
   const TEXT_EDIT_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,li,button,strong,em,small,label,td,th,blockquote';
+  const STANDARD_SECTION_KEYS = ['news', 'blog'] as const;
   
   const [activeSections, setActiveSections] = useState<{ [key: string]: boolean }>({
     "top": true,
@@ -116,7 +119,9 @@ export default function PaletteLab() {
     "features": true,
     "service": true,
     "works": true,
-    "company": true
+    "company": true,
+    "news": true,
+    "blog": true
   });
 
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -193,6 +198,7 @@ export default function PaletteLab() {
       const dbCustomers = Array.isArray(dbData) ? dbData : [];
       const accountData = await accountResponse.json().catch(() => ({}));
       const accounts: PalDbAccount[] = Array.isArray(accountData.accounts) ? accountData.accounts : [];
+      setPalDbAccounts(accounts);
       const accountMap = new Map(accounts.map((item) => [item.paletteId, item]));
       const accountPaletteIds = new Set(accounts.map((item) => item.paletteId));
 
@@ -287,7 +293,12 @@ export default function PaletteLab() {
   const selectedCustomer = customers.find(c => c.id === selectedCustomerId) || customers[0];
   const studioPublicOrigin = (process.env.NEXT_PUBLIC_STUDIO_ORIGIN || 'https://studio.palette-lab.com').replace(/\/$/, '');
   const activePaletteId = resolvePaletteId(selectedCustomer);
+  const selectedAccount = palDbAccounts.find((account) => String(account.paletteId || '').trim().toUpperCase() === activePaletteId);
+  const canShowStandardSections = Boolean(selectedCustomer && !selectedCustomer.isTemplate && selectedAccount?.isStandard);
   const canUseMedia = Boolean(selectedCustomer && !selectedCustomer.isTemplate && PALETTE_ID_PATTERN.test(activePaletteId));
+  const visibleSectionKeys = Object.keys(activeSections).filter((key) => (
+    canShowStandardSections || !STANDARD_SECTION_KEYS.includes(key as (typeof STANDARD_SECTION_KEYS)[number])
+  ));
 
   const normalizePageSlug = (raw: string) => {
     const normalized = String(raw || '').trim().toLowerCase().replace(/^\/+/, '');
@@ -1115,6 +1126,18 @@ ${activePageHtml}
         updatedAt: new Date().toISOString(),
       } as any;
 
+      if (!canShowStandardSections) {
+        const htmlCode = payload.htmlCode ? getProcessedHtml(payload.htmlCode, false) : payload.htmlCode;
+        const pages = Array.isArray(payload.pages)
+          ? payload.pages.map((page: any) => ({
+              ...page,
+              htmlCode: page?.htmlCode ? getProcessedHtml(page.htmlCode, false) : page?.htmlCode,
+            }))
+          : payload.pages;
+        payload.htmlCode = htmlCode;
+        payload.pages = pages;
+      }
+
       // ID は新規採番させるが、customer_id は契約判定に必要なので保持する。
       delete payload.id;
       delete payload.isTemplate;
@@ -1376,9 +1399,12 @@ ${activePageHtml}
   const getProcessedHtml = (html: string, enableEdit: boolean = true) => {
     if (!html) return "";
     let processed = html;
+    const sectionState = canShowStandardSections
+      ? activeSections
+      : { ...activeSections, news: false, blog: false };
     
-    Object.keys(activeSections).forEach(id => {
-      if (!activeSections[id]) {
+    Object.keys(sectionState).forEach(id => {
+      if (!sectionState[id]) {
         const regex = new RegExp(`id="${id}"`, 'g');
         processed = processed.replace(regex, `id="${id}" hidden style="display: none !important;"`);
       }
@@ -1823,7 +1849,7 @@ ${activePageHtml}
               <section className="space-y-4">
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Layout Sections</h2>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.keys(activeSections).map(key => (
+                  {visibleSectionKeys.map(key => (
                     <button
                       key={key}
                       onClick={() => setActiveSections(prev => ({ ...prev, [key]: !prev[key] }))}

@@ -133,6 +133,51 @@ export const naturalTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-24 px-6 bg-[var(--main-color)]/5">
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center mb-12">
+            <h3 class="font-serif text-2xl text-[var(--accent-color)]">お知らせ</h3>
+            <p class="text-[10px] tracking-[0.3em] uppercase mt-2 opacity-50">News</p>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6">
+            <article class="bg-white p-6 rounded-[20px] border border-white shadow-sm">
+              <p class="text-[10px] font-bold opacity-50">2026.03.08</p>
+              <h4 class="font-serif text-lg text-[var(--accent-color)] mt-3">季節限定メニュー</h4>
+              <p class="text-xs mt-2 opacity-70">春の食材を使った新メニューを追加しました。</p>
+            </article>
+            <article class="bg-white p-6 rounded-[20px] border border-white shadow-sm">
+              <p class="text-[10px] font-bold opacity-50">2026.02.11</p>
+              <h4 class="font-serif text-lg text-[var(--accent-color)] mt-3">新店舗オープン</h4>
+              <p class="text-xs mt-2 opacity-70">都内に新しい拠点が誕生します。</p>
+            </article>
+            <article class="bg-white p-6 rounded-[20px] border border-white shadow-sm">
+              <p class="text-[10px] font-bold opacity-50">2026.01.25</p>
+              <h4 class="font-serif text-lg text-[var(--accent-color)] mt-3">ワークショップ開催</h4>
+              <p class="text-xs mt-2 opacity-70">オーガニック体験会を実施します。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto">
+          <div class="text-center mb-12">
+            <h3 class="font-serif text-2xl text-[var(--accent-color)]">ブログ</h3>
+            <p class="text-[10px] tracking-[0.3em] uppercase mt-2 opacity-50">Blog</p>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <article class="bg-white p-8 rounded-[24px] border border-white shadow-sm">
+              <h4 class="font-serif text-xl text-[var(--accent-color)] mb-3">素材選びのこだわり</h4>
+              <p class="text-sm opacity-70">オーガニック素材の背景を紹介します。</p>
+            </article>
+            <article class="bg-white p-8 rounded-[24px] border border-white shadow-sm">
+              <h4 class="font-serif text-xl text-[var(--accent-color)] mb-3">季節の手しごと</h4>
+              <p class="text-sm opacity-70">旬の味わいを楽しむヒント。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="py-24 px-6 border-t border-[var(--main-color)]/10">
         <div class="max-w-3xl mx-auto">
           <div class="flex flex-col md:flex-row justify-between items-start gap-12">

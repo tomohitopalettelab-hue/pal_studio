@@ -7,6 +7,7 @@ type PalDbAccount = {
   status: string;
   chatLoginId: string | null;
   chatPasswordSet: boolean;
+  isStandard?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -83,7 +84,34 @@ export const listPalStudioAccountsFromPalDb = async (): Promise<PalDbAccount[]> 
       .filter(Boolean),
   );
 
-  return accounts.filter((account) => targetAccountIds.has(String(account.id || '').trim()));
+  const standardPlanIds = new Set(
+    plans
+      .filter((plan) => isPalStudioStandardPlanCode(plan.code))
+      .map((plan) => String(plan.id || '').trim())
+      .filter(Boolean),
+  );
+
+  const accountPlanMap = new Map<string, Set<string>>();
+  contracts.forEach((item) => {
+    const accountId = String(item.accountId || '').trim();
+    const planId = String(item.planId || '').trim();
+    if (!accountId || !planId) return;
+    const current = accountPlanMap.get(accountId) || new Set<string>();
+    current.add(planId);
+    accountPlanMap.set(accountId, current);
+  });
+
+  return accounts
+    .filter((account) => targetAccountIds.has(String(account.id || '').trim()))
+    .map((account) => {
+      const accountId = String(account.id || '').trim();
+      const plansForAccount = accountPlanMap.get(accountId) || new Set<string>();
+      const isStandard = Array.from(plansForAccount).some((planId) => standardPlanIds.has(planId));
+      return {
+        ...account,
+        isStandard,
+      };
+    });
 };
 
 export const findPalStudioAccountByPaletteId = async (paletteId: string): Promise<PalDbAccount | null> => {

@@ -183,6 +183,51 @@ export const lpTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-32 px-6 bg-slate-50 border-t border-slate-100">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-end justify-between mb-16">
+            <h3 class="text-2xl md:text-4xl font-black">最新情報</h3>
+            <span class="text-xs font-bold tracking-[0.4em] uppercase text-slate-400">News</span>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6">
+            <article class="p-6 bg-white rounded-2xl border border-slate-200">
+              <p class="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">2026.03.08</p>
+              <h4 class="text-lg font-bold mt-3">新機能リリース</h4>
+              <p class="text-sm text-[var(--text-light)] mt-3">分析ダッシュボードが強化されました。</p>
+            </article>
+            <article class="p-6 bg-white rounded-2xl border border-slate-200">
+              <p class="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">2026.02.10</p>
+              <h4 class="text-lg font-bold mt-3">事例公開</h4>
+              <p class="text-sm text-[var(--text-light)] mt-3">導入事例を追加しました。</p>
+            </article>
+            <article class="p-6 bg-white rounded-2xl border border-slate-200">
+              <p class="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">2026.01.28</p>
+              <h4 class="text-lg font-bold mt-3">セミナー開催</h4>
+              <p class="text-sm text-[var(--text-light)] mt-3">無料のオンラインセミナーを実施します。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-32 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-end justify-between mb-16">
+            <h3 class="text-2xl md:text-4xl font-black">ブログ</h3>
+            <span class="text-xs font-bold tracking-[0.4em] uppercase text-slate-400">Blog</span>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <article class="p-8 border border-slate-200 rounded-2xl">
+              <h4 class="text-xl font-bold mb-3">成長戦略の立て方</h4>
+              <p class="text-sm text-[var(--text-light)]">市場分析から実行までの流れ。</p>
+            </article>
+            <article class="p-8 border border-slate-200 rounded-2xl">
+              <h4 class="text-xl font-bold mb-3">施策の優先順位付け</h4>
+              <p class="text-sm text-[var(--text-light)]">効果の高い施策を見極める方法。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="service" class="py-32 px-6 bg-slate-900 text-white">
         <div class="max-w-7xl mx-auto">
           <div class="text-center mb-24">

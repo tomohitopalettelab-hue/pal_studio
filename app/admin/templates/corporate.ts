@@ -133,6 +133,51 @@ export const corporateTemplate: Template = {
         </div>
       </section>
 
+      <section id="news" class="py-24 px-6 bg-slate-50 border-t border-slate-100">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-end justify-between mb-10">
+            <h3 class="text-2xl font-bold text-[var(--main-dark)]">ニュース</h3>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">News</span>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6">
+            <article class="p-6 bg-white border border-slate-200 rounded-lg">
+              <p class="text-xs font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.03.08</p>
+              <h4 class="text-lg font-bold mb-2">新拠点開設</h4>
+              <p class="text-sm text-[var(--text-light)]">関西支社を開設しました。</p>
+            </article>
+            <article class="p-6 bg-white border border-slate-200 rounded-lg">
+              <p class="text-xs font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.02.12</p>
+              <h4 class="text-lg font-bold mb-2">共同研究開始</h4>
+              <p class="text-sm text-[var(--text-light)]">研究機関との連携を開始しました。</p>
+            </article>
+            <article class="p-6 bg-white border border-slate-200 rounded-lg">
+              <p class="text-xs font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.01.20</p>
+              <h4 class="text-lg font-bold mb-2">レポート公開</h4>
+              <p class="text-sm text-[var(--text-light)]">年次レポートを公開しました。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="blog" class="py-24 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+          <div class="flex items-end justify-between mb-10">
+            <h3 class="text-2xl font-bold text-[var(--main-dark)]">ブログ</h3>
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Blog</span>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <article class="p-6 border border-slate-200 rounded-lg">
+              <h4 class="text-lg font-bold mb-3">顧客体験を高める設計</h4>
+              <p class="text-sm text-[var(--text-light)]">プロジェクトの進め方と工夫を紹介します。</p>
+            </article>
+            <article class="p-6 border border-slate-200 rounded-lg">
+              <h4 class="text-lg font-bold mb-3">現場に強い運用体制</h4>
+              <p class="text-sm text-[var(--text-light)]">品質とスピードを両立させるための考え方。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="company" class="py-28 px-6 bg-slate-900 text-white">
         <div class="max-w-5xl mx-auto">
           <div class="grid md:grid-cols-3 gap-12">

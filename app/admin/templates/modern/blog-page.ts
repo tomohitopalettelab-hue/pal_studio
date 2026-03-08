@@ -43,7 +43,7 @@ export const modernBlogPageTemplate: TemplateVariant = {
 
     <main class="pt-32 md:pt-48">
       <article>
-        <header class="max-w-4xl mx-auto px-6 md:px-10 mb-16">
+        <section id="top" class="max-w-4xl mx-auto px-6 md:px-10 mb-16">
           <div class="flex items-center gap-4 mb-8 text-[10px] font-bold uppercase tracking-[0.4em]">
             <span class="text-slate-400">2026.03.07</span>
             <span class="text-[var(--accent-color)]">/ Strategy</span>
@@ -59,7 +59,7 @@ export const modernBlogPageTemplate: TemplateVariant = {
               <p class="text-sm font-bold">佐藤 健太 / Director</p>
             </div>
           </div>
-        </header>
+        </section>
 
         <div class="max-w-7xl mx-auto px-6 md:px-10 mb-20 md:mb-32">
           <div class="aspect-video md:aspect-[21/9] bg-slate-100 overflow-hidden shadow-2xl shadow-black/5">
@@ -69,7 +69,7 @@ export const modernBlogPageTemplate: TemplateVariant = {
 
         <div class="max-w-7xl mx-auto px-6 md:px-10 pb-32 grid lg:grid-cols-12 gap-16 md:gap-24">
           
-          <div class="lg:col-span-8">
+          <section id="concept" class="lg:col-span-8">
             <div class="prose prose-slate lg:prose-xl max-w-none">
               <p class="text-xl md:text-2xl font-light leading-relaxed text-[var(--text-color)] italic mb-16 border-l-4 border-[var(--accent-color)] pl-8">
                 「Webサイトは公開してからが本番である」という言葉は、今や使い古された表現かもしれません。しかし、真に運用フェーズまで見据えた設計ができているサイトは、驚くほど少ないのが現状です。
@@ -108,7 +108,7 @@ export const modernBlogPageTemplate: TemplateVariant = {
                 <a href="#" class="hover:text-[var(--accent-color)] transition-colors">Pocket</a>
               </div>
             </div>
-          </div>
+          </section>
 
           <aside class="lg:col-span-4 space-y-20">
             <div class="sticky top-32 space-y-16">

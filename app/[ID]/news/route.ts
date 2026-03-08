@@ -4,10 +4,12 @@ import {
   PostItem,
   resolvePublishPath,
   ensureHtmlDocument,
+  getCustomerPagesForNav,
   getCustomerTemplateId,
   selectVariantHtml,
   replaceSectionContent,
   buildPostListHtml,
+  syncNavWithSitePagesHtml,
 } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -47,10 +49,16 @@ export async function GET(
       .sort((a, b) => String(b.publishedAt || '').localeCompare(String(a.publishedAt || '')));
 
     const templateId = getCustomerTemplateId(customer);
+    const publishBasePath = resolvePublishPath(customer) || basePath;
     const baseHtml = selectVariantHtml('news', templateId);
-    const listHtml = buildPostListHtml(published, `/${encodeURIComponent(id)}/news`, 'ニュース');
+    const listHtml = buildPostListHtml(published, `${publishBasePath}/news`, 'ニュース');
     const injected = replaceSectionContent(baseHtml, 'top', listHtml);
-    const output = ensureHtmlDocument(injected || listHtml);
+    const withNav = syncNavWithSitePagesHtml(
+      injected || baseHtml,
+      getCustomerPagesForNav(customer),
+      publishBasePath,
+    );
+    const output = ensureHtmlDocument(withNav || listHtml);
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

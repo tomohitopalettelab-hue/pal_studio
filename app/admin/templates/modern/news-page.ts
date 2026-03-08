@@ -45,7 +45,7 @@ export const modernNewsPageTemplate: TemplateVariant = {
 
     <main class="pt-32 md:pt-48">
       <article>
-        <header class="max-w-4xl mx-auto px-6 md:px-10 mb-16 md:mb-24 text-center">
+        <section id="top" class="max-w-4xl mx-auto px-6 md:px-10 mb-16 md:mb-24 text-center">
           <div class="flex items-center justify-center gap-4 mb-8">
             <span class="text-[10px] font-bold tracking-[0.4em] text-slate-400 uppercase">2026.03.07</span>
             <span class="w-8 h-[1px] bg-slate-200"></span>
@@ -58,7 +58,7 @@ export const modernNewsPageTemplate: TemplateVariant = {
             <span class="px-4 py-1.5 border border-black/5 text-[9px] font-bold uppercase tracking-widest rounded-full">Identity</span>
             <span class="px-4 py-1.5 border border-black/5 text-[9px] font-bold uppercase tracking-widest rounded-full">Web Design</span>
           </div>
-        </header>
+        </section>
 
         <div class="max-w-7xl mx-auto px-6 md:px-10 mb-20 md:mb-32">
           <div class="aspect-[21/9] bg-slate-100 overflow-hidden shadow-2xl shadow-black/5">
@@ -66,7 +66,7 @@ export const modernNewsPageTemplate: TemplateVariant = {
           </div>
         </div>
 
-        <div class="max-w-3xl mx-auto px-6 md:px-10 pb-32">
+        <section id="concept" class="max-w-3xl mx-auto px-6 md:px-10 pb-32">
           <div class="prose prose-slate lg:prose-xl">
             <p class="text-xl md:text-2xl font-light leading-relaxed text-[var(--text-color)] italic mb-16 border-l-4 border-[var(--accent-color)] pl-8">
               「デザインは単なる装飾ではなく、ビジネスの意思決定を視覚化する言語である。」この信念のもと、Studio Modernはブランドの刷新を行いました。
@@ -104,7 +104,7 @@ export const modernNewsPageTemplate: TemplateVariant = {
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </article>
 
       <section id="service" class="py-32 bg-[#f8fafc] px-6 md:px-10">

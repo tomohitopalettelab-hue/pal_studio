@@ -4,11 +4,13 @@ import {
   PostItem,
   resolvePublishPath,
   ensureHtmlDocument,
+  getCustomerPagesForNav,
   getCustomerTemplateId,
   selectVariantHtml,
   replaceSectionContent,
   buildPostDetailTopHtml,
   buildPostDetailBodyHtml,
+  syncNavWithSitePagesHtml,
 } from '../../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -48,12 +50,18 @@ export async function GET(
     }
 
     const templateId = getCustomerTemplateId(customer);
+    const publishBasePath = resolvePublishPath(customer) || basePath;
     const baseHtml = selectVariantHtml('blog-page', templateId);
     const topHtml = buildPostDetailTopHtml(post);
     const bodyHtml = buildPostDetailBodyHtml(post);
     const withTop = replaceSectionContent(baseHtml, 'top', topHtml);
     const withBody = replaceSectionContent(withTop, 'concept', bodyHtml);
-    const output = ensureHtmlDocument(withBody || bodyHtml);
+    const withNav = syncNavWithSitePagesHtml(
+      withBody || baseHtml,
+      getCustomerPagesForNav(customer),
+      publishBasePath,
+    );
+    const output = ensureHtmlDocument(withNav || bodyHtml);
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

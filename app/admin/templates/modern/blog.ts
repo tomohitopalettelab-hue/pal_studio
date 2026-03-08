@@ -54,86 +54,9 @@ export const modernBlogTemplate: TemplateVariant = {
         </div>
       </section>
 
-      <section class="px-6 md:px-10 pb-32">
-        <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 md:gap-24">
-          
-          <div class="lg:col-span-8 space-y-24 md:space-y-32">
-            
-            <a data-page-slug="blog-page" href="/blog-page" class="group block">
-              <article class="cursor-pointer">
-                <div class="aspect-[16/9] overflow-hidden mb-8 bg-slate-100 relative shadow-2xl shadow-black/5">
-                  <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Blog 01">
-                  <div class="absolute bottom-0 left-0 bg-[var(--main-color)] text-white text-[8px] font-black uppercase tracking-[0.4em] px-6 py-3">Featured</div>
-                </div>
-                <div class="max-w-2xl">
-                  <p class="text-[10px] font-bold tracking-[0.4em] text-slate-400 uppercase mb-4">2026.03.07 / Strategy</p>
-                  <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-6 group-hover:text-[var(--accent-color)] transition-colors">成果が続くサイト設計の考え方：分析・設計・改善のループを回す。</h2>
-                  <p class="text-[var(--text-light)] text-sm md:text-base font-light leading-relaxed mb-8">
-                    単に「作る」だけでは終わらない。ビジネスの成長に合わせてサイトが進化し続けるために、初期設計で仕込むべき「余白」と「データ設計」の極意を公開します。
-                  </p>
-                  <div class="flex items-center gap-4">
-                    <span class="text-[10px] font-bold uppercase tracking-[0.4em]">Read Journal</span>
-                    <div class="w-12 h-[1px] bg-black/20 group-hover:w-20 group-hover:bg-[var(--accent-color)] transition-all"></div>
-                  </div>
-                </div>
-              </article>
-            </a>
-
-            <div class="grid md:grid-cols-2 gap-16 md:gap-20 border-t border-black/5 pt-24 md:pt-32">
-              <a data-page-slug="blog-page" href="/blog-page" class="group block">
-                <article class="cursor-pointer">
-                  <div class="aspect-[4/3] overflow-hidden mb-6 bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Blog 02">
-                  </div>
-                  <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mb-3">2026.02.21 / Design</p>
-                  <h3 class="text-xl md:text-2xl font-bold tracking-tight mb-4 group-hover:text-[var(--accent-color)] transition-colors">ブランドストーリーを視覚化する「静寂」の美学。</h3>
-                  <p class="text-xs md:text-sm text-[var(--text-light)] font-light leading-relaxed">語りすぎないことで伝わるブランドの品格。ミニマリズムを追求した先にある、感情を揺さぶるデザインの作り方。</p>
-                </article>
-              </a>
-
-              <a data-page-slug="blog-page" href="/blog-page" class="group block">
-                <article class="cursor-pointer">
-                  <div class="aspect-[4/3] overflow-hidden mb-6 bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1551288049-bbbda536ad39?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Blog 03">
-                  </div>
-                  <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mb-3">2026.02.10 / Operation</p>
-                  <h3 class="text-xl md:text-2xl font-bold tracking-tight mb-4 group-hover:text-[var(--accent-color)] transition-colors">運用で差がつく更新設計：現場の負荷を下げるために。</h3>
-                  <p class="text-xs md:text-sm text-[var(--text-light)] font-light leading-relaxed">美しいデザインを維持しながら、専門知識がなくてもスムーズに更新できる。現場目線で追求したコンポーネント設計術。</p>
-                </article>
-              </a>
-            </div>
-          </div>
-
-          <aside class="lg:col-span-4 space-y-16">
-            <div class="sticky top-32">
-              <div class="border-t border-black font-bold pt-6 mb-12">
-                <h3 class="text-xs uppercase tracking-[0.5em] mb-10 text-[var(--accent-color)]">Categories</h3>
-                <div class="flex flex-col gap-4 text-[10px] uppercase tracking-[0.3em]">
-                  <a href="#" class="flex justify-between items-center group">
-                    <span class="group-hover:translate-x-2 transition-transform">Strategy</span>
-                    <span class="opacity-20 italic">08</span>
-                  </a>
-                  <a href="#" class="flex justify-between items-center group border-t border-black/5 pt-4">
-                    <span class="group-hover:translate-x-2 transition-transform">Design</span>
-                    <span class="opacity-20 italic">12</span>
-                  </a>
-                  <a href="#" class="flex justify-between items-center group border-t border-black/5 pt-4">
-                    <span class="group-hover:translate-x-2 transition-transform">Operation</span>
-                    <span class="opacity-20 italic">05</span>
-                  </a>
-                </div>
-              </div>
-
-              <div class="bg-slate-50 p-8 md:p-10">
-                <p class="text-[9px] font-black uppercase tracking-[0.4em] mb-4">Newsletter</p>
-                <p class="text-xs text-[var(--text-light)] leading-relaxed mb-6">最新のインサイトや制作事例の更新情報を、週に一度お届けします。</p>
-                <div class="space-y-4">
-                  <input type="email" placeholder="Email Address" class="w-full h-12 px-4 bg-white border-none text-[10px] outline-none focus:ring-1 focus:ring-[var(--accent-color)] transition-all">
-                  <button class="w-full py-4 bg-[var(--main-color)] text-white text-[9px] font-bold uppercase tracking-[0.4em] hover:bg-[var(--accent-color)] transition-all">Subscribe</button>
-                </div>
-              </div>
-            </div>
-          </aside>
+      <section id="top" class="px-6 md:px-10 pb-32">
+        <div class="max-w-7xl mx-auto">
+          <p class="text-sm text-slate-400">ブログ一覧は公開投稿から自動生成されます。</p>
         </div>
       </section>
 

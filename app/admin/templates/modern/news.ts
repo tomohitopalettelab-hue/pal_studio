@@ -63,54 +63,9 @@ export const modernNewsTemplate: TemplateVariant = {
         </div>
       </section>
 
-      <section class="px-6 md:px-10 pb-32">
-        <div class="max-w-7xl mx-auto space-y-24 md:space-y-40">
-          
-          <a data-page-slug="news-page" href="/news-page" class="group block">
-            <article class="cursor-pointer">
-              <div class="grid lg:grid-cols-2 gap-10 md:gap-20 items-center">
-                <div class="aspect-[16/9] overflow-hidden bg-slate-100 relative">
-                  <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Featured News">
-                  <div class="absolute top-0 left-0 bg-[var(--accent-color)] text-white text-[8px] font-black uppercase tracking-[0.4em] px-6 py-3">Latest News</div>
-                </div>
-                <div>
-                  <p class="text-[10px] font-bold tracking-[0.4em] text-slate-400 uppercase mb-4 md:mb-6">2026.03.07 / Update</p>
-                  <h2 class="text-3xl md:text-5xl font-bold tracking-tighter leading-tight mb-6 group-hover:text-[var(--accent-color)] transition-colors">ブランド刷新プロジェクトを公開。新たなビジョンへ。</h2>
-                  <p class="text-[var(--text-light)] text-base md:text-lg font-light leading-relaxed mb-10 max-w-xl">
-                    設計から運用までのプロセスを根本から整理し、成果と体験が共鳴するサイトへとアップデート。私たちが目指す次の10年のスタンダードを形にしました。
-                  </p>
-                  <div class="flex items-center gap-4">
-                    <span class="text-[10px] font-bold uppercase tracking-[0.4em]">Read Full Article</span>
-                    <div class="w-12 h-[1px] bg-black/20 group-hover:w-20 group-hover:bg-[var(--accent-color)] transition-all"></div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </a>
-
-          <div class="grid md:grid-cols-2 gap-x-16 gap-y-24 md:gap-y-32 border-t border-black/5 pt-24 md:pt-32">
-            <a data-page-slug="news-page" href="/news-page" class="group block">
-              <article class="cursor-pointer">
-                <div class="aspect-video overflow-hidden mb-8 bg-slate-100">
-                  <img src="https://images.unsplash.com/photo-1542744095-2ad4870706d8?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="News 02">
-                </div>
-                <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mb-4">2026.02.21 / Event</p>
-                <h3 class="text-2xl font-bold tracking-tight mb-4 group-hover:text-[var(--accent-color)] transition-colors">次世代デザイン・サミット 2026 登壇決定のお知らせ</h3>
-                <p class="text-sm text-[var(--text-light)] font-light leading-relaxed">デジタル体験の未来を議論する国際カンファレンスに、代表の田中が登壇します。最新のUX戦略について講演予定です。</p>
-              </article>
-            </a>
-
-            <a data-page-slug="news-page" href="/news-page" class="group block">
-              <article class="cursor-pointer">
-                <div class="aspect-video overflow-hidden mb-8 bg-slate-100">
-                  <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="News 03">
-                </div>
-                <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mb-4">2026.02.08 / Release</p>
-                <h3 class="text-2xl font-bold tracking-tight mb-4 group-hover:text-[var(--accent-color)] transition-colors">新規サービス「Pal-Opt」ベータ版の提供を開始</h3>
-                <p class="text-sm text-[var(--text-light)] font-light leading-relaxed">ビジネスの意思決定を加速させるAI分析ツールを公開。既存クライアント様向けに先行アクセスを開始しました。</p>
-              </article>
-            </a>
-          </div>
+      <section id="top" class="px-6 md:px-10 pb-32">
+        <div class="max-w-7xl mx-auto">
+          <p class="text-sm text-slate-400">ニュース一覧は公開投稿から自動生成されます。</p>
         </div>
       </section>
 

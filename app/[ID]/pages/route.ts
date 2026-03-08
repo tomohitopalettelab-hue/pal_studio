@@ -68,11 +68,16 @@ export async function GET(
     // 同時に charset と Tailwind CDN を挿入し、文字化けとスタイル未適用を防止する。
     if (!/<html[\s>]/i.test(html)) {
       html = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
+             `<meta name="viewport" content="width=device-width, initial-scale=1" />` +
              `<script src="https://cdn.tailwindcss.com"></script></head><body>${html}</body></html>`;
     } else {
       // charset が指定されていない場合は挿入
       if (!/<meta[^>]+charset=/i.test(html)) {
         html = html.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
+      }
+      // viewport が指定されていない場合は挿入
+      if (!/<meta[^>]+name=["']viewport["']/i.test(html)) {
+        html = html.replace(/<head([^>]*)>/i, `<head$1><meta name="viewport" content="width=device-width, initial-scale=1" />`);
       }
       // Tailwind CDN が含まれていなければ追加
       if (!/cdn\.tailwindcss\.com/i.test(html)) {

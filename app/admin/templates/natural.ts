@@ -135,45 +135,32 @@ export const naturalTemplate: Template = {
 
       <section id="news" class="py-24 px-6 bg-[var(--main-color)]/5">
         <div class="max-w-5xl mx-auto">
-          <div class="text-center mb-12">
-            <h3 class="font-serif text-2xl text-[var(--accent-color)]">お知らせ</h3>
-            <p class="text-[10px] tracking-[0.3em] uppercase mt-2 opacity-50">News</p>
+          <div class="text-center mb-12 md:mb-16">
+            <h3 class="font-serif text-2xl md:text-4xl text-[var(--accent-color)]">お知らせ</h3>
+            <p class="text-[9px] tracking-[0.3em] uppercase mt-2 opacity-40">News</p>
           </div>
-          <div class="grid md:grid-cols-3 gap-6">
-            <article class="bg-white p-6 rounded-[20px] border border-white shadow-sm">
-              <p class="text-[10px] font-bold opacity-50">2026.03.08</p>
-              <h4 class="font-serif text-lg text-[var(--accent-color)] mt-3">季節限定メニュー</h4>
-              <p class="text-xs mt-2 opacity-70">春の食材を使った新メニューを追加しました。</p>
-            </article>
-            <article class="bg-white p-6 rounded-[20px] border border-white shadow-sm">
-              <p class="text-[10px] font-bold opacity-50">2026.02.11</p>
-              <h4 class="font-serif text-lg text-[var(--accent-color)] mt-3">新店舗オープン</h4>
-              <p class="text-xs mt-2 opacity-70">都内に新しい拠点が誕生します。</p>
-            </article>
-            <article class="bg-white p-6 rounded-[20px] border border-white shadow-sm">
-              <p class="text-[10px] font-bold opacity-50">2026.01.25</p>
-              <h4 class="font-serif text-lg text-[var(--accent-color)] mt-3">ワークショップ開催</h4>
-              <p class="text-xs mt-2 opacity-70">オーガニック体験会を実施します。</p>
-            </article>
+          <div class="grid md:grid-cols-2 gap-6">
+            <a href="/news/news-page" class="group block"><article class="bg-white p-6 rounded-[20px] border border-white shadow-sm hover:shadow-md transition-shadow"><p class="text-[9px] font-bold text-[var(--accent-color)] opacity-60">2026.03.08</p><h4 class="font-serif text-lg text-[var(--accent-color)] mt-3 group-hover:opacity-70 transition-opacity">最新情報は公開投稿から自動生成されます。</h4><p class="text-xs mt-2 opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/news/news-page" class="group block"><article class="bg-white p-6 rounded-[20px] border border-white shadow-sm hover:shadow-md transition-shadow"><p class="text-[9px] font-bold text-[var(--accent-color)] opacity-60">2026.02.20</p><h4 class="font-serif text-lg text-[var(--accent-color)] mt-3 group-hover:opacity-70 transition-opacity">ニュース記事のタイトルがここに表示されます。</h4><p class="text-xs mt-2 opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></article></a>
+          </div>
+          <div class="text-center mt-10">
+            <a href="/news" class="inline-block text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">すべてのお知らせ</a>
           </div>
         </div>
       </section>
 
       <section id="blog" class="py-24 px-6">
         <div class="max-w-5xl mx-auto">
-          <div class="text-center mb-12">
-            <h3 class="font-serif text-2xl text-[var(--accent-color)]">ブログ</h3>
-            <p class="text-[10px] tracking-[0.3em] uppercase mt-2 opacity-50">Blog</p>
+          <div class="text-center mb-12 md:mb-16">
+            <h3 class="font-serif text-2xl md:text-4xl text-[var(--accent-color)]">ブログ</h3>
+            <p class="text-[9px] tracking-[0.3em] uppercase mt-2 opacity-40">Blog</p>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <article class="bg-white p-8 rounded-[24px] border border-white shadow-sm">
-              <h4 class="font-serif text-xl text-[var(--accent-color)] mb-3">素材選びのこだわり</h4>
-              <p class="text-sm opacity-70">オーガニック素材の背景を紹介します。</p>
-            </article>
-            <article class="bg-white p-8 rounded-[24px] border border-white shadow-sm">
-              <h4 class="font-serif text-xl text-[var(--accent-color)] mb-3">季節の手しごと</h4>
-              <p class="text-sm opacity-70">旬の味わいを楽しむヒント。</p>
-            </article>
+            <a href="/blog/blog-page" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10"></div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">2026.03.01</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10"></div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">2026.02.15</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
+          </div>
+          <div class="text-center mt-10">
+            <a href="/blog" class="inline-block text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">すべての記事</a>
           </div>
         </div>
       </section>

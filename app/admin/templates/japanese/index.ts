@@ -112,45 +112,30 @@ export const japaneseTemplate: Template = {
 
       <section id="news" class="py-32 px-6">
         <div class="max-w-5xl mx-auto">
-          <div class="flex items-center gap-6 mb-16">
+          <div class="flex items-center gap-6 mb-12 md:mb-16">
             <div class="w-12 h-px bg-[var(--main-color)]"></div>
-            <h3 class="text-lg tracking-[0.5em] font-bold uppercase">お知らせ</h3>
+            <h3 class="text-lg tracking-[0.5em] font-bold">お知らせ</h3>
+            <div class="flex-1 h-px bg-[var(--border-color)]"></div>
+            <a href="/news" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--main-color)] pb-1 text-[var(--main-color)] hover:opacity-60 transition-opacity">一覧を見る</a>
           </div>
-          <div class="grid md:grid-cols-3 gap-6 text-sm">
-            <article class="border border-[var(--border-color)] p-6">
-              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.03.08</p>
-              <h4 class="text-lg font-bold mt-4">展示会出展</h4>
-              <p class="text-xs leading-loose mt-3 opacity-70">新作の建具を披露します。</p>
-            </article>
-            <article class="border border-[var(--border-color)] p-6">
-              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.02.16</p>
-              <h4 class="text-lg font-bold mt-4">施工事例更新</h4>
-              <p class="text-xs leading-loose mt-3 opacity-70">最新の実績を追加しました。</p>
-            </article>
-            <article class="border border-[var(--border-color)] p-6">
-              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.01.25</p>
-              <h4 class="text-lg font-bold mt-4">受賞のお知らせ</h4>
-              <p class="text-xs leading-loose mt-3 opacity-70">和の建築賞を受賞しました。</p>
-            </article>
+          <div class="grid md:grid-cols-2 gap-6 text-sm">
+            <a href="/news/news-page" class="group block"><article class="border border-[var(--border-color)] p-6 hover:border-[var(--main-color)] transition-colors"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40">2026.03.08</p><h4 class="text-base font-bold mt-4 group-hover:text-[var(--main-color)] transition-colors leading-relaxed">最新情報は公開投稿から自動生成されます。</h4></article></a>
+            <a href="/news/news-page" class="group block"><article class="border border-[var(--border-color)] p-6 hover:border-[var(--main-color)] transition-colors"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40">2026.02.20</p><h4 class="text-base font-bold mt-4 group-hover:text-[var(--main-color)] transition-colors leading-relaxed">ニュース記事のタイトルがここに表示されます。</h4></article></a>
           </div>
         </div>
       </section>
 
       <section id="blog" class="py-32 px-6 bg-[var(--accent-color)] text-white">
         <div class="max-w-5xl mx-auto">
-          <div class="flex items-center gap-6 mb-16">
+          <div class="flex items-center gap-6 mb-12 md:mb-16">
             <div class="w-12 h-px bg-[var(--main-color)]"></div>
-            <h3 class="text-lg tracking-[0.5em] font-bold uppercase">読み物</h3>
+            <h3 class="text-lg tracking-[0.5em] font-bold">読み物</h3>
+            <div class="flex-1 h-px bg-white/10"></div>
+            <a href="/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--main-color)] pb-1 text-[var(--main-color)] hover:opacity-60 transition-opacity">一覧を見る</a>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <article class="border border-white/20 p-8">
-              <h4 class="text-xl font-bold mb-3">木の香りと暮らし</h4>
-              <p class="text-xs leading-loose opacity-70">住まいに木を取り入れる魅力を紹介。</p>
-            </article>
-            <article class="border border-white/20 p-8">
-              <h4 class="text-xl font-bold mb-3">伝統技法の魅力</h4>
-              <p class="text-xs leading-loose opacity-70">職人の技と素材の話。</p>
-            </article>
+            <a href="/blog/blog-page" class="group block"><article class="border border-white/20 p-8 hover:border-white/40 transition-colors"><h4 class="text-lg font-bold mb-3 group-hover:opacity-70 transition-opacity leading-relaxed">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-xs leading-loose opacity-60">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="border border-white/20 p-8 hover:border-white/40 transition-colors"><h4 class="text-lg font-bold mb-3 group-hover:opacity-70 transition-opacity leading-relaxed">ブログ記事のタイトルがここに表示されます。</h4><p class="text-xs leading-loose opacity-60">記事の抜粋がここに表示されます。</p></article></a>
           </div>
         </div>
       </section>

@@ -135,45 +135,32 @@ export const corporateTemplate: Template = {
 
       <section id="news" class="py-24 px-6 bg-slate-50 border-t border-slate-100">
         <div class="max-w-6xl mx-auto">
-          <div class="flex items-end justify-between mb-10">
-            <h3 class="text-2xl font-bold text-[var(--main-dark)]">ニュース</h3>
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">News</span>
+          <div class="flex items-end justify-between mb-10 md:mb-14 gap-4">
+            <div>
+              <p class="text-[9px] font-bold tracking-[0.4em] uppercase text-[var(--main-color)] mb-2">News</p>
+              <h3 class="text-2xl md:text-4xl font-bold text-[var(--main-dark)]">ニュース</h3>
+            </div>
+            <a href="/news" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a>
           </div>
-          <div class="grid md:grid-cols-3 gap-6">
-            <article class="p-6 bg-white border border-slate-200 rounded-lg">
-              <p class="text-xs font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.03.08</p>
-              <h4 class="text-lg font-bold mb-2">新拠点開設</h4>
-              <p class="text-sm text-[var(--text-light)]">関西支社を開設しました。</p>
-            </article>
-            <article class="p-6 bg-white border border-slate-200 rounded-lg">
-              <p class="text-xs font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.02.12</p>
-              <h4 class="text-lg font-bold mb-2">共同研究開始</h4>
-              <p class="text-sm text-[var(--text-light)]">研究機関との連携を開始しました。</p>
-            </article>
-            <article class="p-6 bg-white border border-slate-200 rounded-lg">
-              <p class="text-xs font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.01.20</p>
-              <h4 class="text-lg font-bold mb-2">レポート公開</h4>
-              <p class="text-sm text-[var(--text-light)]">年次レポートを公開しました。</p>
-            </article>
+          <div class="grid md:grid-cols-2 gap-6">
+            <a href="/news/news-page" class="group block"><article class="p-6 bg-white border border-slate-200 rounded-lg hover:shadow-md transition-shadow"><p class="text-[9px] font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.03.08</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">最新情報は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed mt-2">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/news/news-page" class="group block"><article class="p-6 bg-white border border-slate-200 rounded-lg hover:shadow-md transition-shadow"><p class="text-[9px] font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">2026.02.20</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ニュース記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed mt-2">記事の抜粋がここに表示されます。</p></article></a>
           </div>
         </div>
       </section>
 
       <section id="blog" class="py-24 px-6 bg-white">
         <div class="max-w-6xl mx-auto">
-          <div class="flex items-end justify-between mb-10">
-            <h3 class="text-2xl font-bold text-[var(--main-dark)]">ブログ</h3>
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Blog</span>
+          <div class="flex items-end justify-between mb-10 md:mb-14 gap-4">
+            <div>
+              <p class="text-[9px] font-bold tracking-[0.4em] uppercase text-[var(--main-color)] mb-2">Blog</p>
+              <h3 class="text-2xl md:text-4xl font-bold text-[var(--main-dark)]">ブログ</h3>
+            </div>
+            <a href="/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <article class="p-6 border border-slate-200 rounded-lg">
-              <h4 class="text-lg font-bold mb-3">顧客体験を高める設計</h4>
-              <p class="text-sm text-[var(--text-light)]">プロジェクトの進め方と工夫を紹介します。</p>
-            </article>
-            <article class="p-6 border border-slate-200 rounded-lg">
-              <h4 class="text-lg font-bold mb-3">現場に強い運用体制</h4>
-              <p class="text-sm text-[var(--text-light)]">品質とスピードを両立させるための考え方。</p>
-            </article>
+            <a href="/blog/blog-page" class="group block overflow-hidden rounded-lg border border-slate-200 hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden"></div><div class="p-6"><p class="text-[9px] font-bold text-[var(--main-color)] uppercase tracking-widest mb-2">2026.03.01</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed">記事の抜粋がここに表示されます。</p></div></a>
+            <a href="/blog/blog-page" class="group block overflow-hidden rounded-lg border border-slate-200 hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden"></div><div class="p-6"><p class="text-[9px] font-bold text-[var(--main-color)] uppercase tracking-widest mb-2">2026.02.15</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed">記事の抜粋がここに表示されます。</p></div></a>
           </div>
         </div>
       </section>

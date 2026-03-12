@@ -95,39 +95,26 @@ export const popTemplate: Template = {
 
       <section id="news" class="py-24 px-6 bg-white">
         <div class="max-w-5xl mx-auto">
-          <div class="inline-block px-5 py-2 bg-[var(--accent-color)] border-[3px] border-black rounded-full text-xs font-black mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">NEWS</div>
-          <div class="grid md:grid-cols-3 gap-6">
-            <article class="p-6 bg-[var(--accent-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <p class="text-xs font-black">2026.03.08</p>
-              <h4 class="text-lg font-black mt-3">新イベント開催！</h4>
-              <p class="text-xs font-bold mt-2">限定ワークショップを実施します。</p>
-            </article>
-            <article class="p-6 bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <p class="text-xs font-black">2026.02.14</p>
-              <h4 class="text-lg font-black mt-3">コラボ決定</h4>
-              <p class="text-xs font-bold mt-2">人気ブランドとコラボします。</p>
-            </article>
-            <article class="p-6 bg-[var(--sub-color)] text-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <p class="text-xs font-black">2026.01.22</p>
-              <h4 class="text-lg font-black mt-3">新作発売</h4>
-              <p class="text-xs font-bold mt-2">カラフルな新作が登場。</p>
-            </article>
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4">
+            <div class="inline-block px-5 py-2 bg-[var(--accent-color)] border-[3px] border-black rounded-full text-xs font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">NEWS</div>
+            <a href="/news" class="text-[9px] font-black tracking-[0.2em] uppercase border-[2px] border-black rounded-full px-4 py-1.5 hover:bg-black hover:text-white transition-colors">すべて見る</a>
+          </div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <a href="/news/news-page" class="group block"><article class="p-6 bg-[var(--accent-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform"><p class="text-xs font-black">2026.03.08</p><h4 class="text-lg font-black mt-3">最新情報は公開投稿から自動生成されます。</h4></article></a>
+            <a href="/news/news-page" class="group block"><article class="p-6 bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform"><p class="text-xs font-black">2026.02.20</p><h4 class="text-lg font-black mt-3">ニュース記事のタイトルがここに表示されます。</h4></article></a>
           </div>
         </div>
       </section>
 
       <section id="blog" class="py-24 px-6 bg-[var(--main-color)]">
         <div class="max-w-5xl mx-auto text-white">
-          <div class="inline-block px-5 py-2 bg-white text-[var(--main-color)] border-[3px] border-black rounded-full text-xs font-black mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">BLOG</div>
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4">
+            <div class="inline-block px-5 py-2 bg-white text-[var(--main-color)] border-[3px] border-black rounded-full text-xs font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">BLOG</div>
+            <a href="/blog" class="text-[9px] font-black tracking-[0.2em] uppercase border-[2px] border-white rounded-full px-4 py-1.5 hover:bg-white hover:text-[var(--main-color)] transition-colors">すべて見る</a>
+          </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <article class="p-8 bg-white text-[var(--text-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <h4 class="text-xl font-black mb-3">色づかいのコツ</h4>
-              <p class="text-sm font-bold">毎日を明るくする配色テクニック。</p>
-            </article>
-            <article class="p-8 bg-white text-[var(--text-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <h4 class="text-xl font-black mb-3">イベント準備の裏側</h4>
-              <p class="text-sm font-bold">ワクワクの演出ポイントを紹介。</p>
-            </article>
+            <a href="/blog/blog-page" class="group block"><article class="p-8 bg-white text-[var(--text-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform"><h4 class="text-xl font-black mb-3">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm font-bold opacity-70">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="p-8 bg-white text-[var(--text-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform"><h4 class="text-xl font-black mb-3">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm font-bold opacity-70">記事の抜粋がここに表示されます。</p></article></a>
           </div>
         </div>
       </section>

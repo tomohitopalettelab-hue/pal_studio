@@ -122,40 +122,27 @@ export const elegantTemplate: Template = {
       </section>
 
       <section id="news" class="section-news py-[var(--section-padding)] px-6 bg-white/60">
-        <div class="max-w-5xl mx-auto text-center">
-          <h3 class="text-[11px] tracking-[0.6em] mb-12 text-[var(--sub-color)] uppercase italic">News</h3>
-          <div class="grid md:grid-cols-3 gap-8 text-left">
-            <article class="p-6 bg-white/80 border border-black/[0.05]">
-              <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--text-light)]">2026.03.08</p>
-              <h4 class="text-xl font-light mt-4">新コレクション公開</h4>
-              <p class="text-xs text-[var(--text-light)] mt-3">季節限定のラインナップを公開しました。</p>
-            </article>
-            <article class="p-6 bg-white/80 border border-black/[0.05]">
-              <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--text-light)]">2026.02.20</p>
-              <h4 class="text-xl font-light mt-4">イベント出展</h4>
-              <p class="text-xs text-[var(--text-light)] mt-3">銀座の展示会に参加します。</p>
-            </article>
-            <article class="p-6 bg-white/80 border border-black/[0.05]">
-              <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--text-light)]">2026.01.31</p>
-              <h4 class="text-xl font-light mt-4">受賞のお知らせ</h4>
-              <p class="text-xs text-[var(--text-light)] mt-3">デザインアワードを受賞しました。</p>
-            </article>
+        <div class="max-w-5xl mx-auto">
+          <div class="flex flex-col md:flex-row items-baseline justify-between mb-12 md:mb-20 gap-4">
+            <h3 class="text-[10px] tracking-[0.6em] uppercase italic text-[var(--sub-color)]">News</h3>
+            <a href="/news" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--sub-color)] pb-1 hover:opacity-60 transition-opacity">すべてのお知らせ</a>
+          </div>
+          <div class="space-y-0">
+            <a href="/news/news-page" class="group block"><article class="py-8 md:py-10 flex flex-col md:flex-row items-start gap-4 md:gap-16 border-t border-black/[0.06]"><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] shrink-0 w-28">2026.03.08</p><h4 class="text-lg md:text-xl font-light group-hover:text-[var(--sub-color)] transition-colors tracking-wide">最新情報は公開投稿から自動生成されます。</h4></article></a>
+            <a href="/news/news-page" class="group block"><article class="py-8 md:py-10 flex flex-col md:flex-row items-start gap-4 md:gap-16 border-t border-black/[0.06]"><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] shrink-0 w-28">2026.02.20</p><h4 class="text-lg md:text-xl font-light group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ニュース記事のタイトルがここに表示されます。</h4></article></a>
           </div>
         </div>
       </section>
 
       <section id="blog" class="section-blog py-[var(--section-padding)] px-6">
         <div class="max-w-5xl mx-auto">
-          <h3 class="text-[11px] tracking-[0.6em] mb-12 text-[var(--sub-color)] uppercase italic text-center">Blog</h3>
-          <div class="grid md:grid-cols-2 gap-10">
-            <article class="p-8 border border-black/[0.05]">
-              <h4 class="text-2xl font-extralight italic mb-4">素材選びの美学</h4>
-              <p class="text-sm text-[var(--text-light)]">質感と色彩の調和を引き出すための考え方。</p>
-            </article>
-            <article class="p-8 border border-black/[0.05]">
-              <h4 class="text-2xl font-extralight italic mb-4">空間演出のヒント</h4>
-              <p class="text-sm text-[var(--text-light)]">体験価値を高める導線設計を解説します。</p>
-            </article>
+          <div class="flex flex-col md:flex-row items-baseline justify-between mb-12 md:mb-20 gap-4">
+            <h3 class="text-[10px] tracking-[0.6em] uppercase italic text-[var(--sub-color)]">Blog</h3>
+            <a href="/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--sub-color)] pb-1 hover:opacity-60 transition-opacity">すべての記事</a>
+          </div>
+          <div class="grid md:grid-cols-2 gap-12 md:gap-16">
+            <a href="/blog/blog-page" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden"></div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">2026.03.01</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed font-light">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden"></div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">2026.02.15</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed font-light">記事の抜粋がここに表示されます。</p></article></a>
           </div>
         </div>
       </section>

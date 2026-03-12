@@ -16,6 +16,8 @@ import {
 import {
   buildTopNewsSectionHtml,
   buildTopBlogSectionHtml,
+  buildTopNewsSectionHtmlByTemplate,
+  buildTopBlogSectionHtmlByTemplate,
   buildPostListHtml,
   buildPostDetailTopHtml,
   buildPostDetailBodyHtml,
@@ -1707,9 +1709,17 @@ ${activePageHtml}
     }
 
     if (pageSlug === 'top') {
-      const newsSection = buildTopNewsSectionHtml(newsPosts, '/news', defaultEyecatchUrl)
+      const resolvedTemplateId = hasTemplateVariantId(activePageTemplateId)
+        ? (getTemplateVariantById(activePageTemplateId)?.templateId || TEMPLATE_DEFAULT_ID)
+        : hasTemplateId(activePageTemplateId) ? activePageTemplateId
+        : hasTemplateId(String(activePage?.templateId || '')) ? String(activePage?.templateId || '')
+        : hasTemplateId(selectedTemplateId) ? selectedTemplateId
+        : TEMPLATE_DEFAULT_ID;
+      const newsSection = buildTopNewsSectionHtmlByTemplate(newsPosts, '/news', resolvedTemplateId, defaultEyecatchUrl)
+        || buildTopNewsSectionHtml(newsPosts, '/news', defaultEyecatchUrl)
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
-      const blogSection = buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
+      const blogSection = buildTopBlogSectionHtmlByTemplate(blogPosts, '/blog', resolvedTemplateId, defaultEyecatchUrl)
+        || buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
         || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
       const afterNews = hasSectionId(output, 'news')
         ? replaceSectionBlock(output, 'news', newsSection)

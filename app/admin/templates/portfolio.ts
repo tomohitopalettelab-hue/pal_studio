@@ -138,39 +138,26 @@ export const portfolioTemplate: Template = {
 
       <section id="news" class="py-32 px-8 md:px-[10%] bg-[var(--sub-color)]">
         <div class="max-w-5xl mx-auto">
-          <h2 class="text-[10px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)] mb-12">News</h2>
-          <div class="grid md:grid-cols-3 gap-8">
-            <article class="border border-slate-100 bg-white p-6">
-              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.03.08</p>
-              <h4 class="text-lg font-bold mt-3">展示会参加</h4>
-              <p class="text-sm text-[var(--accent-color)] mt-2">最新作品を公開します。</p>
-            </article>
-            <article class="border border-slate-100 bg-white p-6">
-              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.02.01</p>
-              <h4 class="text-lg font-bold mt-3">新作公開</h4>
-              <p class="text-sm text-[var(--accent-color)] mt-2">ポートフォリオを更新しました。</p>
-            </article>
-            <article class="border border-slate-100 bg-white p-6">
-              <p class="text-[10px] tracking-[0.3em] uppercase opacity-50">2026.01.15</p>
-              <h4 class="text-lg font-bold mt-3">受賞報告</h4>
-              <p class="text-sm text-[var(--accent-color)] mt-2">クリエイティブ賞を受賞しました。</p>
-            </article>
+          <div class="flex items-baseline justify-between mb-12">
+            <h2 class="text-[9px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)]">News</h2>
+            <a href="/news" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">View All</a>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <a href="/news/news-page" class="group block"><article class="border border-slate-100 bg-white p-6 hover:shadow-md transition-shadow"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40">2026.03.08</p><h4 class="text-base md:text-lg font-bold mt-3 group-hover:text-[var(--accent-color)] transition-colors">最新情報は公開投稿から自動生成されます。</h4></article></a>
+            <a href="/news/news-page" class="group block"><article class="border border-slate-100 bg-white p-6 hover:shadow-md transition-shadow"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40">2026.02.20</p><h4 class="text-base md:text-lg font-bold mt-3 group-hover:text-[var(--accent-color)] transition-colors">ニュース記事のタイトルがここに表示されます。</h4></article></a>
           </div>
         </div>
       </section>
 
       <section id="blog" class="py-32 px-8 md:px-[10%]">
         <div class="max-w-5xl mx-auto">
-          <h2 class="text-[10px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)] mb-12">Blog</h2>
+          <div class="flex items-baseline justify-between mb-12">
+            <h2 class="text-[9px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)]">Blog</h2>
+            <a href="/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">View All</a>
+          </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <article class="border border-slate-100 bg-white p-8">
-              <h4 class="text-xl font-bold mb-3">制作プロセスの舞台裏</h4>
-              <p class="text-sm text-[var(--accent-color)]">コンセプトから完成までの流れ。</p>
-            </article>
-            <article class="border border-slate-100 bg-white p-8">
-              <h4 class="text-xl font-bold mb-3">フォトディレクション</h4>
-              <p class="text-sm text-[var(--accent-color)]">ビジュアル設計のポイントを紹介。</p>
-            </article>
+            <a href="/blog/blog-page" class="group block overflow-hidden border border-slate-100 bg-white hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden"></div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">2026.03.01</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--accent-color)] mt-2">記事の抜粋がここに表示されます。</p></div></a>
+            <a href="/blog/blog-page" class="group block overflow-hidden border border-slate-100 bg-white hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden"></div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">2026.02.15</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--accent-color)] mt-2">記事の抜粋がここに表示されます。</p></div></a>
           </div>
         </div>
       </section>

@@ -109,38 +109,27 @@ export const minimalTemplate: Template = {
 
       <section id="news" class="py-32 px-8 bg-[var(--accent-color)]">
         <div class="max-w-7xl mx-auto">
-          <h3 class="text-xs font-bold mb-10 tracking-[0.4em] uppercase text-[var(--text-light)]">News</h3>
-          <div class="grid md:grid-cols-3 gap-10">
-            <article class="border-t border-black pt-6">
-              <p class="text-[11px] font-bold tracking-[0.2em] uppercase">2026.03.08</p>
-              <h4 class="text-lg font-light mt-3">新プロジェクト始動</h4>
-              <p class="text-[13px] text-[var(--text-light)] mt-3">新しいコラボレーションが始まりました。</p>
-            </article>
-            <article class="border-t border-black pt-6">
-              <p class="text-[11px] font-bold tracking-[0.2em] uppercase">2026.02.05</p>
-              <h4 class="text-lg font-light mt-3">展示会参加</h4>
-              <p class="text-[13px] text-[var(--text-light)] mt-3">最新作品を展示します。</p>
-            </article>
-            <article class="border-t border-black pt-6">
-              <p class="text-[11px] font-bold tracking-[0.2em] uppercase">2026.01.18</p>
-              <h4 class="text-lg font-light mt-3">サイト刷新</h4>
-              <p class="text-[13px] text-[var(--text-light)] mt-3">新しいビジュアルに更新しました。</p>
-            </article>
+          <div class="flex items-baseline justify-between mb-12">
+            <h3 class="text-xs font-bold tracking-[0.4em] uppercase text-[var(--text-light)]">News</h3>
+            <a href="/news" class="text-[9px] font-bold tracking-[0.3em] uppercase border-b border-black pb-1 hover:text-[var(--text-light)] transition-colors">View All</a>
+          </div>
+          <div class="grid md:grid-cols-2 gap-10">
+            <a href="/news/news-page" class="group block"><article class="py-8 border-t border-black"><p class="text-[10px] font-bold tracking-[0.2em] uppercase text-[var(--text-light)]">2026.03.08</p><h4 class="text-lg font-light mt-3 group-hover:text-[var(--text-light)] transition-colors">最新情報は公開投稿から自動生成されます。</h4></article></a>
+            <a href="/news/news-page" class="group block"><article class="py-8 border-t border-black"><p class="text-[10px] font-bold tracking-[0.2em] uppercase text-[var(--text-light)]">2026.02.20</p><h4 class="text-lg font-light mt-3 group-hover:text-[var(--text-light)] transition-colors">ニュース記事のタイトルがここに表示されます。</h4></article></a>
           </div>
         </div>
       </section>
 
-      <section id="blog" class="py-32 px-8 max-w-7xl mx-auto">
-        <h3 class="text-xs font-bold mb-10 tracking-[0.4em] uppercase text-[var(--text-light)]">Blog</h3>
-        <div class="grid md:grid-cols-2 gap-10">
-          <article class="border-t border-black pt-6">
-            <h4 class="text-lg font-light mb-3">余白を活かすデザイン</h4>
-            <p class="text-[13px] text-[var(--text-light)]">ミニマル設計の実例を紹介します。</p>
-          </article>
-          <article class="border-t border-black pt-6">
-            <h4 class="text-lg font-light mb-3">タイポグラフィの選び方</h4>
-            <p class="text-[13px] text-[var(--text-light)]">読みやすさを引き出すポイント。</p>
-          </article>
+      <section id="blog" class="py-32 px-8">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex items-baseline justify-between mb-12">
+            <h3 class="text-xs font-bold tracking-[0.4em] uppercase text-[var(--text-light)]">Blog</h3>
+            <a href="/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase border-b border-black pb-1 hover:text-[var(--text-light)] transition-colors">View All</a>
+          </div>
+          <div class="grid md:grid-cols-2 gap-10">
+            <a href="/blog/blog-page" class="group block"><article class="py-8 border-t border-black"><p class="text-[10px] font-bold tracking-[0.3em] uppercase text-[var(--text-light)] mb-3">2026.03.01</p><h4 class="text-lg font-light mb-3 group-hover:text-[var(--text-light)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-[13px] text-[var(--text-light)]">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="py-8 border-t border-black"><p class="text-[10px] font-bold tracking-[0.3em] uppercase text-[var(--text-light)] mb-3">2026.02.15</p><h4 class="text-lg font-light mb-3 group-hover:text-[var(--text-light)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-[13px] text-[var(--text-light)]">記事の抜粋がここに表示されます。</p></article></a>
+          </div>
         </div>
       </section>
 

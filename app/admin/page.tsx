@@ -1584,9 +1584,26 @@ ${activePageHtml}
 
   const replaceSectionBlock = (source: string, sectionId: string, nextSection: string) => {
     if (!source || !nextSection) return source;
-    const re = new RegExp(`(<section[^>]*id=["']${sectionId}["'][^>]*>)[\s\S]*?(</section>)`, 'i');
-    if (!re.test(source)) return source;
-    return source.replace(re, nextSection);
+    const openRe = new RegExp(`<section[^>]*id=["']${sectionId}["'][^>]*>`, 'i');
+    const openMatch = openRe.exec(source);
+    if (!openMatch) return source;
+    const sectionStart = openMatch.index;
+    let pos = sectionStart + openMatch[0].length;
+    let depth = 1;
+    while (depth > 0 && pos < source.length) {
+      const nextOpen = source.indexOf('<section', pos);
+      const nextClose = source.indexOf('</section>', pos);
+      if (nextClose === -1) return source;
+      if (nextOpen !== -1 && nextOpen < nextClose) {
+        depth++;
+        pos = nextOpen + '<section'.length;
+      } else {
+        depth--;
+        pos = nextClose + '</section>'.length;
+      }
+    }
+    if (depth !== 0) return source;
+    return source.slice(0, sectionStart) + nextSection + source.slice(pos);
   };
 
   const insertSectionAfterId = (source: string, afterId: string, sectionHtml: string) => {
@@ -1648,8 +1665,19 @@ ${activePageHtml}
     const contactEmail = selectedCustomer.contactEmail;
     const logoUrl = selectedCustomer.logoUrl;
     const pageSlug = String(activePage?.slug || selectedSitePageSlug || 'top');
-    const newsPosts = getPublishedPostsForPreview('news');
-    const blogPosts = getPublishedPostsForPreview('blog');
+    const rawNewsPosts = getPublishedPostsForPreview('news');
+    const rawBlogPosts = getPublishedPostsForPreview('blog');
+    const now = new Date().toISOString();
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+    const newsPosts = rawNewsPosts.length > 0 ? rawNewsPosts : [
+      { id: 'demo-news-1', title: 'ウェブサイトをリニューアルしました', slug: 'demo-news-1', bodyHtml: '', excerpt: 'このたびウェブサイトをリニューアルいたしました。新しいデザインをぜひご覧ください。', status: 'published', postType: 'news', publishedAt: now },
+      { id: 'demo-news-2', title: '新サービスの提供を開始いたします', slug: 'demo-news-2', bodyHtml: '', excerpt: '新たなサービスの提供を開始いたします。詳しくはお問い合わせください。', status: 'published', postType: 'news', publishedAt: weekAgo },
+    ];
+    const blogPosts = rawBlogPosts.length > 0 ? rawBlogPosts : [
+      { id: 'demo-blog-1', title: 'ブランドの世界観を伝えるWebデザイン', slug: 'demo-blog-1', bodyHtml: '', excerpt: 'ブランドの価値観をウェブデザインを通じてどのように伝えるか、そのポイントをご紹介します。', status: 'published', postType: 'blog', publishedAt: now },
+      { id: 'demo-blog-2', title: 'デジタルマーケティングの最新トレンド', slug: 'demo-blog-2', bodyHtml: '', excerpt: '最新のデジタルマーケティングトレンドと、ビジネスへの活用方法について解説します。', status: 'published', postType: 'blog', publishedAt: twoWeeksAgo },
+    ];
     let output = String(html);
 
     const resolvePreviewBaseHtml = () => {

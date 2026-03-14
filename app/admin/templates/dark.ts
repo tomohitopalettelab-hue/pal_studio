@@ -25,6 +25,9 @@ export const darkTemplate: Template = {
 
     <main>
       <section id="top" class="relative py-40 px-6 max-w-6xl mx-auto overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-30 pointer-events-none mix-blend-luminosity">
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover mask-image-b" style="mask-image: linear-gradient(to bottom, black, transparent);">
+        </div>
         <div class="absolute -top-20 -left-20 w-96 h-96 bg-[var(--main-color)]/10 blur-[120px] rounded-full"></div>
         <div class="relative z-10">
           <div class="flex items-center gap-3 mb-6">
@@ -114,18 +117,22 @@ export const darkTemplate: Template = {
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="aspect-video bg-slate-800/50 border border-slate-700 group relative cursor-crosshair">
+              <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity duration-500">
               <div class="absolute inset-0 bg-[var(--main-color)]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div class="absolute bottom-2 left-2 text-[8px] text-slate-600 uppercase">Archive_01</div>
             </div>
             <div class="aspect-video bg-slate-900/50 border border-slate-700 group relative cursor-crosshair">
+              <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity duration-500">
               <div class="absolute inset-0 bg-[var(--main-color)]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div class="absolute bottom-2 left-2 text-[8px] text-slate-600 uppercase">Archive_02</div>
             </div>
             <div class="aspect-video bg-slate-800/50 border border-slate-700 group relative cursor-crosshair">
+              <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity duration-500">
               <div class="absolute inset-0 bg-[var(--main-color)]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div class="absolute bottom-2 left-2 text-[8px] text-slate-600 uppercase">Archive_03</div>
             </div>
             <div class="aspect-video bg-slate-900/50 border border-slate-700 group relative cursor-crosshair">
+              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity duration-500">
               <div class="absolute inset-0 bg-[var(--main-color)]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div class="absolute bottom-2 left-2 text-[8px] text-slate-600 uppercase">Archive_04</div>
             </div>
@@ -153,8 +160,8 @@ export const darkTemplate: Template = {
             <a href="/blog" class="text-[9px] tracking-[0.3em] uppercase text-slate-500 border-b border-slate-700 pb-1 hover:text-[var(--main-color)] transition-colors">View All</a>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <a href="/blog/blog-page" class="group block"><article class="p-6 border border-slate-800 bg-black/40 hover:border-[var(--main-color)]/30 transition-colors"><p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-mono mb-3">2026.03.01</p><h4 class="text-xl font-bold text-[var(--text-color)] group-hover:text-[var(--main-color)] transition-colors mb-3">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-xs text-slate-500 leading-relaxed">記事の抜粋がここに表示されます。</p></article></a>
-            <a href="/blog/blog-page" class="group block"><article class="p-6 border border-slate-800 bg-black/40 hover:border-[var(--main-color)]/30 transition-colors"><p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-mono mb-3">2026.02.15</p><h4 class="text-xl font-bold text-[var(--text-color)] group-hover:text-[var(--main-color)] transition-colors mb-3">ブログ記事のタイトルがここに表示されます。</h4><p class="text-xs text-slate-500 leading-relaxed">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="border border-slate-800 bg-black/40 hover:border-[var(--main-color)]/30 transition-colors overflow-hidden"><div class="h-40 bg-slate-900 overflow-hidden relative"><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"></div><div class="p-6"><p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-mono mb-3">2026.03.01</p><h4 class="text-xl font-bold text-[var(--text-color)] group-hover:text-[var(--main-color)] transition-colors mb-3">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-xs text-slate-500 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="border border-slate-800 bg-black/40 hover:border-[var(--main-color)]/30 transition-colors overflow-hidden"><div class="h-40 bg-slate-900 overflow-hidden relative"><img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"></div><div class="p-6"><p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-mono mb-3">2026.02.15</p><h4 class="text-xl font-bold text-[var(--text-color)] group-hover:text-[var(--main-color)] transition-colors mb-3">ブログ記事のタイトルがここに表示されます。</h4><p class="text-xs text-slate-500 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
           </div>
         </div>
       </section>

@@ -31,6 +31,9 @@ export const elegantTemplate: Template = {
 
     <main>
       <section id="top" class="section-hero relative min-h-screen flex items-center justify-center px-6 overflow-hidden pt-28">
+        <div class="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover opacity-40 mix-blend-multiply" alt="Elegant Interior">
+        </div>
         <div class="relative z-10 text-center">
           <p class="text-[11px] tracking-[0.8em] mb-16 uppercase text-[var(--sub-color)] font-medium opacity-0 animate-fade-in" style="animation: fadeIn 2s forwards 0.5s">Est. 2026 — Ginza, Tokyo</p>
           <h2 class="text-7xl md:text-[10rem] font-extralight tracking-tighter mb-16 leading-[0.85] text-[var(--main-color)]">
@@ -105,18 +108,24 @@ export const elegantTemplate: Template = {
           </div>
           <div class="grid md:grid-cols-12 gap-12 items-end">
             <div class="md:col-span-7 aspect-[16/11] bg-stone-100 group overflow-hidden relative shadow-2xl">
+               <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
                <div class="absolute inset-0 bg-[var(--sub-color)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
                <div class="absolute bottom-8 left-8 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0">
                   <p class="text-[10px] tracking-[0.3em] uppercase text-[var(--main-color)]">Private Villa Project</p>
                </div>
             </div>
             <div class="md:col-span-5 aspect-[4/5] bg-stone-200 group overflow-hidden relative shadow-xl md:-mb-32">
+               <img src="https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
                <div class="absolute inset-0 bg-[var(--sub-color)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
             </div>
           </div>
           <div class="grid md:grid-cols-12 gap-12 mt-40 items-start">
-             <div class="md:col-span-4 aspect-[3/4] bg-stone-100 group overflow-hidden relative shadow-lg"></div>
-             <div class="md:col-span-8 aspect-[16/9] bg-stone-200 group overflow-hidden relative shadow-2xl md:mt-24"></div>
+             <div class="md:col-span-4 aspect-[3/4] bg-stone-100 group overflow-hidden relative shadow-lg">
+               <img src="https://images.unsplash.com/photo-1574026601449-62db39d7fcce?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+             </div>
+             <div class="md:col-span-8 aspect-[16/9] bg-stone-200 group overflow-hidden relative shadow-2xl md:mt-24">
+               <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1200" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+             </div>
           </div>
         </div>
       </section>
@@ -141,8 +150,8 @@ export const elegantTemplate: Template = {
             <a href="/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--sub-color)] pb-1 hover:opacity-60 transition-opacity">すべての記事</a>
           </div>
           <div class="grid md:grid-cols-2 gap-12 md:gap-16">
-            <a href="/blog/blog-page" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden"></div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">2026.03.01</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed font-light">記事の抜粋がここに表示されます。</p></article></a>
-            <a href="/blog/blog-page" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden"></div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">2026.02.15</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed font-light">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">2026.03.01</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed font-light">記事の抜粋がここに表示されます。</p></article></a>
+            <a href="/blog/blog-page" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden"><img src="https://images.unsplash.com/photo-1543489822-c49800018749?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"></div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">2026.02.15</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed font-light">記事の抜粋がここに表示されます。</p></article></a>
           </div>
         </div>
       </section>

@@ -122,13 +122,19 @@ export const naturalTemplate: Template = {
       <section id="works" class="py-24 px-6 max-w-6xl mx-auto">
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div class="aspect-square bg-white rounded-2xl overflow-hidden border-8 border-white shadow-sm rotate-1">
-             <div class="w-full h-full bg-slate-200"></div>
+             <div class="w-full h-full bg-slate-200 relative group">
+               <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+             </div>
           </div>
           <div class="aspect-square bg-white rounded-2xl overflow-hidden border-8 border-white shadow-sm -rotate-2 mt-4 md:mt-0">
-             <div class="w-full h-full bg-slate-100"></div>
+             <div class="w-full h-full bg-slate-100 relative group">
+               <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+             </div>
           </div>
           <div class="aspect-square bg-white rounded-2xl overflow-hidden border-8 border-white shadow-sm rotate-3 hidden md:block">
-             <div class="w-full h-full bg-slate-200"></div>
+             <div class="w-full h-full bg-slate-200 relative group">
+               <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+             </div>
           </div>
         </div>
       </section>
@@ -156,8 +162,8 @@ export const naturalTemplate: Template = {
             <p class="text-[9px] tracking-[0.3em] uppercase mt-2 opacity-40">Blog</p>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <a href="/blog/blog-page" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10"></div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">2026.03.01</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
-            <a href="/blog/blog-page" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10"></div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">2026.02.15</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10"><img src="https://images.unsplash.com/photo-1490818387583-1b5ba45227fa?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">2026.03.01</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
+            <a href="/blog/blog-page" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10"><img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">2026.02.15</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm opacity-60 leading-relaxed">記事の抜粋がここに表示されます。</p></div></article></a>
           </div>
           <div class="text-center mt-10">
             <a href="/blog" class="inline-block text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">すべての記事</a>

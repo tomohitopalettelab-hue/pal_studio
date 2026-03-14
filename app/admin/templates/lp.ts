@@ -23,6 +23,9 @@ export const lpTemplate: Template = {
 
     <main>
       <section id="top" class="relative pt-32 pb-40 px-6 bg-gradient-to-br from-[var(--accent-color)] to-[#162a45] text-white overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-10">
+          <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover mix-blend-screen">
+        </div>
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <div class="text-left">
             <span class="inline-block border border-red-400 text-red-400 text-xs font-bold px-4 py-1 rounded-full mb-8 tracking-[0.2em] uppercase">2026 New Solution</span>
@@ -43,7 +46,7 @@ export const lpTemplate: Template = {
           <div class="relative hidden lg:block">
             <div class="aspect-video bg-white/5 rounded-3xl border border-white/10 backdrop-blur-3xl p-4 shadow-2xl">
                <div class="w-full h-full bg-slate-800/50 rounded-2xl border border-white/5 overflow-hidden flex items-center justify-center">
-                 <span class="text-white/20 text-xs tracking-[1em] uppercase">Visual Asset Area</span>
+                 <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover opacity-80 mix-blend-luminosity hover:opacity-100 hover:mix-blend-normal transition-all duration-700">
                </div>
             </div>
             <div class="absolute -bottom-10 -right-10 w-48 h-48 bg-[var(--main-color)] rounded-full blur-[100px] opacity-20"></div>
@@ -78,6 +81,9 @@ export const lpTemplate: Template = {
               </div>
             </div>
             <div class="bg-slate-900 rounded-[2rem] p-12 text-white relative overflow-hidden">
+              <div class="absolute inset-0 opacity-20 z-0 mix-blend-overlay">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover">
+              </div>
               <div class="relative z-10">
                 <p class="text-red-400 font-bold mb-4">Solution</p>
                 <p class="text-2xl leading-relaxed italic mb-8">「分析・戦略・実行。この3要素を、分断させることなく一本の線で繋ぐこと。」</p>
@@ -209,8 +215,8 @@ export const lpTemplate: Template = {
             <a href="/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <a href="/blog/blog-page" class="group block overflow-hidden rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden"></div><div class="p-6"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">2026.03.01</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed">記事の抜粋がここに表示されます。</p></div></a>
-            <a href="/blog/blog-page" class="group block overflow-hidden rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden"></div><div class="p-6"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">2026.02.15</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed">記事の抜粋がここに表示されます。</p></div></a>
+            <a href="/blog/blog-page" class="group block overflow-hidden rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden"><img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-6"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">2026.03.01</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed">記事の抜粋がここに表示されます。</p></div></a>
+            <a href="/blog/blog-page" class="group block overflow-hidden rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-6"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">2026.02.15</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--text-light)] leading-relaxed">記事の抜粋がここに表示されます。</p></div></a>
           </div>
         </div>
       </section>

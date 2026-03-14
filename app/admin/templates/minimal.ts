@@ -47,7 +47,9 @@ export const minimalTemplate: Template = {
               ブランドの輪郭を最も鮮明に描き出します。
             </p>
           </div>
-          <div class="aspect-video bg-white shadow-sm border border-slate-100 rounded-sm"></div>
+          <div class="aspect-video bg-white shadow-sm border border-slate-100 rounded-sm overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt="Minimal Interior">
+          </div>
         </div>
       </section>
 
@@ -94,12 +96,14 @@ export const minimalTemplate: Template = {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="group">
             <div class="aspect-square bg-slate-100 overflow-hidden relative border border-slate-100">
+              <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
             </div>
             <p class="mt-4 text-[10px] tracking-widest uppercase font-bold text-gray-400 italic">2026 / Visual Study</p>
           </div>
           <div class="group">
             <div class="aspect-square bg-slate-100 overflow-hidden relative border border-slate-100">
+              <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
             </div>
             <p class="mt-4 text-[10px] tracking-widest uppercase font-bold text-gray-400 italic">2026 / Architecture</p>

@@ -14,6 +14,9 @@ export const portfolioTemplate: Template = {
 
     <header class="h-screen px-8 md:px-[10%] relative overflow-hidden">
       <section id="top" class="h-full flex flex-col justify-center">
+        <div class="absolute inset-0 z-[-1] overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover grayscale opacity-20 mix-blend-multiply">
+        </div>
         <div class="absolute top-10 left-10">
           <span class="text-xs font-bold tracking-[0.5em] uppercase opacity-30 italic">Vol. 2026 / Selected Works</span>
         </div>
@@ -92,6 +95,7 @@ export const portfolioTemplate: Template = {
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
           <div class="aspect-square bg-slate-100 relative group cursor-pointer overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/80 transition-all duration-500 z-10"></div>
             <div class="absolute inset-0 flex flex-col justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 p-8">
               <span class="text-[10px] tracking-[0.3em] uppercase mb-4 translate-y-4 group-hover:translate-y-0 transition-transform">Branding</span>
@@ -99,6 +103,7 @@ export const portfolioTemplate: Template = {
             </div>
           </div>
           <div class="aspect-square bg-slate-200 relative group cursor-pointer overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/80 transition-all duration-500 z-10"></div>
              <div class="absolute inset-0 flex flex-col justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 p-8">
               <span class="text-[10px] tracking-[0.3em] uppercase mb-4 translate-y-4 group-hover:translate-y-0 transition-transform">Digital</span>
@@ -106,6 +111,7 @@ export const portfolioTemplate: Template = {
             </div>
           </div>
           <div class="aspect-square bg-slate-100 relative group cursor-pointer overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/80 transition-all duration-500 z-10"></div>
              <div class="absolute inset-0 flex flex-col justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 p-8">
               <span class="text-[10px] tracking-[0.3em] uppercase mb-4 translate-y-4 group-hover:translate-y-0 transition-transform">Identity</span>
@@ -113,6 +119,7 @@ export const portfolioTemplate: Template = {
             </div>
           </div>
           <div class="aspect-square bg-slate-200 relative group cursor-pointer overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1524143986875-3b098d78b363?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/80 transition-all duration-500 z-10"></div>
              <div class="absolute inset-0 flex flex-col justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 p-8">
               <span class="text-[10px] tracking-[0.3em] uppercase mb-4 translate-y-4 group-hover:translate-y-0 transition-transform">Visual</span>
@@ -120,6 +127,7 @@ export const portfolioTemplate: Template = {
             </div>
           </div>
           <div class="aspect-square bg-slate-100 relative group cursor-pointer overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/80 transition-all duration-500 z-10"></div>
              <div class="absolute inset-0 flex flex-col justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 p-8">
               <span class="text-[10px] tracking-[0.3em] uppercase mb-4 translate-y-4 group-hover:translate-y-0 transition-transform">Motion</span>
@@ -127,6 +135,7 @@ export const portfolioTemplate: Template = {
             </div>
           </div>
           <div class="aspect-square bg-slate-200 relative group cursor-pointer overflow-hidden">
+             <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/80 transition-all duration-500 z-10"></div>
              <div class="absolute inset-0 flex flex-col justify-center items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 p-8">
               <span class="text-[10px] tracking-[0.3em] uppercase mb-4 translate-y-4 group-hover:translate-y-0 transition-transform">Editorial</span>
@@ -156,8 +165,8 @@ export const portfolioTemplate: Template = {
             <a href="/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">View All</a>
           </div>
           <div class="grid md:grid-cols-2 gap-8">
-            <a href="/blog/blog-page" class="group block overflow-hidden border border-slate-100 bg-white hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden"></div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">2026.03.01</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--accent-color)] mt-2">記事の抜粋がここに表示されます。</p></div></a>
-            <a href="/blog/blog-page" class="group block overflow-hidden border border-slate-100 bg-white hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden"></div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">2026.02.15</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--accent-color)] mt-2">記事の抜粋がここに表示されます。</p></div></a>
+            <a href="/blog/blog-page" class="group block overflow-hidden border border-slate-100 bg-white hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">2026.03.01</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">ブログ記事は公開投稿から自動生成されます。</h4><p class="text-sm text-[var(--accent-color)] mt-2">記事の抜粋がここに表示されます。</p></div></a>
+            <a href="/blog/blog-page" class="group block overflow-hidden border border-slate-100 bg-white hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden"><img src="https://images.unsplash.com/photo-1543489822-c49800018749?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">2026.02.15</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">ブログ記事のタイトルがここに表示されます。</h4><p class="text-sm text-[var(--accent-color)] mt-2">記事の抜粋がここに表示されます。</p></div></a>
           </div>
         </div>
       </section>

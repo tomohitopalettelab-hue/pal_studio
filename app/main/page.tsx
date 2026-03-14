@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import RichEditor from './RichEditor';
 
 type PostStatus = 'draft' | 'published';
 
@@ -468,10 +469,9 @@ export default function MainPage() {
         });
         setSaveError(data?.error || '自動生成に失敗しました。');
       } else {
-        const generatedText = String(data.text || '').trim();
+        const generatedHtml = String(data.html || '').trim();
         updatePost(selectedPost.id, {
-          bodyText: generatedText,
-          bodyHtml: textToHtml(generatedText),
+          bodyHtml: generatedHtml,
           slug: selectedPost.slug || buildSlugFromTypeAndDate(selectedPost.postType, selectedPost.publishedAt),
         });
         setShowGeneratedToast(true);
@@ -1006,14 +1006,9 @@ if (isLoading) {
                         </button>
                       </div>
                     </div>
-                    <textarea
-                      value={selectedPost.bodyText ?? htmlToText(selectedPost.bodyHtml)}
-                      onChange={(event) => {
-                        const nextText = event.target.value;
-                        updatePost(selectedPost.id, { bodyText: nextText, bodyHtml: textToHtml(nextText) });
-                      }}
-                      className="w-full px-8 py-8 bg-white border border-slate-100 rounded-[2rem] text-[15px] leading-[1.8] text-slate-700 focus:ring-4 focus:ring-[#00B7CE]/5 focus:border-[#00B7CE] transition-all outline-none min-h-[400px]"
-                      placeholder="本文を入力してください..."
+                    <RichEditor
+                      value={selectedPost.bodyHtml}
+                      onChange={(html) => updatePost(selectedPost.id, { bodyHtml: html })}
                     />
                   </div>
 

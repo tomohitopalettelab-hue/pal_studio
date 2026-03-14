@@ -53,15 +53,15 @@ export async function POST(req: Request) {
     }
 
     const client = new OpenAI({ apiKey });
-    const prompt = `あなたは日本語でニュース記事を書く編集者です。\n\n条件:\n- タイプ: ${postType}\n- タイトル: ${title}\n- 概要(抜粋): ${excerpt}\n- 文字数の目安: ${length} 文字\n- 見出しや箇条書きを適度に使う\n- 誇張や断定は避ける\n- Markdown記法は禁止（** や # や - の記法は使わない）\n\n本文のみを書いてください。`;
+    const prompt = `以下の条件で日本語の${postType}本文HTMLを作成してください。\n\nタイトル: ${title}\n概要(抜粋): ${excerpt}\n文字数の目安: ${length} 文字\n\n要件:\n- h2を2〜3個含める\n- 1段落は短め（3〜4文）\n- 箇条書き（ul/li）を適度に使う\n- 企業サイト向けのトーン\n- 誇張や断定は避ける\n- HTMLのみで返す（p, h2, h3, ul, li, strong などのタグを使う）\n- Markdownや説明文は一切含めない`;
 
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
       input: prompt,
     });
 
-    const text = response.output_text || '';
-    return NextResponse.json({ success: true, text });
+    const html = response.output_text || '';
+    return NextResponse.json({ success: true, html });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message || 'generate failed' }, { status: 500 });
   }

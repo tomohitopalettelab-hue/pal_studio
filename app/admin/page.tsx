@@ -1151,7 +1151,8 @@ ${activePageHtml}
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              system: prompt,
+              system: 'あなたはWebデザイナーです。指示に従ってHTMLのみを返してください。',
+              message: prompt,
               history: []
             })
           });

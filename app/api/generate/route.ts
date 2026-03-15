@@ -1,70 +1,36 @@
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const getErrorCode = (error: unknown): number | null => {
-  const code = (error as any)?.status || (error as any)?.code || (error as any)?.error?.code;
-  const normalized = Number(code);
-  return Number.isFinite(normalized) ? normalized : null;
-};
-
 const isRetryableError = (error: unknown): boolean => {
-  const code = getErrorCode(error);
-  if (code === 429 || code === 500 || code === 503 || code === 504) return true;
-  const message = String((error as any)?.message || '').toLowerCase();
-  return (
-    message.includes('high demand') ||
-    message.includes('unavailable') ||
-    message.includes('temporarily') ||
-    message.includes('timeout') ||
-    message.includes('rate limit')
-  );
+  const status = (error as Record<string, unknown>)?.status as number | undefined;
+  if (status === 429 || status === 500 || status === 503) return true;
+  const message = String((error as Record<string, unknown>)?.message || '').toLowerCase();
+  return message.includes('rate limit') || message.includes('overloaded') || message.includes('timeout');
 };
 
 const extractErrorMessage = (error: unknown): string => {
-  const code = getErrorCode(error);
-  const raw = String((error as any)?.message || 'Unknown generation error');
+  const status = (error as Record<string, unknown>)?.status;
+  const raw = String((error as Record<string, unknown>)?.message || '不明なエラー');
   const compact = raw.replace(/\s+/g, ' ').trim();
-  return code ? `[${code}] ${compact}` : compact;
+  return status ? `[${status}] ${compact}` : compact;
 };
 
 export async function POST(req: Request) {
   try {
-    const apiKey =
-      process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-      process.env.GEMINI_API_KEY ||
-      process.env.GOOGLE_API_KEY ||
-      '';
+    const apiKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY_API || '';
 
     if (!apiKey) {
-      return NextResponse.json({ text: "Gemini APIキーが設定されていません。（GOOGLE_GENERATIVE_AI_API_KEY または GEMINI_API_KEY）" }, { status: 500 });
+      return NextResponse.json(
+        { text: 'OpenAI APIキーが設定されていません。（OPENAI_API_KEY）' },
+        { status: 500 },
+      );
     }
 
-    const ai = new GoogleGenAI({ apiKey });
     const body = await req.json();
-    // message: 通常のユーザー入力、system: システム指示（管理画面からの高度なプロンプトなど）
     const { message, history, images, system } = body;
 
-    // ユーザーメッセージの構築
-    const userParts: any[] = [];
-    if (message !== undefined && message !== null && String(message).trim() !== "") {
-      userParts.push({ text: String(message) });
-    }
-
-    // 画像がある場合に追加
-    if (images && Array.isArray(images)) {
-      images.forEach((img: { data: string, mimeType: string }) => {
-        userParts.push({
-          inlineData: {
-            data: img.data,
-            mimeType: img.mimeType
-          }
-        });
-      });
-    }
-
-    // システムプロンプトの定義
     const defaultSystemPrompt = `
 あなたはWebサイト制作のプロフェッショナルなヒアリング担当者です。
 ユーザーからWebサイトの要望を聞き出し、最終的にHTMLのワイヤーフレームを作成することが目標です。
@@ -96,73 +62,73 @@ export async function POST(req: Request) {
 `;
     const systemPrompt = system ? String(system) : defaultSystemPrompt;
 
-    // Build contents array and guarantee at least one entry.
-    const contentsArray: any[] = [];
-    contentsArray.push(
-      // history goes first
-      ...(history || []).map((m: any) => ({
-        role: m.role === 'ai' ? 'model' : 'user',
-        parts: [{ text: String(m.content) }],
-      }))
-    );
-    if (userParts.length) {
-      contentsArray.push({ role: 'user', parts: userParts });
-    }
-    // If nothing was added (system-only prompt), add an empty user message to satisfy API
-    if (contentsArray.length === 0) {
-      contentsArray.push({ role: 'user', parts: [{ text: '' }] });
+    // OpenAI メッセージ配列を構築
+    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+      { role: 'system', content: systemPrompt },
+    ];
+
+    // 会話履歴を追加
+    if (Array.isArray(history)) {
+      for (const m of history) {
+        const role = m.role === 'ai' ? 'assistant' : 'user';
+        messages.push({ role, content: String(m.content) });
+      }
     }
 
-    const models = (
-      process.env.GENERATE_MODEL_LIST ||
-      process.env.GENERATE_MODEL ||
-      'gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3-flash-preview'
-    )
-      .split(',')
-      .map((m) => m.trim())
-      .filter(Boolean);
+    // 現在のユーザーメッセージを構築（テキスト + 画像）
+    if (message !== undefined && message !== null && String(message).trim() !== '') {
+      if (images && Array.isArray(images) && images.length > 0) {
+        // 画像付きメッセージ
+        const contentParts: OpenAI.Chat.ChatCompletionContentPart[] = [
+          { type: 'text', text: String(message) },
+        ];
+        for (const img of images as { data: string; mimeType: string }[]) {
+          contentParts.push({
+            type: 'image_url',
+            image_url: { url: `data:${img.mimeType};base64,${img.data}` },
+          });
+        }
+        messages.push({ role: 'user', content: contentParts });
+      } else {
+        messages.push({ role: 'user', content: String(message) });
+      }
+    } else if (messages.length === 1) {
+      // system のみの場合は空メッセージを追加
+      messages.push({ role: 'user', content: '' });
+    }
 
-    let response: any = null;
+    const model = process.env.OPENAI_MODEL || 'gpt-4o';
+    const openai = new OpenAI({ apiKey });
+
+    let responseText: string | null = null;
     let lastError: unknown = null;
 
-    for (const mdl of models) {
-      const maxAttempts = 2;
-      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-          response = await ai.models.generateContent({
-            model: mdl,
-            config: {
-              systemInstruction: systemPrompt,
-            },
-            contents: contentsArray,
-          });
-          lastError = null;
-          break;
-        } catch (error) {
-          lastError = error;
-          const retryable = isRetryableError(error);
-          console.warn(`generate model ${mdl} attempt ${attempt} failed`, extractErrorMessage(error));
-          if (!retryable || attempt === maxAttempts) {
-            break;
-          }
-          await sleep(250 * attempt);
-        }
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model,
+          messages,
+        });
+        responseText = completion.choices[0]?.message?.content || '';
+        lastError = null;
+        break;
+      } catch (error) {
+        lastError = error;
+        if (!isRetryableError(error) || attempt === 3) break;
+        await sleep(500 * attempt);
       }
-      if (response) break;
     }
 
-    if (!response) {
-      throw lastError || new Error('Unable to generate response from any model');
+    if (responseText === null) {
+      throw lastError || new Error('モデルからのレスポンスを取得できませんでした');
     }
 
-    // レスポンスのテキストを取得（SDKのバージョンによってメソッドかプロパティか異なるため両対応）
-    const text = typeof response.text === 'function' ? response.text : (response as any).text;
-
-    return NextResponse.json({ text });
-
+    return NextResponse.json({ text: responseText });
   } catch (error) {
-    console.error("--- Gemini API (Generate) 実行エラー ---");
-    console.error(error);
-    return NextResponse.json({ text: `生成エラーが発生しました: ${extractErrorMessage(error)}` }, { status: 500 });
+    console.error('--- OpenAI API (Generate) 実行エラー ---', error);
+    return NextResponse.json(
+      { text: `生成エラーが発生しました: ${extractErrorMessage(error)}` },
+      { status: 500 },
+    );
   }
 }

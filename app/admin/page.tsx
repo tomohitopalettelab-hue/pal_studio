@@ -824,13 +824,11 @@ export default function PaletteLab() {
   const restoreBaseIfMissingSections = (html: string, baseHtml: string) => {
     const baseIds = getSectionIds(baseHtml);
     if (baseIds.length === 0) return html;
-    const missing = baseIds.filter((id) => !hasSectionId(html, id));
+    const coreIds = baseIds.filter((id) => !['news', 'blog'].includes(id));
+    const missing = coreIds.filter((id) => !hasSectionId(html, id));
     if (missing.length === 0) return html;
-    if (missing.length >= Math.ceil(baseIds.length * 0.4)) return baseHtml;
-    if (missing.includes('top') || missing.includes('news') || missing.includes('blog')) {
-      return baseHtml;
-    }
-    return html;
+    // コアセクションが1つでも欠けていたらベースに戻す
+    return baseHtml;
   };
 
   // テンプレート自動選択ロジック
@@ -1108,38 +1106,39 @@ ${activePageHtml}
           : '';
 
         const prompt = `
-      あなたはWebデザイナーです。以下の「ヒアリング内容」の**テーマ**を理解した上で、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。
+あなたはWebデザイナーです。以下の「ヒアリング内容」の**テーマ**を理解した上で、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。
 
-      【対象ページ】
-      /${pageSlug} (${pageTitle})
+【対象ページ】
+/${pageSlug} (${pageTitle})
 
-      【デザインテーマ】
-      お客様のサイトのテーマは「${detectTheme(templateSelectionAnswers)}」です。このテーマに沿ったデザイン・表現・色選びを心がけてください。
+【デザインテーマ】
+お客様のサイトのテーマは「${detectTheme(templateSelectionAnswers)}」です。このテーマに沿ったデザイン・表現・色選びを心がけてください。
 
-      【言語ポリシー】
-      **本文・見出し・説明文は日本語をメインにしてください。**
-      英語は以下のようなデザイン要素としてのみ使用してください：
-      - サイト全体の雰囲気を上品にするための英語タグライン（例: "Premium Quality", "Innovation", "Trust"）
-      - セクションヘッダーの小さなラベル（例: "ABOUT US", "OUR SERVICES"）
-      - ボタンラベルはシンプルな英語（例: "Learn More", "Contact Us"）
-      
-      ただし、日本語での適切な表現がある場合は日本語を優先してください。
+【言語ポリシー】
+**本文・見出し・説明文は日本語をメインにしてください。**
+英語は以下のようなデザイン要素としてのみ使用してください：
+- サイト全体の雰囲気を上品にするための英語タグライン（例: "Premium Quality", "Innovation", "Trust"）
+- セクションヘッダーの小さなラベル（例: "ABOUT US", "OUR SERVICES"）
+- ボタンラベルはシンプルな英語（例: "Learn More", "Contact Us"）
 
-      【制約事項】
-      1. **HTML構造（タグの入れ子構造やクラス名）は極力維持**してください。レイアウトを大きく壊さないでください。
-      2. セクション（\`<section id="...">\`）は**削除しない**でください。必ず残してください。
-      3. テキストはヒアリング内容に合わせて魅力的なものに変更してください。【重要】日本語をメインにしてください。
-      4. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像、またはUnsplash等の実在するURLに差し替えてください。
-      5. 配色はTailwind CSSのクラスを変更して調整してください（例: bg-indigo-600 -> bg-pink-500 など）。
-      6. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
-      ${topNewsInstruction}
+ただし、日本語での適切な表現がある場合は日本語を優先してください。
 
-      【ヒアリング内容】
-      ${answerSummary}
+【最重要ルール - 必ず守ること】
+1. **ベースHTMLに存在する全ての `<section id="...">` タグは、内容を変更しても絶対に削除・省略しないでください。** セクションのIDや個数はベースHTMLと完全に一致させてください。
+2. **ヒアリング情報が不足している場合でも、各セクションをそのまま残し、業種やテーマに合った自然な仮テキストで埋めてください。**（例：美容院なら「施術の流れ」「料金案内」など）セクションを空にしたり削除したりするのは禁止です。
+3. **HTML構造（タグの入れ子構造・クラス名）は極力維持**してください。
+4. テキストはヒアリング内容とテーマに合わせて魅力的な日本語にしてください。
+5. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像に差し替えてください。
+6. 配色はTailwind CSSのクラスを変更して調整してください。
+7. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
+${topNewsInstruction}
 
-      【ベースHTML】
-      ${baseHtml}
-      `;
+【ヒアリング内容】
+${answerSummary}
+
+【ベースHTML】
+${baseHtml}
+`;
 
         // 高負荷や503エラーに備えてリトライを行う
         let response: Response;

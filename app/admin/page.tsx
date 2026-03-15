@@ -824,11 +824,13 @@ export default function PaletteLab() {
   const restoreBaseIfMissingSections = (html: string, baseHtml: string) => {
     const baseIds = getSectionIds(baseHtml);
     if (baseIds.length === 0) return html;
+    // news/blog は ensureTopSections で保証済みのため除外してコアのみチェック
     const coreIds = baseIds.filter((id) => !['news', 'blog'].includes(id));
     const missing = coreIds.filter((id) => !hasSectionId(html, id));
     if (missing.length === 0) return html;
-    // コアセクションが1つでも欠けていたらベースに戻す
-    return baseHtml;
+    // コアセクションの過半数（60%以上）が欠けていたらベースに戻す
+    if (missing.length >= Math.ceil(coreIds.length * 0.6)) return baseHtml;
+    return html;
   };
 
   // テンプレート自動選択ロジック

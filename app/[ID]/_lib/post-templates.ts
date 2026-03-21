@@ -174,20 +174,37 @@ export const replaceSectionContent = (html: string, sectionId: string, content: 
 type HtmlDocumentOptions = {
   faviconUrl?: string;
   headHtml?: string;
+  paletteId?: string;
+};
+
+const buildTrackingScript = (paletteId: string): string => {
+  if (!paletteId) return '';
+  const consoleUrl = process.env.CONSOLE_TRACKING_URL?.trim() || 'http://localhost:3106';
+  return `<script>
+(function(){
+  var pid="${escapeHtml(paletteId)}",u="${escapeHtml(consoleUrl)}/api/console/tracking";
+  var sid=sessionStorage.getItem("_pcs")||((function(){var s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem("_pcs",s);return s})());
+  var d=/Mobi|Android/i.test(navigator.userAgent)?"mobile":"desktop";
+  function t(p,e){try{navigator.sendBeacon?navigator.sendBeacon(u,JSON.stringify({paletteId:pid,pagePath:p,eventType:e||"pageview",referrer:document.referrer,userAgent:navigator.userAgent,deviceType:d,sessionId:sid})):fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({paletteId:pid,pagePath:p,eventType:e||"pageview",referrer:document.referrer,userAgent:navigator.userAgent,deviceType:d,sessionId:sid}),keepalive:true})}catch(x){}};
+  t(location.pathname);
+})();
+</script>`;
 };
 
 export const ensureHtmlDocument = (html: string, options: HtmlDocumentOptions = {}) => {
   let output = String(html || '');
   const faviconUrl = String(options.faviconUrl || '').trim();
   const headHtml = String(options.headHtml || '').trim();
+  const paletteId = String(options.paletteId || '').trim();
   const faviconTag = faviconUrl ? `<link rel="icon" href="${escapeHtml(faviconUrl)}" />` : '';
+  const trackingScript = buildTrackingScript(paletteId);
 
   if (!/<html[\s>]/i.test(output)) {
     output = `<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8" />` +
              `<meta name="viewport" content="width=device-width, initial-scale=1" />` +
              `${faviconTag}` +
              `<script src="https://cdn.tailwindcss.com"></script>` +
-             `${headHtml}</head><body>${output}</body></html>`;
+             `${headHtml}</head><body>${output}${trackingScript}</body></html>`;
   } else {
     if (!/<meta[^>]+charset=/i.test(output)) {
       output = output.replace(/<head([^>]*)>/i, `<head$1><meta charset="utf-8" />`);
@@ -203,6 +220,9 @@ export const ensureHtmlDocument = (html: string, options: HtmlDocumentOptions = 
     }
     if (headHtml && !output.includes(headHtml)) {
       output = output.replace(/<head([^>]*)>/i, `<head$1>${headHtml}`);
+    }
+    if (trackingScript && !output.includes('_pcs')) {
+      output = output.replace(/<\/body>/i, `${trackingScript}</body>`);
     }
   }
   return output;

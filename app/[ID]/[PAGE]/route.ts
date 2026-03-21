@@ -75,6 +75,7 @@ export async function GET(
     const output = ensureHtmlDocument(withLogo, {
       faviconUrl: customer?.faviconUrl,
       headHtml: linkSyncScript,
+      paletteId: customer?.customer_id || id,
     });
 
     return new NextResponse(output, {

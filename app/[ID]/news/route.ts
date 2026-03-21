@@ -82,7 +82,7 @@ export async function GET(
     );
     const withEmail = applyContactEmail(withNav || listHtml || injected, customer?.contactEmail);
     const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
-    const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl });
+    const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl, paletteId: customer?.customer_id || id });
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

@@ -180,6 +180,7 @@ export async function GET(
     const output = ensureHtmlDocument(html, {
       faviconUrl: customer?.faviconUrl,
       headHtml: linkSyncScript,
+      paletteId: customer?.customer_id || id,
     });
 
     return new NextResponse(output, {

@@ -4,8 +4,12 @@ import { warmTemplate } from './warm';
 import { warmAboutTemplate } from './warm/about';
 import { warmSolutionTemplate } from './warm/solution';
 import { warmRecruitTemplate } from './warm/recruit';
+import { warmBlogTemplate } from './warm/blog';
 import { warmContactTemplate } from './warm/contact';
 import { warmPageTemplate } from './warm/generic-page';
+import { warmNewsTemplate } from './warm/news';
+import { warmNewsPageTemplate } from './warm/news-page';
+import { warmBlogPageTemplate } from './warm/blog-page';
 import { warmRealestateTemplate } from './warm/realestate';
 import { warmHrTemplate } from './warm/hr';
 import { noirTemplate } from './noir';
@@ -30,6 +34,10 @@ export const templateVariants: TemplateVariant[] = [
   warmAboutTemplate,
   warmSolutionTemplate,
   warmRecruitTemplate,
+  warmNewsTemplate,
+  warmBlogTemplate,
+  warmNewsPageTemplate,
+  warmBlogPageTemplate,
   warmContactTemplate,
   warmPageTemplate,
   warmRealestateTemplate,

@@ -327,20 +327,46 @@ const buildPostListHtmlWarm = (
   typeLabel: string,
   defaultImageUrl?: string,
 ) => {
+  const isBlog = basePath.includes('/blog');
+
+  if (isBlog) {
+    // ブログ: カードグリッド（元の静的デザイン準拠）
+    const listItems = sortPostsByTag(posts).map((post) => {
+      const title = escapeHtml(post.title || '');
+      const excerpt = escapeHtml(post.excerpt || '');
+      const date = escapeHtml(formatDate(post.publishedAt));
+      const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
+      const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+      const image = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">`
+        : '';
+      return `
+        <a href="${basePath}/${encodeURIComponent(post.slug)}" class="group">
+          <div class="aspect-video overflow-hidden rounded-3xl mb-5 shadow-md bg-gray-100">${image}</div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span>
+            <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
+          </div>
+          <h3 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-snug mb-3">${title}</h3>
+          ${excerpt ? `<p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>` : ''}
+        </a>`;
+    }).join('\n');
+
+    return `
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-8">${listItems}</div>
+      </div>`;
+  }
+
+  // ニュース: リスト形式（元の静的デザイン準拠）
   const listItems = sortPostsByTag(posts).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
     const date = escapeHtml(formatDate(post.publishedAt));
-    const tags = normalizeTags(post.tags);
     const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
     const imageAlt = escapeHtml(post.imageAlt || post.title || '');
     const image = imageUrl
-      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />`
-      : '';
-    const tagHtml = tags.length
-      ? `<div class="mt-3 flex flex-wrap gap-2">${tags
-          .map((tag) => `<span class="text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#F4F7F9] text-[var(--main-color)]">${escapeHtml(tag)}</span>`)
-          .join('')}</div>`
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
       : '';
 
     return `
@@ -350,30 +376,19 @@ const buildPostListHtmlWarm = (
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-3">
               <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span>
-              <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">${escapeHtml(typeLabel)}</span>
+              <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">NEWS</span>
             </div>
             <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">${title}</h2>
-            <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>
-            ${tagHtml}
+            ${excerpt ? `<p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>` : ''}
           </div>
         </div>
-      </a>
-    `;
+      </a>`;
   }).join('\n');
 
   return `
-    <div class="space-y-6">
-      <div class="flex flex-col md:flex-row justify-between items-end mb-4">
-        <div>
-          <p class="text-sm font-bold tracking-[0.3em] text-[var(--main-color)] uppercase" style="font-family:'Quicksand',sans-serif">${escapeHtml(typeLabel.toUpperCase())}</p>
-          <h2 class="text-3xl font-black">${escapeHtml(typeLabel)} 一覧</h2>
-        </div>
-      </div>
-      <div class="space-y-4">
-        ${listItems}
-      </div>
-    </div>
-  `;
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="space-y-4">${listItems}</div>
+    </div>`;
 };
 
 const buildPostListHtmlNoir = (
@@ -382,35 +397,33 @@ const buildPostListHtmlNoir = (
   typeLabel: string,
   defaultImageUrl?: string,
 ) => {
+  const isBlog = basePath.includes('/blog');
+
+  if (isBlog) {
+    const listItems = sortPostsByTag(posts).map((post) => {
+      const title = escapeHtml(post.title || '');
+      const date = escapeHtml(formatDate(post.publishedAt));
+      const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
+      const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+      const image = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.7s cubic-bezier(.22,1,.36,1);">`
+        : '';
+      return `<a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:block;text-decoration:none;color:inherit;"><div style="aspect-ratio:16/9;overflow:hidden;margin-bottom:20px;background:#eee;">${image}</div><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="font-family:'Cormorant Garamond',serif;font-size:0.75rem;color:#999;letter-spacing:0.06em;">${date}</span><span style="font-size:0.6rem;font-weight:500;padding:3px 12px;border:1px solid var(--main-color,#c8161d);color:var(--main-color,#c8161d);letter-spacing:0.08em;text-transform:uppercase;">Blog</span></div><h3 style="font-size:0.95rem;font-weight:400;line-height:1.6;">${title}</h3></a>`;
+    }).join('\n');
+
+    return `<div style="max-width:1200px;margin:0 auto;padding:0 60px;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px 24px;">${listItems}</div></div>`;
+  }
+
   const listItems = sortPostsByTag(posts).map((post) => {
     const title = escapeHtml(post.title || '');
     const date = escapeHtml(formatDate(post.publishedAt));
     const tags = normalizeTags(post.tags);
-    const tagHtml = tags.length
-      ? `<span style="font-size:0.65rem;font-weight:500;padding:3px 14px;border:1px solid #e5e5e5;color:#999;flex-shrink:0;">${escapeHtml(tags[0])}</span>`
-      : '';
+    const tagLabel = tags.length ? escapeHtml(tags[0]) : 'お知らせ';
 
-    return `
-      <a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:flex;align-items:center;gap:24px;padding:24px 0;border-bottom:1px solid #e5e5e5;transition:opacity 0.3s;text-decoration:none;color:#1a1a1a;">
-        <time style="font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:#999;letter-spacing:0.04em;flex-shrink:0;width:100px;">${date}</time>
-        ${tagHtml}
-        <p style="flex:1;font-size:0.9rem;line-height:1.6;">${title}</p>
-        <span style="font-family:'Cormorant Garamond',serif;color:#999;font-size:1rem;flex-shrink:0;">→</span>
-      </a>
-    `;
+    return `<a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:flex;align-items:center;gap:24px;padding:24px 0;border-bottom:1px solid #e5e5e5;transition:opacity 0.3s;text-decoration:none;color:var(--text-color,#1a1a1a);"><time style="font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:#999;letter-spacing:0.04em;flex-shrink:0;width:100px;">${date}</time><span style="font-size:0.6rem;font-weight:500;padding:4px 14px;border:1px solid var(--main-color,#c8161d);color:var(--main-color,#c8161d);flex-shrink:0;letter-spacing:0.08em;text-transform:uppercase;">${tagLabel}</span><span style="flex:1;font-size:0.9rem;line-height:1.6;font-weight:400;">${title}</span><svg style="width:16px;height:16px;color:#999;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>`;
   }).join('\n');
 
-  return `
-    <div>
-      <div style="margin-bottom:56px;">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;font-weight:300;color:#999;display:block;margin-bottom:16px;">( ${escapeHtml(typeLabel)} )</span>
-        <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;letter-spacing:-0.02em;">${escapeHtml(typeLabel)} 一覧</h2>
-      </div>
-      <div style="border-top:1px solid #e5e5e5;">
-        ${listItems}
-      </div>
-    </div>
-  `;
+  return `<div style="max-width:1000px;margin:0 auto;padding:0 60px;"><div style="border-top:1px solid #e5e5e5;">${listItems}</div></div>`;
 };
 
 export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string, defaultImageUrl?: string) => {

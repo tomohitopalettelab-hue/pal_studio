@@ -72,7 +72,8 @@ export async function GET(
       published,
       `${publishBasePath}/blog`,
       'ブログ',
-      customer?.defaultEyecatchUrl
+      customer?.defaultEyecatchUrl,
+      templateId,
     );
     const injected = listHtml ? replaceSectionContent(withHeader, 'top', listHtml) : withHeader;
     const withNav = syncNavWithSitePagesHtml(

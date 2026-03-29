@@ -265,9 +265,15 @@ export const buildPostListHtml = (
   posts: PostItem[],
   basePath: string,
   typeLabel: string,
-  defaultImageUrl?: string
+  defaultImageUrl?: string,
+  templateId?: string,
 ) => {
   if (posts.length === 0) return '';
+
+  if (templateId === 'template-warm') {
+    return buildPostListHtmlWarm(posts, basePath, typeLabel, defaultImageUrl);
+  }
+
   const listItems = sortPostsByTag(posts).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
@@ -305,6 +311,61 @@ export const buildPostListHtml = (
         <h2 class="text-3xl font-black">${typeLabel} 一覧</h2>
       </div>
       <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        ${listItems}
+      </div>
+    </div>
+  `;
+};
+
+const buildPostListHtmlWarm = (
+  posts: PostItem[],
+  basePath: string,
+  typeLabel: string,
+  defaultImageUrl?: string,
+) => {
+  const listItems = sortPostsByTag(posts).map((post) => {
+    const title = escapeHtml(post.title || '');
+    const excerpt = escapeHtml(post.excerpt || '');
+    const date = escapeHtml(formatDate(post.publishedAt));
+    const tags = normalizeTags(post.tags);
+    const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
+    const imageAlt = escapeHtml(post.imageAlt || post.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />`
+      : '';
+    const tagHtml = tags.length
+      ? `<div class="mt-3 flex flex-wrap gap-2">${tags
+          .map((tag) => `<span class="text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#F4F7F9] text-[var(--main-color)]">${escapeHtml(tag)}</span>`)
+          .join('')}</div>`
+      : '';
+
+    return `
+      <a href="${basePath}/${encodeURIComponent(post.slug)}" class="group block bg-[var(--accent-color)] rounded-[30px] p-6 md:p-8 hover:shadow-lg transition-shadow">
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+          ${image ? `<div class="w-full md:w-48 h-32 bg-gray-100 rounded-[20px] overflow-hidden shrink-0">${image}</div>` : ''}
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span>
+              <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">${escapeHtml(typeLabel)}</span>
+            </div>
+            <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">${title}</h2>
+            <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>
+            ${tagHtml}
+          </div>
+        </div>
+      </a>
+    `;
+  }).join('\n');
+
+  return `
+    <div class="space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-4">
+        <div>
+          <p class="text-sm font-bold tracking-[0.3em] text-[var(--main-color)] uppercase" style="font-family:'Quicksand',sans-serif">${escapeHtml(typeLabel.toUpperCase())}</p>
+          <h2 class="text-3xl font-black">${escapeHtml(typeLabel)} 一覧</h2>
+        </div>
+      </div>
+      <div class="space-y-4">
         ${listItems}
       </div>
     </div>
@@ -566,6 +627,17 @@ export const buildTopNewsSectionHtmlByTemplate = (
       }).join('');
       return `<section id="news" class="py-32 px-6 bg-slate-50 border-t border-slate-100"><div class="max-w-6xl mx-auto"><div class="flex items-end justify-between mb-12 md:mb-16 gap-4"><div><h3 class="text-2xl md:text-4xl font-black">最新情報</h3><span class="text-xs font-bold tracking-[0.4em] uppercase text-slate-400">News</span></div><a href="${basePath}/news" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
     }
+    case 'template-warm': {
+      const items = slice.map((p) => {
+        const title = escapeHtml(p.title || '');
+        const excerpt = escapeHtml(p.excerpt || '');
+        const date = escapeHtml(formatDate(p.publishedAt));
+        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
+        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />` : '';
+        return `<a href="${detailHref}" class="group block"><article class="flex flex-col sm:flex-row gap-4 p-5 bg-[var(--accent-color)] rounded-[24px] hover:shadow-lg transition-shadow"><div class="w-full sm:w-32 h-24 bg-gray-100 rounded-[16px] overflow-hidden shrink-0">${image}</div><div><p class="text-xs font-bold text-[var(--main-color)] mb-2" style="font-family:'Quicksand',sans-serif">${date}</p><h4 class="text-base font-bold group-hover:text-[var(--main-color)] transition-colors line-clamp-2">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] mt-1 line-clamp-1">${excerpt}</p>` : ''}</div></article></a>`;
+      }).join('');
+      return `<section id="news" class="py-20 bg-white relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">NEWS</h2><h3 class="text-3xl font-black">ニュース</h3></div><a href="${basePath}/news" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
+    }
     case 'template-japanese': {
       const items = slice.map((p) => {
         const title = escapeHtml(p.title || '');
@@ -671,6 +743,17 @@ export const buildTopBlogSectionHtmlByTemplate = (
         return `<a href="${detailHref}" class="group block overflow-hidden rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden">${image}</div><div class="p-6"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">${date}</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] leading-relaxed">${excerpt}</p>` : ''}</div></a>`;
       }).join('');
       return `<section id="blog" class="py-32 px-6 bg-white"><div class="max-w-6xl mx-auto"><div class="flex items-end justify-between mb-12 md:mb-16 gap-4"><div><h3 class="text-2xl md:text-4xl font-black">ブログ</h3><span class="text-xs font-bold tracking-[0.4em] uppercase text-slate-400">Blog</span></div><a href="${basePath}/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
+    }
+    case 'template-warm': {
+      const items = slice.map((p) => {
+        const title = escapeHtml(p.title || '');
+        const excerpt = escapeHtml(p.excerpt || '');
+        const date = escapeHtml(formatDate(p.publishedAt));
+        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
+        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />` : '';
+        return `<a href="${detailHref}" class="group"><div class="aspect-video overflow-hidden rounded-3xl mb-4 shadow-md">${image}</div><div class="flex items-center gap-3 mb-3"><span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span><span class="bg-[var(--accent-color)] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span></div><h4 class="text-lg font-bold group-hover:text-[var(--main-color)] transition-all line-clamp-2">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] mt-2 line-clamp-2">${excerpt}</p>` : ''}</a>`;
+      }).join('');
+      return `<section id="blog" class="py-20 bg-[var(--accent-color)] relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">BLOG</h2><h3 class="text-3xl font-black">ブログ</h3></div><a href="${basePath}/blog" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-3 gap-6">${items}</div></div></section>`;
     }
     case 'template-japanese': {
       const items = slice.map((p) => {

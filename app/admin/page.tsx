@@ -803,7 +803,7 @@ export default function PaletteLab() {
     return ids;
   };
 
-  const ensureTopSections = (html: string, baseHtml: string) => {
+  const ensureTopSections = (html: string, baseHtml: string, templateId?: string) => {
     let output = String(html || '');
     const topSection = extractSectionById(baseHtml, 'top');
     const newsSection = extractSectionById(baseHtml, 'news');
@@ -816,20 +816,25 @@ export default function PaletteLab() {
       output = output.replace(/<section[^>]*id=["']top["'][^>]*>[\s\S]*?<\/section>/i, `$&${newsSection}`);
     }
 
-    // blog: 常にcompanyセクションの直後に配置する
-    const blogInOutput = extractSectionById(output, 'blog');
-    const blogToInsert = blogInOutput || blogSectionBase;
-    if (blogToInsert) {
-      // まず既存のblogセクションを除去
-      if (blogInOutput) {
-        output = output.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');
+    // Noir: blogをcompanyの後に強制配置
+    if (templateId === 'template-noir') {
+      const blogInOutput = extractSectionById(output, 'blog');
+      const blogToInsert = blogInOutput || blogSectionBase;
+      if (blogToInsert) {
+        if (blogInOutput) {
+          output = output.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');
+        }
+        const companyRe = /<section[^>]*id=["']company["'][^>]*>[\s\S]*?<\/section>/i;
+        if (companyRe.test(output)) {
+          output = output.replace(companyRe, `$&\n${blogToInsert}`);
+        } else {
+          output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&\n${blogToInsert}`);
+        }
       }
-      // companyの後に挿入（なければ末尾付近に追加）
-      const companyRe = /<section[^>]*id=["']company["'][^>]*>[\s\S]*?<\/section>/i;
-      if (companyRe.test(output)) {
-        output = output.replace(companyRe, `$&\n${blogToInsert}`);
-      } else if (hasSectionId(output, 'news')) {
-        output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&\n${blogToInsert}`);
+    } else {
+      // 他テンプレート: blogがなければnewsの後に追加
+      if (!hasSectionId(output, 'blog') && blogSectionBase) {
+        output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSectionBase}`);
       }
     }
     return output;
@@ -1196,7 +1201,7 @@ ${baseHtml}
             if (!isRenderableHtml(generatedHtml)) {
               generatedHtml = baseHtml || generatedHtml;
             }
-            generatedHtml = ensureTopSections(generatedHtml, baseHtml);
+            generatedHtml = ensureTopSections(generatedHtml, baseHtml, recommendedTemplateId);
             generatedHtml = restoreBaseIfMissingSections(generatedHtml, baseHtml);
           }
           if (!isRenderableHtml(generatedHtml)) {

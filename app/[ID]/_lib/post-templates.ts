@@ -560,73 +560,6 @@ export const buildTopNewsSectionHtmlByTemplate = (
   const slice = sortPostsByTag(posts).slice(0, 2);
 
   switch (templateId) {
-    case 'template-elegant': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="py-8 md:py-10 flex flex-col md:flex-row items-start gap-4 md:gap-16 border-t border-black/[0.06]"><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] shrink-0 w-28">${date}</p><h4 class="text-lg md:text-xl font-light group-hover:text-[var(--sub-color)] transition-colors tracking-wide">${title}</h4></article></a>`;
-      }).join('');
-      return `<section id="news" class="section-news py-[var(--section-padding)] px-6 bg-white/60"><div class="max-w-5xl mx-auto"><div class="flex flex-col md:flex-row items-baseline justify-between mb-12 md:mb-20 gap-4"><h3 class="text-[10px] tracking-[0.6em] uppercase italic text-[var(--sub-color)]">News</h3><a href="${basePath}/news" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--sub-color)] pb-1 hover:opacity-60 transition-opacity">すべてのお知らせ</a></div><div class="space-y-0">${items}</div></div></section>`;
-    }
-    case 'template-corporate': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="p-6 bg-white border border-slate-200 rounded-lg hover:shadow-md transition-shadow"><p class="text-[9px] font-bold text-[var(--main-color)] uppercase tracking-widest mb-3">${date}</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] leading-relaxed mt-2">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="news" class="py-24 px-6 bg-slate-50 border-t border-slate-100"><div class="max-w-6xl mx-auto"><div class="flex items-end justify-between mb-10 md:mb-14 gap-4"><div><p class="text-[9px] font-bold tracking-[0.4em] uppercase text-[var(--main-color)] mb-2">News</p><h3 class="text-2xl md:text-4xl font-bold text-[var(--main-dark)]">ニュース</h3></div><a href="${basePath}/news" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-natural': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="bg-white p-6 rounded-[20px] border border-white shadow-sm hover:shadow-md transition-shadow"><p class="text-[9px] font-bold text-[var(--accent-color)] opacity-60">${date}</p><h4 class="font-serif text-lg text-[var(--accent-color)] mt-3 group-hover:opacity-70 transition-opacity">${title}</h4>${excerpt ? `<p class="text-xs mt-2 opacity-60 leading-relaxed">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="news" class="py-24 px-6 bg-[var(--main-color)]/5"><div class="max-w-5xl mx-auto"><div class="text-center mb-12 md:mb-16"><h3 class="font-serif text-2xl md:text-4xl text-[var(--accent-color)]">お知らせ</h3><p class="text-[9px] tracking-[0.3em] uppercase mt-2 opacity-40">News</p></div><div class="grid md:grid-cols-2 gap-6">${items}</div><div class="text-center mt-10"><a href="${basePath}/news" class="inline-block text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">すべてのお知らせ</a></div></div></section>`;
-    }
-    case 'template-minimal': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="py-8 border-t border-black"><p class="text-[10px] font-bold tracking-[0.3em] uppercase text-[var(--text-light)]">${date}</p><h4 class="text-lg font-light mt-3 group-hover:text-[var(--text-light)] transition-colors">${title}</h4></article></a>`;
-      }).join('');
-      return `<section id="news" class="py-32 px-8 bg-[var(--accent-color)]"><div class="max-w-7xl mx-auto"><div class="flex items-baseline justify-between mb-12"><h3 class="text-xs font-bold tracking-[0.4em] uppercase text-[var(--text-light)]">News</h3><a href="${basePath}/news" class="text-[9px] font-bold tracking-[0.3em] uppercase border-b border-black pb-1 hover:text-[var(--text-light)] transition-colors">View All</a></div><div class="grid md:grid-cols-2 gap-10">${items}</div></div></section>`;
-    }
-    case 'template-dark': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="p-6 border border-slate-800 bg-black/40 hover:border-[var(--main-color)]/30 transition-colors"><p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-mono">${date}</p><h4 class="text-lg font-bold mt-3 text-[var(--text-color)] group-hover:text-[var(--main-color)] transition-colors">${title}</h4></article></a>`;
-      }).join('');
-      return `<section id="news" class="py-24 px-6 bg-slate-900/40 border-y border-slate-800"><div class="max-w-6xl mx-auto"><div class="flex justify-between items-end mb-10 md:mb-14"><div><h3 class="text-[var(--main-color)] text-xs tracking-[0.5em] uppercase font-mono">// News Log</h3></div><a href="${basePath}/news" class="text-[9px] tracking-[0.3em] uppercase text-slate-500 border-b border-slate-700 pb-1 hover:text-[var(--main-color)] transition-colors">View All</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-pop': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="p-6 bg-[var(--accent-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform"><p class="text-xs font-black">${date}</p><h4 class="text-lg font-black mt-3">${title}</h4></article></a>`;
-      }).join('');
-      return `<section id="news" class="py-24 px-6 bg-white"><div class="max-w-5xl mx-auto"><div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4"><div class="inline-block px-5 py-2 bg-[var(--accent-color)] border-[3px] border-black rounded-full text-xs font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">NEWS</div><a href="${basePath}/news" class="text-[9px] font-black tracking-[0.2em] uppercase border-[2px] border-black rounded-full px-4 py-1.5 hover:bg-black hover:text-white transition-colors">すべて見る</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-portfolio': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="border border-slate-100 bg-white p-6 hover:shadow-md transition-shadow"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40">${date}</p><h4 class="text-base md:text-lg font-bold mt-3 group-hover:text-[var(--accent-color)] transition-colors">${title}</h4></article></a>`;
-      }).join('');
-      return `<section id="news" class="py-32 px-8 md:px-[10%] bg-[var(--sub-color)]"><div class="max-w-5xl mx-auto"><div class="flex items-baseline justify-between mb-12"><h2 class="text-[9px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)]">News</h2><a href="${basePath}/news" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">View All</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
-    }
-    case 'template-lp': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="p-6 bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">${date}</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] leading-relaxed">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="news" class="py-32 px-6 bg-slate-50 border-t border-slate-100"><div class="max-w-6xl mx-auto"><div class="flex items-end justify-between mb-12 md:mb-16 gap-4"><div><h3 class="text-2xl md:text-4xl font-black">最新情報</h3><span class="text-xs font-bold tracking-[0.4em] uppercase text-slate-400">News</span></div><a href="${basePath}/news" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
-    }
     case 'template-warm': {
       const items = slice.map((p) => {
         const title = escapeHtml(p.title || '');
@@ -637,15 +570,6 @@ export const buildTopNewsSectionHtmlByTemplate = (
         return `<a href="${detailHref}" class="group block"><article class="flex flex-col sm:flex-row gap-4 p-5 bg-[var(--accent-color)] rounded-[24px] hover:shadow-lg transition-shadow"><div class="w-full sm:w-32 h-24 bg-gray-100 rounded-[16px] overflow-hidden shrink-0">${image}</div><div><p class="text-xs font-bold text-[var(--main-color)] mb-2" style="font-family:'Quicksand',sans-serif">${date}</p><h4 class="text-base font-bold group-hover:text-[var(--main-color)] transition-colors line-clamp-2">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] mt-1 line-clamp-1">${excerpt}</p>` : ''}</div></article></a>`;
       }).join('');
       return `<section id="news" class="py-20 bg-white relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">NEWS</h2><h3 class="text-3xl font-black">ニュース</h3></div><a href="${basePath}/news" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-japanese': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="border border-[var(--border-color)] p-6 hover:border-[var(--main-color)] transition-colors"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40">${date}</p><h4 class="text-base font-bold mt-4 group-hover:text-[var(--main-color)] transition-colors leading-relaxed">${title}</h4>${excerpt ? `<p class="text-xs leading-loose mt-3 opacity-60">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="news" class="py-32 px-6"><div class="max-w-5xl mx-auto"><div class="flex items-center gap-6 mb-12 md:mb-16"><div class="w-12 h-px bg-[var(--main-color)]"></div><h3 class="text-lg tracking-[0.5em] font-bold">お知らせ</h3><div class="flex-1 h-px bg-[var(--border-color)]"></div><a href="${basePath}/news" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--main-color)] pb-1 text-[var(--main-color)] hover:opacity-60 transition-opacity">一覧を見る</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
     }
     default:
       return buildTopNewsSectionHtml(posts, basePath, defaultImageUrl);
@@ -663,87 +587,6 @@ export const buildTopBlogSectionHtmlByTemplate = (
   const slice = sortPostsByTag(posts).slice(0, 2);
 
   switch (templateId) {
-    case 'template-elegant': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />` : '';
-        return `<a href="${detailHref}" class="group block"><article><div class="aspect-[4/3] bg-stone-100 mb-6 overflow-hidden">${image}</div><p class="text-[9px] tracking-[0.3em] uppercase text-[var(--sub-color)] mb-3">${date}</p><h4 class="text-xl md:text-2xl font-extralight italic mb-3 group-hover:text-[var(--sub-color)] transition-colors tracking-wide">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] leading-relaxed font-light">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="blog" class="section-blog py-[var(--section-padding)] px-6"><div class="max-w-5xl mx-auto"><div class="flex flex-col md:flex-row items-baseline justify-between mb-12 md:mb-20 gap-4"><h3 class="text-[10px] tracking-[0.6em] uppercase italic text-[var(--sub-color)]">Blog</h3><a href="${basePath}/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--sub-color)] pb-1 hover:opacity-60 transition-opacity">すべての記事</a></div><div class="grid md:grid-cols-2 gap-12 md:gap-16">${items}</div></div></section>`;
-    }
-    case 'template-corporate': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />` : '';
-        return `<a href="${detailHref}" class="group block overflow-hidden rounded-lg border border-slate-200 hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden">${image}</div><div class="p-6"><p class="text-[9px] font-bold text-[var(--main-color)] uppercase tracking-widest mb-2">${date}</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] leading-relaxed">${excerpt}</p>` : ''}</div></a>`;
-      }).join('');
-      return `<section id="blog" class="py-24 px-6 bg-white"><div class="max-w-6xl mx-auto"><div class="flex items-end justify-between mb-10 md:mb-14 gap-4"><div><p class="text-[9px] font-bold tracking-[0.4em] uppercase text-[var(--main-color)] mb-2">Blog</p><h3 class="text-2xl md:text-4xl font-bold text-[var(--main-dark)]">ブログ</h3></div><a href="${basePath}/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
-    }
-    case 'template-natural': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />` : '';
-        return `<a href="${detailHref}" class="group block"><article class="bg-white rounded-[24px] border border-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video overflow-hidden bg-[var(--main-color)]/10">${image}</div><div class="p-6 md:p-8"><p class="text-[9px] opacity-50 mb-2">${date}</p><h4 class="font-serif text-xl text-[var(--accent-color)] mb-3 group-hover:opacity-70 transition-opacity">${title}</h4>${excerpt ? `<p class="text-sm opacity-60 leading-relaxed">${excerpt}</p>` : ''}</div></article></a>`;
-      }).join('');
-      return `<section id="blog" class="py-24 px-6"><div class="max-w-5xl mx-auto"><div class="text-center mb-12 md:mb-16"><h3 class="font-serif text-2xl md:text-4xl text-[var(--accent-color)]">ブログ</h3><p class="text-[9px] tracking-[0.3em] uppercase mt-2 opacity-40">Blog</p></div><div class="grid md:grid-cols-2 gap-8">${items}</div><div class="text-center mt-10"><a href="${basePath}/blog" class="inline-block text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">すべての記事</a></div></div></section>`;
-    }
-    case 'template-minimal': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="py-8 border-t border-black"><p class="text-[10px] font-bold tracking-[0.3em] uppercase text-[var(--text-light)] mb-3">${date}</p><h4 class="text-lg font-light mb-3 group-hover:text-[var(--text-light)] transition-colors">${title}</h4>${excerpt ? `<p class="text-[13px] text-[var(--text-light)]">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="blog" class="py-32 px-8"><div class="max-w-7xl mx-auto"><div class="flex items-baseline justify-between mb-12"><h3 class="text-xs font-bold tracking-[0.4em] uppercase text-[var(--text-light)]">Blog</h3><a href="${basePath}/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase border-b border-black pb-1 hover:text-[var(--text-light)] transition-colors">View All</a></div><div class="grid md:grid-cols-2 gap-10">${items}</div></div></section>`;
-    }
-    case 'template-dark': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article class="p-6 border border-slate-800 bg-black/40 hover:border-[var(--main-color)]/30 transition-colors"><p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 font-mono mb-3">${date}</p><h4 class="text-xl font-bold text-[var(--text-color)] group-hover:text-[var(--main-color)] transition-colors mb-3">${title}</h4>${excerpt ? `<p class="text-xs text-slate-500 leading-relaxed">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="blog" class="py-24 px-6"><div class="max-w-6xl mx-auto"><div class="flex justify-between items-end mb-10 md:mb-14"><h3 class="text-[var(--main-color)] text-xs tracking-[0.5em] uppercase font-mono">// Blog Stream</h3><a href="${basePath}/blog" class="text-[9px] tracking-[0.3em] uppercase text-slate-500 border-b border-slate-700 pb-1 hover:text-[var(--main-color)] transition-colors">View All</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
-    }
-    case 'template-pop': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        return `<a href="${detailHref}" class="group block"><article class="p-8 bg-white text-[var(--text-color)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform"><h4 class="text-xl font-black mb-3">${title}</h4>${excerpt ? `<p class="text-sm font-bold opacity-70">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="blog" class="py-24 px-6 bg-[var(--main-color)]"><div class="max-w-5xl mx-auto text-white"><div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4"><div class="inline-block px-5 py-2 bg-white text-[var(--main-color)] border-[3px] border-black rounded-full text-xs font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">BLOG</div><a href="${basePath}/blog" class="text-[9px] font-black tracking-[0.2em] uppercase border-[2px] border-white rounded-full px-4 py-1.5 hover:bg-white hover:text-[var(--main-color)] transition-colors">すべて見る</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
-    }
-    case 'template-portfolio': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />` : '';
-        return `<a href="${detailHref}" class="group block"><article class="border border-slate-100 bg-white overflow-hidden hover:shadow-md transition-shadow"><div class="aspect-video bg-slate-50 overflow-hidden">${image}</div><div class="p-6"><p class="text-[9px] tracking-[0.3em] uppercase opacity-40 mb-2">${date}</p><h4 class="text-base md:text-lg font-bold group-hover:text-[var(--accent-color)] transition-colors">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--accent-color)] mt-2">${excerpt}</p>` : ''}</div></article></a>`;
-      }).join('');
-      return `<section id="blog" class="py-32 px-8 md:px-[10%]"><div class="max-w-5xl mx-auto"><div class="flex items-baseline justify-between mb-12"><h2 class="text-[9px] font-bold tracking-[0.5em] uppercase text-[var(--accent-color)]">Blog</h2><a href="${basePath}/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--accent-color)] pb-1 text-[var(--accent-color)] hover:opacity-60 transition-opacity">View All</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
-    }
-    case 'template-lp': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover" />` : '';
-        return `<a href="${detailHref}" class="group block overflow-hidden rounded-2xl border border-slate-200 hover:shadow-lg transition-shadow"><div class="aspect-video bg-slate-100 overflow-hidden">${image}</div><div class="p-6"><p class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-3">${date}</p><h4 class="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--main-color)] transition-colors">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] leading-relaxed">${excerpt}</p>` : ''}</div></a>`;
-      }).join('');
-      return `<section id="blog" class="py-32 px-6 bg-white"><div class="max-w-6xl mx-auto"><div class="flex items-end justify-between mb-12 md:mb-16 gap-4"><div><h3 class="text-2xl md:text-4xl font-black">ブログ</h3><span class="text-xs font-bold tracking-[0.4em] uppercase text-slate-400">Blog</span></div><a href="${basePath}/blog" class="text-[9px] font-bold tracking-[0.3em] uppercase text-[var(--main-color)] border-b border-[var(--main-color)] pb-1 hover:opacity-70 transition-opacity shrink-0">すべて見る</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
-    }
     case 'template-warm': {
       const items = slice.map((p) => {
         const title = escapeHtml(p.title || '');
@@ -754,14 +597,6 @@ export const buildTopBlogSectionHtmlByTemplate = (
         return `<a href="${detailHref}" class="group"><div class="aspect-video overflow-hidden rounded-3xl mb-4 shadow-md">${image}</div><div class="flex items-center gap-3 mb-3"><span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span><span class="bg-[var(--accent-color)] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span></div><h4 class="text-lg font-bold group-hover:text-[var(--main-color)] transition-all line-clamp-2">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] mt-2 line-clamp-2">${excerpt}</p>` : ''}</a>`;
       }).join('');
       return `<section id="blog" class="py-20 bg-[var(--accent-color)] relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">BLOG</h2><h3 class="text-3xl font-black">ブログ</h3></div><a href="${basePath}/blog" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-3 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-japanese': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        return `<a href="${detailHref}" class="group block"><article class="border border-white/20 p-8 hover:border-white/40 transition-colors"><h4 class="text-lg font-bold mb-3 group-hover:opacity-70 transition-opacity leading-relaxed">${title}</h4>${excerpt ? `<p class="text-xs leading-loose opacity-60">${excerpt}</p>` : ''}</article></a>`;
-      }).join('');
-      return `<section id="blog" class="py-32 px-6 bg-[var(--accent-color)] text-white"><div class="max-w-5xl mx-auto"><div class="flex items-center gap-6 mb-12 md:mb-16"><div class="w-12 h-px bg-[var(--main-color)]"></div><h3 class="text-lg tracking-[0.5em] font-bold">読み物</h3><div class="flex-1 h-px bg-white/10"></div><a href="${basePath}/blog" class="text-[9px] tracking-[0.3em] uppercase border-b border-[var(--main-color)] pb-1 text-[var(--main-color)] hover:opacity-60 transition-opacity">一覧を見る</a></div><div class="grid md:grid-cols-2 gap-8">${items}</div></div></section>`;
     }
     default:
       return buildTopBlogSectionHtml(posts, basePath, defaultImageUrl);

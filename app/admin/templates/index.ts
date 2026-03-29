@@ -77,6 +77,11 @@ import { warmRecruitTemplate } from './warm/recruit';
 import { warmBlogTemplate } from './warm/blog';
 import { warmContactTemplate } from './warm/contact';
 import { warmPageTemplate } from './warm/generic-page';
+import { warmNewsTemplate } from './warm/news';
+import { warmNewsPageTemplate } from './warm/news-page';
+import { warmBlogPageTemplate } from './warm/blog-page';
+import { warmRealestateTemplate } from './warm/realestate';
+import { warmHrTemplate } from './warm/hr';
 
 const REQUIRED_SECTION_IDS = ['top', 'concept', 'features', 'service', 'works', 'company'] as const;
 
@@ -158,9 +163,14 @@ export const templateVariants: TemplateVariant[] = [
   warmAboutTemplate,
   warmSolutionTemplate,
   warmRecruitTemplate,
+  warmNewsTemplate,
   warmBlogTemplate,
+  warmNewsPageTemplate,
+  warmBlogPageTemplate,
   warmContactTemplate,
   warmPageTemplate,
+  warmRealestateTemplate,
+  warmHrTemplate,
 ];
 
 export const TEMPLATE_DEFAULT_ID = templates[0]?.id ?? '';

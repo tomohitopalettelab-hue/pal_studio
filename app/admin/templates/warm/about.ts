@@ -4,7 +4,7 @@ export const warmAboutTemplate: TemplateVariant = {
   id: 'variant-warm-about',
   templateId: 'template-warm',
   name: 'About',
-  pageSlug: 'about',
+  pageSlug: 'company',
   description: 'Warm / 会社概要ページ',
   html: `
 <div class="template-root" style="--main-color: #c59500; --main-dark: #9a7500; --accent-color: #FDFBF7; --text-color: #333333; --text-light: #6b7280; --bg-color: #ffffff;">

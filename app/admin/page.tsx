@@ -807,7 +807,7 @@ export default function PaletteLab() {
     let output = String(html || '');
     const topSection = extractSectionById(baseHtml, 'top');
     const newsSection = extractSectionById(baseHtml, 'news');
-    const blogSection = extractSectionById(baseHtml, 'blog');
+    const blogSectionBase = extractSectionById(baseHtml, 'blog');
 
     if (!hasSectionId(output, 'top') && topSection) {
       output = `${topSection}${output}`;
@@ -815,13 +815,21 @@ export default function PaletteLab() {
     if (!hasSectionId(output, 'news') && newsSection) {
       output = output.replace(/<section[^>]*id=["']top["'][^>]*>[\s\S]*?<\/section>/i, `$&${newsSection}`);
     }
-    if (!hasSectionId(output, 'blog') && blogSection) {
-      // companyセクションの後に配置（なければnewsの後）
+
+    // blog: 常にcompanyセクションの直後に配置する
+    const blogInOutput = extractSectionById(output, 'blog');
+    const blogToInsert = blogInOutput || blogSectionBase;
+    if (blogToInsert) {
+      // まず既存のblogセクションを除去
+      if (blogInOutput) {
+        output = output.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');
+      }
+      // companyの後に挿入（なければ末尾付近に追加）
       const companyRe = /<section[^>]*id=["']company["'][^>]*>[\s\S]*?<\/section>/i;
       if (companyRe.test(output)) {
-        output = output.replace(companyRe, `$&${blogSection}`);
-      } else {
-        output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSection}`);
+        output = output.replace(companyRe, `$&\n${blogToInsert}`);
+      } else if (hasSectionId(output, 'news')) {
+        output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&\n${blogToInsert}`);
       }
     }
     return output;

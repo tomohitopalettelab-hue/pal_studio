@@ -12,11 +12,22 @@ import { warmNewsPageTemplate } from './warm/news-page';
 import { warmBlogPageTemplate } from './warm/blog-page';
 import { warmRealestateTemplate } from './warm/realestate';
 import { warmHrTemplate } from './warm/hr';
+import { noirTemplate } from './noir';
+import { noirAboutTemplate } from './noir/about';
+import { noirSolutionTemplate } from './noir/solution';
+import { noirRecruitTemplate } from './noir/recruit';
+import { noirBlogTemplate } from './noir/blog';
+import { noirContactTemplate } from './noir/contact';
+import { noirPageTemplate } from './noir/generic-page';
+import { noirNewsTemplate } from './noir/news';
+import { noirNewsPageTemplate } from './noir/news-page';
+import { noirBlogPageTemplate } from './noir/blog-page';
 
 const REQUIRED_SECTION_IDS = ['top', 'concept', 'features', 'service', 'works', 'company'] as const;
 
 export const templates: Template[] = [
   warmTemplate,
+  noirTemplate,
 ];
 
 export const templateVariants: TemplateVariant[] = [
@@ -31,6 +42,15 @@ export const templateVariants: TemplateVariant[] = [
   warmPageTemplate,
   warmRealestateTemplate,
   warmHrTemplate,
+  noirAboutTemplate,
+  noirSolutionTemplate,
+  noirRecruitTemplate,
+  noirNewsTemplate,
+  noirBlogTemplate,
+  noirNewsPageTemplate,
+  noirBlogPageTemplate,
+  noirContactTemplate,
+  noirPageTemplate,
 ];
 
 export const TEMPLATE_DEFAULT_ID = 'template-warm';

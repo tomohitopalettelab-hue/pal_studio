@@ -70,6 +70,13 @@ import { lpNewsPageTemplate } from './lp/news-page';
 import { lpBlogPageTemplate } from './lp/blog-page';
 import { lpAboutTemplate } from './lp/about';
 import { lpContactTemplate } from './lp/contact';
+import { warmTemplate } from './warm';
+import { warmAboutTemplate } from './warm/about';
+import { warmSolutionTemplate } from './warm/solution';
+import { warmRecruitTemplate } from './warm/recruit';
+import { warmBlogTemplate } from './warm/blog';
+import { warmContactTemplate } from './warm/contact';
+import { warmPageTemplate } from './warm/page';
 
 const REQUIRED_SECTION_IDS = ['top', 'concept', 'features', 'service', 'works', 'company'] as const;
 
@@ -84,6 +91,7 @@ export const templates: Template[] = [
   japaneseTemplate,
   portfolioTemplate,
   lpTemplate,
+  warmTemplate,
 ];
 
 export const templateVariants: TemplateVariant[] = [
@@ -147,6 +155,12 @@ export const templateVariants: TemplateVariant[] = [
   lpBlogPageTemplate,
   lpAboutTemplate,
   lpContactTemplate,
+  warmAboutTemplate,
+  warmSolutionTemplate,
+  warmRecruitTemplate,
+  warmBlogTemplate,
+  warmContactTemplate,
+  warmPageTemplate,
 ];
 
 export const TEMPLATE_DEFAULT_ID = templates[0]?.id ?? '';

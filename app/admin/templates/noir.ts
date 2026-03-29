@@ -11,12 +11,12 @@ export const noirTemplate: Template = {
 
 /* ===== CSS Reset & Variables ===== */
 .template-root {
-  --color-bg: #fff;
-  --color-text: #1a1a1a;
-  --color-accent: #c8161d;
-  --color-gray: #f7f7f5;
+  --color-bg: var(--bg-color, #fff);
+  --color-text: var(--text-color, #1a1a1a);
+  --color-accent: var(--main-color, #c8161d);
+  --color-gray: var(--accent-color, #f7f7f5);
   --color-border: #e5e5e5;
-  --color-dark: #111;
+  --color-dark: var(--main-dark, #111);
   --font-display: 'Cormorant Garamond', serif;
   --font-body: 'Noto Sans JP', sans-serif;
   --ease: cubic-bezier(.16, 1, .3, 1);
@@ -1148,6 +1148,165 @@ export const noirTemplate: Template = {
 }
 
 /* ===== Responsive: Tablet ===== */
+/* ===== Features ===== */
+.template-root .features {
+  padding: 140px 0;
+  background: var(--color-bg);
+}
+
+.template-root .features__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.template-root .features__header {
+  margin-bottom: 64px;
+}
+
+.template-root .features__label {
+  font-family: var(--font-display);
+  font-size: .9rem;
+  font-weight: 300;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+.template-root .features__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+
+.template-root .features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.template-root .features__card {
+  padding: 40px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.template-root .features__card-num {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  color: var(--color-accent);
+  margin-bottom: 20px;
+}
+
+.template-root .features__card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.template-root .features__card-text {
+  font-size: .82rem;
+  color: #999;
+  line-height: 2;
+  font-weight: 300;
+}
+
+/* ===== Blog ===== */
+.template-root .blog {
+  padding: 140px 0;
+  background: var(--color-bg);
+}
+
+.template-root .blog__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.template-root .blog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 56px;
+}
+
+.template-root .blog__label {
+  font-family: var(--font-display);
+  font-size: .9rem;
+  font-weight: 300;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.template-root .blog__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+
+.template-root .blog__more {
+  font-family: var(--font-display);
+  font-size: .8rem;
+  letter-spacing: .08em;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 4px;
+  transition: border-color .3s;
+}
+
+.template-root .blog__more:hover {
+  border-color: var(--color-text);
+}
+
+.template-root .blog__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+.template-root .blog__card {
+  display: block;
+}
+
+.template-root .blog__card-img {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  margin-bottom: 16px;
+  background: #eee;
+}
+
+.template-root .blog__card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .8s var(--ease);
+}
+
+.template-root .blog__card:hover .blog__card-img img {
+  transform: scale(1.06);
+}
+
+.template-root .blog__card-date {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  color: #999;
+  letter-spacing: .06em;
+  margin-bottom: 6px;
+}
+
+.template-root .blog__card-name {
+  font-size: .95rem;
+  font-weight: 400;
+  line-height: 1.6;
+  transition: opacity .3s;
+}
+
+.template-root .blog__card:hover .blog__card-name {
+  opacity: .6;
+}
+
 @media (max-width: 999px) {
   .template-root .header__inner {
     padding: 0 30px;
@@ -1225,6 +1384,32 @@ export const noirTemplate: Template = {
 
   .template-root .company {
     padding: 100px 0;
+  }
+
+  .template-root .features__inner {
+    padding: 0 30px;
+  }
+
+  .template-root .features {
+    padding: 100px 0;
+  }
+
+  .template-root .features__grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .template-root .blog__inner {
+    padding: 0 30px;
+  }
+
+  .template-root .blog {
+    padding: 100px 0;
+  }
+
+  .template-root .blog__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
   }
 
   .template-root .cta__inner {
@@ -1420,8 +1605,8 @@ export const noirTemplate: Template = {
     <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000" alt="Hero Background">
   </div>
   <div class="hero__content">
-    <p class="hero__label">Design / Art Direction / Branding</p>
-    <h1 class="hero__title">Making Digital<br>Beautiful</h1>
+    <p class="hero__label">デザイン / アートディレクション / ブランディング</p>
+    <h1 class="hero__title">美しさで、<br>ビジネスを動かす。</h1>
     <div class="hero__line"></div>
   </div>
   <div class="hero__scroll">
@@ -1437,8 +1622,8 @@ export const noirTemplate: Template = {
   </svg>
   <div class="about__inner">
     <div data-anim="slide-left">
-      <p class="about__label">Philosophy</p>
-      <h2 class="about__title">Less, but<br>better.</h2>
+      <p class="about__label">私たちについて</p>
+      <h2 class="about__title">削ぎ落として、<br>本質を残す。</h2>
       <div class="about__line"></div>
       <p class="about__text">
         本質を見極め、余分を削ぎ落とすことで、真に美しいデザインが生まれる。<br><br>
@@ -1456,8 +1641,8 @@ export const noirTemplate: Template = {
   <div class="svc__inner">
     <div class="svc__header">
       <div data-anim="fade">
-        <p class="svc__label">Service</p>
-        <h2 class="svc__title">What We<br>Offer</h2>
+        <p class="svc__label">事業内容</p>
+        <h2 class="svc__title">私たちが<br>できること</h2>
       </div>
       <p class="svc__desc" data-anim="fade">
         戦略的思考とクリエイティブの融合。数値に裏打ちされたデザインで、ビジネスの成長を支えます。ロゴ、Web、印刷物まで一貫したブランド体験を構築します。
@@ -1491,10 +1676,10 @@ export const noirTemplate: Template = {
   <div class="works__inner">
     <div class="works__header" data-anim="fade">
       <div>
-        <p class="works__label">Works</p>
-        <h2 class="works__title">Selected<br>Projects</h2>
+        <p class="works__label">実績紹介</p>
+        <h2 class="works__title">制作<br>実績</h2>
       </div>
-      <a href="/works" class="works__more">View All Works</a>
+      <a href="/works" class="works__more">すべての実績を見る</a>
     </div>
     <div class="works__marquee">
       <div class="works__marquee-inner">
@@ -1508,8 +1693,8 @@ export const noirTemplate: Template = {
           <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" alt="Work 1">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">Branding</p>
-          <h3 class="works__card-name">Brand Identity Design</h3>
+          <p class="works__card-cat">ブランディング</p>
+          <h3 class="works__card-name">ブランドアイデンティティ設計</h3>
         </div>
       </a>
       <a href="/works/work-page" class="works__card">
@@ -1517,8 +1702,8 @@ export const noirTemplate: Template = {
           <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=800" alt="Work 2">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">Web Design</p>
-          <h3 class="works__card-name">Corporate Website Renewal</h3>
+          <p class="works__card-cat">Webデザイン</p>
+          <h3 class="works__card-name">コーポレートサイトリニューアル</h3>
         </div>
       </a>
       <a href="/works/work-page" class="works__card">
@@ -1526,8 +1711,8 @@ export const noirTemplate: Template = {
           <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=800" alt="Work 3">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">Art Direction</p>
-          <h3 class="works__card-name">Product Photography</h3>
+          <p class="works__card-cat">アートディレクション</p>
+          <h3 class="works__card-name">プロダクト撮影ディレクション</h3>
         </div>
       </a>
       <a href="/works/work-page" class="works__card">
@@ -1535,10 +1720,37 @@ export const noirTemplate: Template = {
           <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" alt="Work 4">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">Branding</p>
-          <h3 class="works__card-name">Visual Identity System</h3>
+          <p class="works__card-cat">ブランディング</p>
+          <h3 class="works__card-name">ビジュアルアイデンティティ構築</h3>
         </div>
       </a>
+    </div>
+  </div>
+</section>
+
+<!-- Features / Strengths -->
+<section id="features" class="features">
+  <div class="features__inner">
+    <div class="features__header" data-anim="fade">
+      <p class="features__label">私たちの強み</p>
+      <h2 class="features__title">選ばれる<br>理由</h2>
+    </div>
+    <div class="features__grid" data-anim="stagger">
+      <div class="features__card">
+        <p class="features__card-num">01</p>
+        <h3 class="features__card-title">戦略から実装まで一貫対応</h3>
+        <p class="features__card-text">調査・分析に基づく戦略設計から、デザイン・コーディング・運用まで、ワンストップで対応します。</p>
+      </div>
+      <div class="features__card">
+        <p class="features__card-num">02</p>
+        <h3 class="features__card-title">品質へのこだわり</h3>
+        <p class="features__card-text">細部まで妥協しないクラフトマンシップ。国内外のデザインアワードで評価される品質基準を維持しています。</p>
+      </div>
+      <div class="features__card">
+        <p class="features__card-num">03</p>
+        <h3 class="features__card-title">長期的なパートナーシップ</h3>
+        <p class="features__card-text">制作して終わりではなく、公開後の改善・運用支援まで。お客様のビジネス成長に伴走します。</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1548,10 +1760,10 @@ export const noirTemplate: Template = {
   <div class="news__inner">
     <div class="news__header" data-anim="fade">
       <div>
-        <p class="news__label">News</p>
-        <h2 class="news__title">Latest<br>News</h2>
+        <p class="news__label">お知らせ</p>
+        <h2 class="news__title">最新の<br>ニュース</h2>
       </div>
-      <a href="/news" class="news__more">View All News</a>
+      <a href="/news" class="news__more">すべてのニュースを見る</a>
     </div>
     <div class="news__list" data-anim="fade">
       <a href="/news/news-page" class="news__item">
@@ -1577,8 +1789,8 @@ export const noirTemplate: Template = {
 <section id="company" class="company">
   <div class="company__inner">
     <div class="company__header" data-anim="fade">
-      <p class="company__label">Company</p>
-      <h2 class="company__title">About Us</h2>
+      <p class="company__label">会社情報</p>
+      <h2 class="company__title">会社概要</h2>
     </div>
     <div data-anim="fade">
       <table class="company__table">
@@ -1592,19 +1804,52 @@ export const noirTemplate: Template = {
   </div>
 </section>
 
+<!-- Blog -->
+<section id="blog" class="blog">
+  <div class="blog__inner">
+    <div class="blog__header" data-anim="fade">
+      <div>
+        <p class="blog__label">ブログ</p>
+        <h2 class="blog__title">最新の<br>記事</h2>
+      </div>
+      <a href="/blog" class="blog__more">すべての記事を見る</a>
+    </div>
+    <div class="blog__grid" data-anim="stagger">
+      <a href="/blog/blog-page" class="blog__card">
+        <div class="blog__card-img" data-anim="img-reveal">
+          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&q=80&w=800" alt="Blog 1">
+        </div>
+        <div class="blog__card-info">
+          <p class="blog__card-date">2025.04.01</p>
+          <h3 class="blog__card-name">ブログ記事は公開投稿から自動生成されます。</h3>
+        </div>
+      </a>
+      <a href="/blog/blog-page" class="blog__card">
+        <div class="blog__card-img" data-anim="img-reveal">
+          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" alt="Blog 2">
+        </div>
+        <div class="blog__card-info">
+          <p class="blog__card-date">2025.03.15</p>
+          <h3 class="blog__card-name">ブログ記事のタイトルがここに表示されます。</h3>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- Contact CTA -->
 <section id="contact" class="cta">
   <div class="cta__inner">
     <div class="cta__grid" data-anim="stagger">
       <a href="tel:000-0000-0000" class="cta__box cta__box--dark">
-        <p class="cta__box-label">Telephone</p>
+        <p class="cta__box-label">お電話</p>
         <p class="cta__box-value">000-0000-0000</p>
         <p class="cta__box-note">平日 10:00 - 19:00</p>
       </a>
       <a href="#" class="cta__box cta__box--outline">
-        <p class="cta__box-label">Contact Form</p>
-        <p class="cta__box-value">Get in Touch</p>
-        <p class="cta__box-note">お気軽にご相談ください</p>
+        <p class="cta__box-label">お問い合わせ</p>
+        <p class="cta__box-value">フォームから相談する</p>
+        <p class="cta__box-note">お気軽にご連絡ください</p>
       </a>
     </div>
   </div>
@@ -1624,7 +1869,7 @@ export const noirTemplate: Template = {
         </p>
       </div>
       <div>
-        <p class="footer__heading">Service</p>
+        <p class="footer__heading">事業内容</p>
         <ul class="footer__link-list">
           <li><a href="#">ブランディング</a></li>
           <li><a href="#">Webデザイン</a></li>
@@ -1632,14 +1877,14 @@ export const noirTemplate: Template = {
         </ul>
       </div>
       <div>
-        <p class="footer__heading">Company</p>
+        <p class="footer__heading">企業情報</p>
         <ul class="footer__link-list">
           <li><a href="#">会社概要</a></li>
           <li><a href="#">採用情報</a></li>
         </ul>
       </div>
       <div>
-        <p class="footer__heading">Content</p>
+        <p class="footer__heading">コンテンツ</p>
         <ul class="footer__link-list">
           <li><a href="#">ニュース</a></li>
           <li><a href="#">ブログ</a></li>

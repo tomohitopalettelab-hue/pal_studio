@@ -76,7 +76,7 @@ import { warmSolutionTemplate } from './warm/solution';
 import { warmRecruitTemplate } from './warm/recruit';
 import { warmBlogTemplate } from './warm/blog';
 import { warmContactTemplate } from './warm/contact';
-import { warmPageTemplate } from './warm/page';
+import { warmPageTemplate } from './warm/generic-page';
 
 const REQUIRED_SECTION_IDS = ['top', 'concept', 'features', 'service', 'works', 'company'] as const;
 

@@ -49,62 +49,6 @@ export const warmNewsTemplate: TemplateVariant = {
           </p>
         </div>
       </section>
-
-      <section class="py-20 bg-white relative overflow-hidden">
-        <div class="bubble-field">
-          <span class="bubble" style="width:110px;height:110px;left:8%;top:15%;animation-delay:0.7s;"></span>
-          <span class="bubble" style="width:80px;height:80px;left:88%;top:70%;animation-delay:2s;"></span>
-        </div>
-        <div class="max-w-6xl mx-auto px-6">
-          <div class="space-y-6 mb-14">
-            <a href="/news/news-page" class="group block bg-[var(--accent-color)] rounded-[30px] p-6 md:p-8 hover:shadow-lg transition-shadow">
-              <div class="flex flex-col md:flex-row gap-6 items-start">
-                <div class="w-full md:w-48 h-32 bg-gray-100 rounded-[20px] overflow-hidden shrink-0">
-                  <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="News">
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="text-sm font-en font-bold text-gray-400">2025.04.01</span>
-                    <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">NEWS</span>
-                  </div>
-                  <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">新サービス提供開始のお知らせ</h2>
-                  <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">事業課題に合わせた支援プランを追加しました。詳細はこちらをご覧ください。</p>
-                </div>
-              </div>
-            </a>
-            <a href="/news/news-page" class="group block bg-[var(--accent-color)] rounded-[30px] p-6 md:p-8 hover:shadow-lg transition-shadow">
-              <div class="flex flex-col md:flex-row gap-6 items-start">
-                <div class="w-full md:w-48 h-32 bg-gray-100 rounded-[20px] overflow-hidden shrink-0">
-                  <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="News">
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="text-sm font-en font-bold text-gray-400">2025.03.15</span>
-                    <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">NEWS</span>
-                  </div>
-                  <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">ニュース記事のタイトルがここに表示されます。</h2>
-                  <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">記事の抜粋テキストがここに表示されます。</p>
-                </div>
-              </div>
-            </a>
-            <a href="/news/news-page" class="group block bg-[var(--accent-color)] rounded-[30px] p-6 md:p-8 hover:shadow-lg transition-shadow">
-              <div class="flex flex-col md:flex-row gap-6 items-start">
-                <div class="w-full md:w-48 h-32 bg-gray-100 rounded-[20px] overflow-hidden shrink-0">
-                  <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="News">
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="text-sm font-en font-bold text-gray-400">2025.03.01</span>
-                    <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">NEWS</span>
-                  </div>
-                  <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">ニュース記事のタイトルがここに表示されます。</h2>
-                  <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">記事の抜粋テキストがここに表示されます。</p>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
     </main>
 
     <footer class="bg-[var(--accent-color)] pt-14 pb-10 border-t border-gray-200">

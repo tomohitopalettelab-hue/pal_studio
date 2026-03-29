@@ -43,48 +43,6 @@ export const noirNewsTemplate: TemplateVariant = {
         </div>
       </section>
 
-      <section class="py-20 bg-white relative overflow-hidden">
-        <div class="max-w-5xl mx-auto px-6">
-          <div class="divide-y divide-gray-200">
-
-            <a href="/news/news-page" class="group flex items-center gap-6 py-7 hover:bg-[var(--accent-color)] transition-colors -mx-6 px-6">
-              <time class="font-en text-sm font-light text-[var(--text-light)] tracking-wider shrink-0 w-28">2025.04.01</time>
-              <span class="text-[10px] font-medium tracking-widest uppercase border border-[var(--main-color)] text-[var(--main-color)] px-3 py-1 shrink-0">お知らせ</span>
-              <span class="flex-1 text-sm font-normal group-hover:text-[var(--main-color)] transition-colors">新サービス提供開始のお知らせ</span>
-              <svg class="w-4 h-4 text-[var(--text-light)] group-hover:text-[var(--main-color)] group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
-            </a>
-
-            <a href="/news/news-page" class="group flex items-center gap-6 py-7 hover:bg-[var(--accent-color)] transition-colors -mx-6 px-6">
-              <time class="font-en text-sm font-light text-[var(--text-light)] tracking-wider shrink-0 w-28">2025.03.15</time>
-              <span class="text-[10px] font-medium tracking-widest uppercase border border-[var(--main-dark)] text-[var(--main-dark)] px-3 py-1 shrink-0">プレスリリース</span>
-              <span class="flex-1 text-sm font-normal group-hover:text-[var(--main-color)] transition-colors">業務提携に関するプレスリリースを公開いたしました</span>
-              <svg class="w-4 h-4 text-[var(--text-light)] group-hover:text-[var(--main-color)] group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
-            </a>
-
-            <a href="/news/news-page" class="group flex items-center gap-6 py-7 hover:bg-[var(--accent-color)] transition-colors -mx-6 px-6">
-              <time class="font-en text-sm font-light text-[var(--text-light)] tracking-wider shrink-0 w-28">2025.03.01</time>
-              <span class="text-[10px] font-medium tracking-widest uppercase border border-[var(--main-color)] text-[var(--main-color)] px-3 py-1 shrink-0">お知らせ</span>
-              <span class="flex-1 text-sm font-normal group-hover:text-[var(--main-color)] transition-colors">コーポレートサイトリニューアルのお知らせ</span>
-              <svg class="w-4 h-4 text-[var(--text-light)] group-hover:text-[var(--main-color)] group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
-            </a>
-
-            <a href="/news/news-page" class="group flex items-center gap-6 py-7 hover:bg-[var(--accent-color)] transition-colors -mx-6 px-6">
-              <time class="font-en text-sm font-light text-[var(--text-light)] tracking-wider shrink-0 w-28">2025.02.10</time>
-              <span class="text-[10px] font-medium tracking-widest uppercase border border-[var(--text-light)] text-[var(--text-light)] px-3 py-1 shrink-0">メディア掲載</span>
-              <span class="flex-1 text-sm font-normal group-hover:text-[var(--main-color)] transition-colors">日経デザイン誌に当社の取り組みが掲載されました</span>
-              <svg class="w-4 h-4 text-[var(--text-light)] group-hover:text-[var(--main-color)] group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
-            </a>
-
-            <a href="/news/news-page" class="group flex items-center gap-6 py-7 hover:bg-[var(--accent-color)] transition-colors -mx-6 px-6">
-              <time class="font-en text-sm font-light text-[var(--text-light)] tracking-wider shrink-0 w-28">2025.01.20</time>
-              <span class="text-[10px] font-medium tracking-widest uppercase border border-[var(--main-color)] text-[var(--main-color)] px-3 py-1 shrink-0">お知らせ</span>
-              <span class="flex-1 text-sm font-normal group-hover:text-[var(--main-color)] transition-colors">年末年始の営業日程に関するご案内</span>
-              <svg class="w-4 h-4 text-[var(--text-light)] group-hover:text-[var(--main-color)] group-hover:translate-x-1 transition-all shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
-            </a>
-
-          </div>
-        </div>
-      </section>
     </main>
 
     <footer class="bg-[#111] text-white pt-20 pb-10 relative overflow-hidden">

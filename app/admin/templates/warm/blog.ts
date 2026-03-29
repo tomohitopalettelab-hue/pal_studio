@@ -49,57 +49,6 @@ export const warmBlogTemplate: TemplateVariant = {
           </p>
         </div>
       </section>
-
-      <!-- ブログ一覧 -->
-      <section class="py-20 bg-white relative overflow-hidden">
-        <div class="bubble-field">
-          <span class="bubble" style="width:110px;height:110px;left:8%;top:15%;animation-delay:0.7s;"></span>
-          <span class="bubble" style="width:80px;height:80px;left:88%;top:70%;animation-delay:2s;"></span>
-        </div>
-        <div class="max-w-6xl mx-auto px-6">
-          <div class="grid md:grid-cols-3 gap-8 mb-14">
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden rounded-3xl mb-5 shadow-md">
-                <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=800" alt="Blog" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-sm font-en font-bold text-gray-400">2025.04.01</span>
-                <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-              </div>
-              <h3 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-snug mb-3">
-                ブログ記事は公開投稿から自動生成されます。
-              </h3>
-              <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">記事の抜粋がここに表示されます。</p>
-            </a>
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden rounded-3xl mb-5 shadow-md">
-                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" alt="Blog" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-sm font-en font-bold text-gray-400">2025.03.15</span>
-                <span class="bg-[var(--accent-color)] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-              </div>
-              <h3 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-snug mb-3">
-                ブログ記事のタイトルがここに表示されます。
-              </h3>
-              <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">記事の抜粋がここに表示されます。</p>
-            </a>
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden rounded-3xl mb-5 shadow-md">
-                <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=800" alt="Blog" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-sm font-en font-bold text-gray-400">2025.03.01</span>
-                <span class="bg-[var(--accent-color)] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-              </div>
-              <h3 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-snug mb-3">
-                最新のアプローチと私たちの取り組み。
-              </h3>
-              <p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">記事の抜粋がここに表示されます。</p>
-            </a>
-          </div>
-        </div>
-      </section>
     </main>
 
     <footer class="bg-[var(--accent-color)] pt-14 pb-10 border-t border-gray-200">

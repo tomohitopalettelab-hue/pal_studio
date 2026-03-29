@@ -47,50 +47,6 @@ export const noirBlogTemplate: TemplateVariant = {
           </p>
         </div>
       </section>
-
-      <!-- ブログ一覧 -->
-      <section class="py-24 bg-white relative overflow-hidden">
-        <div class="max-w-6xl mx-auto px-6">
-          <div class="grid md:grid-cols-3 gap-10 mb-14">
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden mb-5">
-                <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=800" alt="Blog" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-xs font-en font-light text-[var(--text-light)] tracking-wider">2025.04.01</span>
-                <span class="border border-[var(--main-color)] text-[var(--main-color)] text-[10px] font-medium px-3 py-0.5 tracking-widest uppercase">Blog</span>
-              </div>
-              <h3 class="text-base font-medium group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-relaxed">
-                ブログ記事は公開投稿から自動生成されます。
-              </h3>
-            </a>
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden mb-5">
-                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" alt="Blog" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-xs font-en font-light text-[var(--text-light)] tracking-wider">2025.03.15</span>
-                <span class="border border-[var(--main-color)] text-[var(--main-color)] text-[10px] font-medium px-3 py-0.5 tracking-widest uppercase">Blog</span>
-              </div>
-              <h3 class="text-base font-medium group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-relaxed">
-                ブログ記事のタイトルがここに表示されます。
-              </h3>
-            </a>
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden mb-5">
-                <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=800" alt="Blog" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-xs font-en font-light text-[var(--text-light)] tracking-wider">2025.03.01</span>
-                <span class="border border-[var(--main-color)] text-[var(--main-color)] text-[10px] font-medium px-3 py-0.5 tracking-widest uppercase">Blog</span>
-              </div>
-              <h3 class="text-base font-medium group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-relaxed">
-                最新のアプローチと私たちの取り組み。
-              </h3>
-            </a>
-          </div>
-        </div>
-      </section>
     </main>
 
     <footer class="bg-[#111] text-white pt-20 pb-10 relative overflow-hidden">

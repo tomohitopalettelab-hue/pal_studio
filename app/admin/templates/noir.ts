@@ -1606,7 +1606,7 @@ export const noirTemplate: Template = {
   </div>
   <div class="hero__content">
     <p class="hero__label">デザイン / アートディレクション / ブランディング</p>
-    <h1 class="hero__title">美しさで、<br>ビジネスを動かす。</h1>
+    <h1 class="hero__title">Making<br>Digital Beautiful</h1>
     <div class="hero__line"></div>
   </div>
   <div class="hero__scroll">

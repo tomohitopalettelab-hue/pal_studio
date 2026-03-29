@@ -816,7 +816,13 @@ export default function PaletteLab() {
       output = output.replace(/<section[^>]*id=["']top["'][^>]*>[\s\S]*?<\/section>/i, `$&${newsSection}`);
     }
     if (!hasSectionId(output, 'blog') && blogSection) {
-      output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSection}`);
+      // companyセクションの後に配置（なければnewsの後）
+      const companyRe = /<section[^>]*id=["']company["'][^>]*>[\s\S]*?<\/section>/i;
+      if (companyRe.test(output)) {
+        output = output.replace(companyRe, `$&${blogSection}`);
+      } else {
+        output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSection}`);
+      }
     }
     return output;
   };

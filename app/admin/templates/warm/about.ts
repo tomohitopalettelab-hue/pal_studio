@@ -24,7 +24,12 @@ export const warmAboutTemplate: TemplateVariant = {
           <div class="w-10 h-10 bg-[var(--main-color)] flex items-center justify-center text-white font-black rounded-full text-sm">W</div>
           <div class="font-black text-xl tracking-tight">Company <span class="text-[var(--main-color)] font-bold">Name</span></div>
         </div>
-        <nav data-sync="site-pages" class="hidden md:flex items-center gap-6 text-sm font-black tracking-widest"></nav>
+        <nav data-sync="site-pages" class="hidden md:flex items-center gap-6 text-sm font-black tracking-widest">
+          <a href="#concept" class="hover:text-[var(--main-color)] transition-colors">コンセプト</a>
+          <a href="#features" class="hover:text-[var(--main-color)] transition-colors">強み</a>
+          <a href="#service" class="hover:text-[var(--main-color)] transition-colors">事業内容</a>
+          <a href="#company" class="bg-[var(--main-color)] text-white px-5 py-2 rounded-full hover:opacity-80 transition-all">お問い合わせ</a>
+        </nav>
       </div>
     </header>
 

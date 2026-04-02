@@ -1122,6 +1122,17 @@ ${activePageHtml}
           )));
         }
 
+        // news/blog系ページは投稿データから動的生成されるため、AI生成をスキップしてテンプレートをそのまま使用
+        const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
+        if (dynamicPageSlugs.includes(pageSlug)) {
+          updateSelectedCustomerPages((pages) => pages.map((p) => (
+            p.slug === pageSlug ? { ...p, htmlCode: baseHtml } : p
+          )));
+          const progressValue = Math.max(1, Math.round(((i + 1) / pagesToGenerate.length) * 100));
+          setGenerationProgress(progressValue);
+          continue;
+        }
+
         const topNewsInstruction = pageSlug === 'top'
           ? '\n      6. topページでは、ニュースセクション（id="news"）をヒーローセクション（id="top"）の下に配置してください。セクション内部の構造は維持してください。\n'
           : '';

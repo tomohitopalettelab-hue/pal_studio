@@ -99,6 +99,10 @@ export const syncNavWithSitePagesHtml = (
   if (!html) return html;
   if (!/data-sync=["']site-pages["']/.test(html)) return html;
 
+  // 1ページ（topのみ）の場合はテンプレートのアンカーリンクをそのまま残す
+  const nonTopPages = pages.filter((p) => normalizePageSlug(p.slug) !== 'top');
+  if (nonTopPages.length === 0) return html;
+
   return html.replace(/<nav[^>]*data-sync=["']site-pages["'][^>]*>[\s\S]*?<\/nav>/gi, (match) => {
     const anchorClassMatch = match.match(/<a[^>]*class=["']([^"']+)["']/i);
     const anchorClassName = anchorClassMatch ? anchorClassMatch[1] : '';

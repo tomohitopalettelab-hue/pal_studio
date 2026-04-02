@@ -32,7 +32,13 @@ export const noirNewsPageTemplate: TemplateVariant = {
         <div class="flex items-center gap-3">
           <div class="font-en text-2xl font-light tracking-widest text-[var(--main-dark)]">Company <span class="text-[var(--main-color)]">Name</span></div>
         </div>
-        <nav data-sync="site-pages" class="hidden md:flex items-center gap-8 text-xs font-medium tracking-[0.2em] uppercase"></nav>
+        <nav data-sync="site-pages" class="hidden md:flex items-center gap-8 text-xs font-medium tracking-[0.2em] uppercase">
+          <a href="#concept" class="hover:text-[var(--main-color)] transition-colors">About</a>
+          <a href="#service" class="hover:text-[var(--main-color)] transition-colors">Service</a>
+          <a href="#works" class="hover:text-[var(--main-color)] transition-colors">Works</a>
+          <a href="#company" class="hover:text-[var(--main-color)] transition-colors">Company</a>
+          <a href="#contact" class="border border-[var(--text-color)] px-5 py-2 hover:bg-[var(--text-color)] hover:text-white transition-all">Contact</a>
+        </nav>
       </div>
     </header>
 

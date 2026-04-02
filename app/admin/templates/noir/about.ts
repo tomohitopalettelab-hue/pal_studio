@@ -19,7 +19,13 @@ export const noirAboutTemplate: TemplateVariant = {
   <header style="border-bottom: 1px solid #e5e5e5; padding: 20px 0;">
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 60px; display: flex; align-items: center; justify-content: space-between;">
       <div class="font-display" style="font-size: 1.15rem; font-weight: 400; letter-spacing: 0.18em;">COMPANY NAME</div>
-      <nav data-sync="site-pages" style="display: flex; gap: 40px; font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: var(--text-light);"></nav>
+      <nav data-sync="site-pages" style="display: flex; gap: 40px; font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: var(--text-light);">
+        <a href="#concept" style="text-decoration:none;color:inherit;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;">About</a>
+        <a href="#service" style="text-decoration:none;color:inherit;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;">Service</a>
+        <a href="#works" style="text-decoration:none;color:inherit;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;">Works</a>
+        <a href="#company" style="text-decoration:none;color:inherit;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;">Company</a>
+        <a href="#contact" style="text-decoration:none;color:inherit;padding:8px 24px;border:1px solid #1a1a1a;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;">Contact</a>
+      </nav>
     </div>
   </header>
 

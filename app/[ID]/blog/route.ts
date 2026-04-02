@@ -5,13 +5,10 @@ import {
   resolvePublishPath,
   ensureHtmlDocument,
   getCustomerPagesForNav,
-  getCustomerTopHtml,
-  extractHeaderHtml,
   getCustomerTemplateId,
   selectVariantHtml,
   replaceSectionContent,
   buildPostListHtml,
-  replaceHeaderHtml,
   syncNavWithSitePagesHtml,
   applyContactEmail,
   applyLogoToHeader,
@@ -66,8 +63,6 @@ export async function GET(
     const templateId = getCustomerTemplateId(customer);
     const publishBasePath = resolvePublishPath(customer) || basePath;
     const baseHtml = selectVariantHtml('blog', templateId);
-    const headerHtml = extractHeaderHtml(getCustomerTopHtml(customer));
-    const withHeader = replaceHeaderHtml(baseHtml, headerHtml) || baseHtml;
     const listHtml = buildPostListHtml(
       published,
       `${publishBasePath}/blog`,
@@ -75,7 +70,7 @@ export async function GET(
       customer?.defaultEyecatchUrl,
       templateId,
     );
-    const injected = listHtml ? replaceSectionContent(withHeader, 'top', listHtml) : withHeader;
+    const injected = listHtml ? replaceSectionContent(baseHtml, 'top', listHtml) : baseHtml;
     const withNav = syncNavWithSitePagesHtml(
       injected,
       getCustomerPagesForNav(customer),

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
-import { ensureHtmlDocument, applyContactEmail, applyLogoToHeader, getCustomerTopHtml, extractHeaderHtml, replaceHeaderHtml } from '../_lib/post-templates';
+import { ensureHtmlDocument, applyContactEmail, applyLogoToHeader, syncNavWithSitePagesHtml, getCustomerPagesForNav } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -67,14 +67,12 @@ export async function GET(
       return new NextResponse('Page not found', { status: 404 });
     }
 
-    // TOPページのheaderでサブページのheaderを置換（navを常にTOPと同じにする）
-    const topHeaderHtml = extractHeaderHtml(getCustomerTopHtml(customer));
-    const withHeader = topHeaderHtml ? replaceHeaderHtml(html, topHeaderHtml) : html;
-
+    // navリンクをページ一覧と同期
     const publishBasePath = resolvePublishPath(customer) || basePath;
+    const withNav = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), publishBasePath);
     const linkSyncScript = `<script id="palette-link-sync">(function(){var basePath=${JSON.stringify(publishBasePath)};function normalize(s){return String(s||'').replace(/^\\/+/, '')}function build(slug){slug=normalize(slug);if(!slug||slug==='top')return basePath||'/';var baseForSubpages=basePath.endsWith('/pages')?basePath.replace(/\\/pages$/,''):basePath;if(!baseForSubpages)return '/'+slug;return baseForSubpages.replace(/\\/$/,'')+'/'+slug}var links=document.querySelectorAll('a[data-page-slug]');links.forEach(function(link){var slug=link.getAttribute('data-page-slug');if(!slug)return;var hash=link.getAttribute('data-page-hash')||'';hash=hash.replace(/^#/, '');var href=build(slug);link.setAttribute('href', hash?href+'#'+hash:href)});})();</script>`;
 
-    const withEmail = applyContactEmail(withHeader, customer?.contactEmail);
+    const withEmail = applyContactEmail(withNav || html, customer?.contactEmail);
     const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
     const output = ensureHtmlDocument(withLogo, {
       faviconUrl: customer?.faviconUrl,

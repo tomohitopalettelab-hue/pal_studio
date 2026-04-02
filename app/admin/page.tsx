@@ -26,8 +26,6 @@ import {
   applyContactEmail,
   applyLogoToHeader,
   buildRelatedNewsSectionHtml,
-  extractHeaderHtml,
-  replaceHeaderHtml,
 } from '../[ID]/_lib/post-templates';
 
 type Customer = {
@@ -1209,16 +1207,6 @@ ${baseHtml}
           if (!isRenderableHtml(generatedHtml)) {
             const fallbackHtml = normalizeHtmlString(baseHtml) || baseHtml;
             generatedHtml = fallbackHtml || generatedHtml;
-          }
-
-          // サブページのheaderをTOPのheaderで上書き（navを常にTOPと同じにする）
-          if (pageSlug !== 'top') {
-            const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
-            const topHtml = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
-            const topHeader = extractHeaderHtml(topHtml);
-            if (topHeader) {
-              generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
-            }
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (

@@ -265,6 +265,17 @@ export const applyLogoToHeader = (html: string, logoUrl?: string) => {
   return output;
 };
 
+export const applyCustomerName = (html: string, customerName?: string) => {
+  const name = String(customerName || '').trim();
+  if (!name) return html;
+  let output = String(html || '');
+  // テンプレートのプレースホルダー「Company Name」「COMPANY NAME」を顧客名に置換
+  output = output.replace(/Company\s*<span[^>]*>Name<\/span>/gi, name);
+  output = output.replace(/Company Name/g, name);
+  output = output.replace(/COMPANY NAME/g, name);
+  return output;
+};
+
 export const buildPostListHtml = (
   posts: PostItem[],
   basePath: string,

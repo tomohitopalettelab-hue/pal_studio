@@ -10,6 +10,7 @@ import {
   replaceSectionContent,
   buildPostListHtml,
   syncNavWithSitePagesHtml,
+  applyCustomerName,
   applyContactEmail,
   applyLogoToHeader,
 } from '../_lib/post-templates';
@@ -76,7 +77,8 @@ export async function GET(
       getCustomerPagesForNav(customer),
       publishBasePath,
     );
-    const withEmail = applyContactEmail(withNav || listHtml || injected, customer?.contactEmail);
+    const withName = applyCustomerName(withNav || listHtml || injected, customer?.name);
+    const withEmail = applyContactEmail(withName, customer?.contactEmail);
     const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
     const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl, paletteId: customer?.customer_id || id });
 

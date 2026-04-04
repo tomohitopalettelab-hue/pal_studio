@@ -26,6 +26,10 @@ import {
   applyContactEmail,
   applyLogoToHeader,
   buildRelatedNewsSectionHtml,
+  syncNavFromTopPage,
+  applyCustomerName,
+  extractHeaderHtml,
+  replaceHeaderHtml,
 } from '../[ID]/_lib/post-templates';
 
 type Customer = {
@@ -1122,11 +1126,23 @@ ${activePageHtml}
           )));
         }
 
-        // news/blog系ページは投稿データから動的生成されるため、AI生成をスキップしてテンプレートをそのまま使用
+        // news/blog系ページは投稿データから動的生成されるため、AI生成をスキップ
+        // TOPのheader(nav+屋号)を適用してから保存
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
+          let dynamicHtml = baseHtml;
+          // TOPのheaderを取得してnavと屋号を統一
+          const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
+          const topHtml = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
+          const topHeader = extractHeaderHtml(topHtml);
+          if (topHeader) {
+            dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
+          }
+          // 顧客名をフッター等にも適用
+          dynamicHtml = applyCustomerName(dynamicHtml, selectedCustomer?.name);
+
           updateSelectedCustomerPages((pages) => pages.map((p) => (
-            p.slug === pageSlug ? { ...p, htmlCode: baseHtml } : p
+            p.slug === pageSlug ? { ...p, htmlCode: dynamicHtml } : p
           )));
           const progressValue = Math.max(1, Math.round(((i + 1) / pagesToGenerate.length) * 100));
           setGenerationProgress(progressValue);

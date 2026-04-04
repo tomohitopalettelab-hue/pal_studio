@@ -32,25 +32,29 @@ export const noirBlogTemplate: TemplateVariant = {
     </header>
 
     <main>
-      <section id="top" class="pt-32 pb-16 bg-[var(--accent-color)] relative overflow-hidden">
+      <section id="top" class="pt-32 pb-20 bg-[var(--accent-color)] relative overflow-hidden">
         <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
           <line class="dac-line" x1="10%" y1="0" x2="10%" y2="100%" />
           <line class="dac-line" x1="90%" y1="0" x2="90%" y2="100%" />
         </svg>
         <div class="max-w-6xl mx-auto px-6 relative z-10">
-          <nav class="mb-6 text-xs font-medium text-[var(--text-light)] flex items-center gap-2 tracking-widest">
-            <a href="/" class="hover:text-[var(--main-color)] transition-colors">HOME</a>
+          <nav class="mb-8 text-xs font-medium text-[var(--text-light)] flex items-center gap-2 tracking-widest">
+            <a href="/" class="hover:text-[var(--main-color)] transition-colors uppercase">HOME</a>
             <span class="text-gray-300">&gt;</span>
             <span class="text-[var(--main-color)]">ブログ</span>
           </nav>
-          <p class="font-en text-xs tracking-[0.3em] text-[var(--main-color)] uppercase mb-3">( Blog )</p>
-          <h1 class="font-en text-5xl md:text-6xl font-light leading-tight mb-6">
-            ブログ
-          </h1>
-          <div class="w-12 h-px bg-[var(--main-color)] mb-6"></div>
-          <p class="text-sm text-[var(--text-light)] font-light max-w-2xl leading-loose">
-            最新のお知らせやブログ記事をお届けします。
-          </p>
+          <div class="grid md:grid-cols-2 gap-12 items-end">
+            <div>
+              <p class="font-en text-xs tracking-[0.3em] text-[var(--main-color)] uppercase mb-3">( Blog )</p>
+              <h1 class="font-en text-4xl md:text-5xl font-light leading-tight mb-4">Our<br>Insights</h1>
+              <div class="w-12 h-px bg-[var(--main-color)] mt-4"></div>
+            </div>
+            <div>
+              <p class="text-sm text-[var(--text-light)] leading-loose font-light">
+                デザイン・テクノロジー・ビジネスに関する知見やナレッジを発信しています。
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </main>

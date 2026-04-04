@@ -32,7 +32,7 @@ export const noirNewsTemplate: TemplateVariant = {
     </header>
 
     <main>
-      <section id="top" class="pt-32 pb-16 bg-[var(--accent-color)] relative overflow-hidden">
+      <section id="top" class="pt-32 pb-20 bg-[var(--accent-color)] relative overflow-hidden">
         <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
           <line class="dac-line" x1="10%" y1="0" x2="10%" y2="100%" />
           <line class="dac-line" x1="90%" y1="0" x2="90%" y2="100%" />
@@ -43,9 +43,18 @@ export const noirNewsTemplate: TemplateVariant = {
             <span class="text-gray-300">&gt;</span>
             <span class="text-[var(--main-color)]">ニュース</span>
           </nav>
-          <p class="font-en text-xs tracking-[0.3em] text-[var(--main-color)] uppercase mb-3">( News )</p>
-          <h1 class="text-3xl md:text-4xl font-medium leading-tight mb-4">ニュース一覧</h1>
-          <div class="w-12 h-px bg-[var(--main-color)] mt-4"></div>
+          <div class="grid md:grid-cols-2 gap-12 items-end">
+            <div>
+              <p class="font-en text-xs tracking-[0.3em] text-[var(--main-color)] uppercase mb-3">( News )</p>
+              <h1 class="font-en text-4xl md:text-5xl font-light leading-tight mb-4">Latest<br>Updates</h1>
+              <div class="w-12 h-px bg-[var(--main-color)] mt-4"></div>
+            </div>
+            <div>
+              <p class="text-sm text-[var(--text-light)] leading-loose font-light">
+                最新のお知らせ・プレスリリース・メディア掲載情報をお届けします。
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

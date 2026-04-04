@@ -91,6 +91,32 @@ export const replaceHeaderHtml = (html: string, headerHtml: string) => {
   return html.replace(/<header[\s\S]*?<\/header>/i, headerHtml);
 };
 
+export const syncNavFromTopPage = (html: string, topHtml: string) => {
+  if (!html || !topHtml) return html;
+  // TOPのheaderからnavリンク（href + テキスト）を抽出
+  const topHeader = extractHeaderHtml(topHtml);
+  if (!topHeader) return html;
+  const linkRe = /<a[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  const topLinks: { href: string; text: string }[] = [];
+  let m;
+  while ((m = linkRe.exec(topHeader)) !== null) {
+    const text = m[2].replace(/<[^>]*>/g, '').trim();
+    if (text) topLinks.push({ href: m[1], text });
+  }
+  if (topLinks.length === 0) return html;
+
+  // サブページのdata-sync navの中身をTOPのリンクで上書き（構造はサブページの1つ目のaのclassを継承）
+  return html.replace(/<nav[^>]*data-sync=["']site-pages["'][^>]*>[\s\S]*?<\/nav>/gi, (match) => {
+    const anchorClassMatch = match.match(/<a[^>]*class=["']([^"']+)["']/i);
+    const anchorClassName = anchorClassMatch ? anchorClassMatch[1] : '';
+    const classAttr = anchorClassName ? ` class="${anchorClassName}"` : '';
+    const links = topLinks.map((link) =>
+      `<a href="${link.href}"${classAttr}>${escapeHtml(link.text)}</a>`
+    ).join('');
+    return match.replace(/>\s*[\s\S]*?<\/nav>/i, `>${links}</nav>`);
+  });
+};
+
 export const syncNavWithSitePagesHtml = (
   html: string,
   pages: { slug: string; title: string }[],

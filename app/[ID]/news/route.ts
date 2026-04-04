@@ -6,10 +6,11 @@ import {
   ensureHtmlDocument,
   getCustomerPagesForNav,
   getCustomerTemplateId,
+  getCustomerTopHtml,
   selectVariantHtml,
   replaceSectionContent,
   buildPostListHtml,
-  syncNavWithSitePagesHtml,
+  syncNavFromTopPage,
   applyCustomerName,
   applyContactEmail,
   applyLogoToHeader,
@@ -72,12 +73,9 @@ export async function GET(
       templateId,
     );
     const injected = listHtml ? replaceSectionContent(baseHtml, 'top', listHtml) : baseHtml;
-    const withNav = syncNavWithSitePagesHtml(
-      injected,
-      getCustomerPagesForNav(customer),
-      publishBasePath,
-    );
-    const withName = applyCustomerName(withNav || listHtml || injected, customer?.name);
+    const topHtml = getCustomerTopHtml(customer);
+    const withNav = syncNavFromTopPage(injected, topHtml);
+    const withName = applyCustomerName(withNav || injected, customer?.name);
     const withEmail = applyContactEmail(withName, customer?.contactEmail);
     const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
     const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl, paletteId: customer?.customer_id || id });

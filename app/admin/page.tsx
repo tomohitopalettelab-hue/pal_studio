@@ -1236,6 +1236,16 @@ ${baseHtml}
             generatedHtml = fallbackHtml || generatedHtml;
           }
 
+          // サブページのheaderをTOPのheaderで上書き（navと屋号をTOPと統一）
+          if (pageSlug !== 'top') {
+            const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
+            const topHtml = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
+            const topHeader = extractHeaderHtml(topHtml);
+            if (topHeader) {
+              generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
+            }
+          }
+
           updateSelectedCustomerPages((pages) => pages.map((p) => (
             p.slug === pageSlug ? { ...p, htmlCode: generatedHtml } : p
           )));

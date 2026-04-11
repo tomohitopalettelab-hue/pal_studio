@@ -1671,57 +1671,57 @@ export const noirTemplate: Template = {
   </div>
 </section>
 
-<!-- Works -->
+<!-- Blog (worksデザイン流用) -->
 <section id="works" class="works">
   <div class="works__inner">
     <div class="works__header" data-anim="fade">
       <div>
-        <p class="works__label">実績紹介</p>
-        <h2 class="works__title">制作<br>実績</h2>
+        <p class="works__label">ブログ</p>
+        <h2 class="works__title">最新の<br>記事</h2>
       </div>
-      <a href="/works" class="works__more">すべての実績を見る</a>
+      <a href="/blog" class="works__more">すべての記事を見る</a>
     </div>
     <div class="works__marquee">
       <div class="works__marquee-inner">
-        <span class="works__marquee-text">WORKS WORKS WORKS WORKS&nbsp;</span>
-        <span class="works__marquee-text">WORKS WORKS WORKS WORKS&nbsp;</span>
+        <span class="works__marquee-text">BLOG BLOG BLOG BLOG&nbsp;</span>
+        <span class="works__marquee-text">BLOG BLOG BLOG BLOG&nbsp;</span>
       </div>
     </div>
     <div class="works__grid" data-anim="stagger">
-      <a href="/works/work-page" class="works__card">
+      <a href="/blog/blog-page" class="works__card">
         <div class="works__card-img" data-anim="img-reveal">
-          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" alt="Work 1">
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" alt="Blog 1">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">ブランディング</p>
-          <h3 class="works__card-name">ブランドアイデンティティ設計</h3>
+          <p class="works__card-cat">2025.04.01</p>
+          <h3 class="works__card-name">ブログ記事は公開投稿から自動生成されます。</h3>
         </div>
       </a>
-      <a href="/works/work-page" class="works__card">
+      <a href="/blog/blog-page" class="works__card">
         <div class="works__card-img" data-anim="img-reveal">
-          <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=800" alt="Work 2">
+          <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=800" alt="Blog 2">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">Webデザイン</p>
-          <h3 class="works__card-name">コーポレートサイトリニューアル</h3>
+          <p class="works__card-cat">2025.03.15</p>
+          <h3 class="works__card-name">ブログ記事のタイトルがここに表示されます。</h3>
         </div>
       </a>
-      <a href="/works/work-page" class="works__card">
+      <a href="/blog/blog-page" class="works__card">
         <div class="works__card-img" data-anim="img-reveal">
-          <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=800" alt="Work 3">
+          <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=800" alt="Blog 3">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">アートディレクション</p>
-          <h3 class="works__card-name">プロダクト撮影ディレクション</h3>
+          <p class="works__card-cat">2025.03.01</p>
+          <h3 class="works__card-name">最新のアプローチと私たちの取り組み。</h3>
         </div>
       </a>
-      <a href="/works/work-page" class="works__card">
+      <a href="/blog/blog-page" class="works__card">
         <div class="works__card-img" data-anim="img-reveal">
-          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" alt="Work 4">
+          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" alt="Blog 4">
         </div>
         <div class="works__card-info">
-          <p class="works__card-cat">ブランディング</p>
-          <h3 class="works__card-name">ビジュアルアイデンティティ構築</h3>
+          <p class="works__card-cat">2025.02.15</p>
+          <h3 class="works__card-name">デザインとテクノロジーの交差点。</h3>
         </div>
       </a>
     </div>
@@ -1800,39 +1800,6 @@ export const noirTemplate: Template = {
         <tr><th>代表</th><td>山田 太郎</td></tr>
         <tr><th>事業内容</th><td>ブランディング / Webデザイン・開発 / アートディレクション</td></tr>
       </table>
-    </div>
-  </div>
-</section>
-
-<!-- Blog -->
-<section id="blog" class="blog">
-  <div class="blog__inner">
-    <div class="blog__header" data-anim="fade">
-      <div>
-        <p class="blog__label">ブログ</p>
-        <h2 class="blog__title">最新の<br>記事</h2>
-      </div>
-      <a href="/blog" class="blog__more">すべての記事を見る</a>
-    </div>
-    <div class="blog__grid" data-anim="stagger">
-      <a href="/blog/blog-page" class="blog__card">
-        <div class="blog__card-img" data-anim="img-reveal">
-          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&q=80&w=800" alt="Blog 1">
-        </div>
-        <div class="blog__card-info">
-          <p class="blog__card-date">2025.04.01</p>
-          <h3 class="blog__card-name">ブログ記事は公開投稿から自動生成されます。</h3>
-        </div>
-      </a>
-      <a href="/blog/blog-page" class="blog__card">
-        <div class="blog__card-img" data-anim="img-reveal">
-          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" alt="Blog 2">
-        </div>
-        <div class="blog__card-info">
-          <p class="blog__card-date">2025.03.15</p>
-          <h3 class="blog__card-name">ブログ記事のタイトルがここに表示されます。</h3>
-        </div>
-      </a>
     </div>
   </div>
 </section>

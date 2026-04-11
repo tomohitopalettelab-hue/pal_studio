@@ -28,6 +28,8 @@ import {
   buildRelatedNewsSectionHtml,
   syncNavFromTopPage,
   applyCustomerName,
+  extractHeaderHtml,
+  replaceHeaderHtml,
 } from '../[ID]/_lib/post-templates';
 
 type Customer = {
@@ -1136,9 +1138,21 @@ ${activePageHtml}
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
-          // navリンクと屋号だけTOPと統一（header構造/CSSは維持）
+          // TOPのstyle+headerを適用してデザインを統一
           if (latestTopHtml) {
-            dynamicHtml = syncNavFromTopPage(dynamicHtml, latestTopHtml);
+            const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
+            if (topStyleMatch) {
+              const subStyleMatch = dynamicHtml.match(/<style[\s\S]*?<\/style>/i);
+              if (subStyleMatch) {
+                dynamicHtml = dynamicHtml.replace(/<style[\s\S]*?<\/style>/i, topStyleMatch[0]);
+              } else {
+                dynamicHtml = topStyleMatch[0] + dynamicHtml;
+              }
+            }
+            const topHeader = extractHeaderHtml(latestTopHtml);
+            if (topHeader) {
+              dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
+            }
           }
           // 顧客名をフッター等にも適用
           dynamicHtml = applyCustomerName(dynamicHtml, selectedCustomer?.name);
@@ -1243,9 +1257,23 @@ ${baseHtml}
             latestTopHtml = generatedHtml;
           }
 
-          // サブページ: navリンクと屋号だけTOPと統一（header構造/CSSは維持）
+          // サブページ: TOPのheader+styleを適用してデザインを統一
           if (pageSlug !== 'top' && latestTopHtml) {
-            generatedHtml = syncNavFromTopPage(generatedHtml, latestTopHtml);
+            // TOPの<style>ブロックを抽出してサブページに注入（headerのCSSクラスが機能するように）
+            const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
+            if (topStyleMatch) {
+              const subStyleMatch = generatedHtml.match(/<style[\s\S]*?<\/style>/i);
+              if (subStyleMatch) {
+                generatedHtml = generatedHtml.replace(/<style[\s\S]*?<\/style>/i, topStyleMatch[0]);
+              } else {
+                generatedHtml = topStyleMatch[0] + generatedHtml;
+              }
+            }
+            // TOPのheaderで丸ごと上書き
+            const topHeader = extractHeaderHtml(latestTopHtml);
+            if (topHeader) {
+              generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
+            }
             generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
           }
 

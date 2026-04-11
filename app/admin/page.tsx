@@ -1059,6 +1059,13 @@ ${activePageHtml}
         ? selectedCustomerPages
         : (activePage ? [activePage] : []);
 
+      // TOPページのGENERATE DRAFT結果をループ内で保持（サブページのheader上書き用）
+      let latestTopHtml = '';
+      {
+        const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
+        latestTopHtml = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
+      }
+
       for (let i = 0; i < pagesToGenerate.length; i++) {
         const page = pagesToGenerate[i];
         const pageSlug = String(page?.slug || 'top');
@@ -1132,11 +1139,11 @@ ${activePageHtml}
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
           // TOPのheaderを取得してnavと屋号を統一
-          const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
-          const topHtml = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
-          const topHeader = extractHeaderHtml(topHtml);
-          if (topHeader) {
-            dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
+          if (latestTopHtml) {
+            const topHeader = extractHeaderHtml(latestTopHtml);
+            if (topHeader) {
+              dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
+            }
           }
           // 顧客名をフッター等にも適用
           dynamicHtml = applyCustomerName(dynamicHtml, selectedCustomer?.name);
@@ -1236,11 +1243,14 @@ ${baseHtml}
             generatedHtml = fallbackHtml || generatedHtml;
           }
 
+          // TOPページ生成時は結果を保持
+          if (pageSlug === 'top') {
+            latestTopHtml = generatedHtml;
+          }
+
           // サブページのheaderをTOPのheaderで上書き（navと屋号をTOPと統一）
-          if (pageSlug !== 'top') {
-            const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
-            const topHtml = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
-            const topHeader = extractHeaderHtml(topHtml);
+          if (pageSlug !== 'top' && latestTopHtml) {
+            const topHeader = extractHeaderHtml(latestTopHtml);
             if (topHeader) {
               generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
             }

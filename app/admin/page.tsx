@@ -820,21 +820,9 @@ export default function PaletteLab() {
       output = output.replace(/<section[^>]*id=["']top["'][^>]*>[\s\S]*?<\/section>/i, `$&${newsSection}`);
     }
 
-    // Noir: blogをcompanyの後に強制配置
+    // Noir: テンプレートにid="blog"がないのでblog追加をスキップ
     if (templateId === 'template-noir') {
-      const blogInOutput = extractSectionById(output, 'blog');
-      const blogToInsert = blogInOutput || blogSectionBase;
-      if (blogToInsert) {
-        if (blogInOutput) {
-          output = output.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');
-        }
-        const companyRe = /<section[^>]*id=["']company["'][^>]*>[\s\S]*?<\/section>/i;
-        if (companyRe.test(output)) {
-          output = output.replace(companyRe, `$&\n${blogToInsert}`);
-        } else {
-          output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&\n${blogToInsert}`);
-        }
-      }
+      // blogセクションは追加しない（worksセクションがブログの役割を担う）
     } else {
       // 他テンプレート: blogがなければnewsの後に追加
       if (!hasSectionId(output, 'blog') && blogSectionBase) {
@@ -1808,15 +1796,22 @@ ${baseHtml}
       const newsSection = buildTopNewsSectionHtmlByTemplate(newsPosts, '/news', resolvedTemplateId, defaultEyecatchUrl)
         || buildTopNewsSectionHtml(newsPosts, '/news', defaultEyecatchUrl)
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
-      const blogSection = buildTopBlogSectionHtmlByTemplate(blogPosts, '/blog', resolvedTemplateId, defaultEyecatchUrl)
-        || buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
-        || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
       const afterNews = hasSectionId(output, 'news')
         ? replaceSectionBlock(output, 'news', newsSection)
         : insertSectionAfterId(output, 'top', newsSection);
-      const afterBlog = hasSectionId(afterNews, 'blog')
-        ? replaceSectionBlock(afterNews, 'blog', blogSection)
-        : insertSectionAfterId(afterNews, 'news', blogSection);
+
+      // テンプレートにid="blog"が存在する場合のみblogセクションを追加
+      const baseTemplate = getTemplateById(resolvedTemplateId);
+      const templateHasBlog = baseTemplate && baseTemplate.html.includes('id="blog"');
+      let afterBlog = afterNews;
+      if (templateHasBlog) {
+        const blogSection = buildTopBlogSectionHtmlByTemplate(blogPosts, '/blog', resolvedTemplateId, defaultEyecatchUrl)
+          || buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
+          || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
+        afterBlog = hasSectionId(afterNews, 'blog')
+          ? replaceSectionBlock(afterNews, 'blog', blogSection)
+          : insertSectionAfterId(afterNews, 'news', blogSection);
+      }
       output = removeAutoPlaceholderSections(afterBlog);
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)

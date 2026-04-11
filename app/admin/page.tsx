@@ -1011,7 +1011,7 @@ ${activePageHtml}
       // ヒアリング内容のサマリー（answers から Q&A をまとめる）
       let answerSummary = templateSelectionAnswers
         .filter(a => a.q && a.a) // q と a が両方存在するもののみ
-        .map(a => `Q: ${a.q.substring(0, 100)}...\nA: ${a.a}`) // 質問は最初の100文字のみ
+        .map(a => `Q: ${a.q}\nA: ${a.a}`) // 質問は最初の100文字のみ
         .join("\n\n");
       
       if (!answerSummary || answerSummary.trim().length === 0) {
@@ -1021,7 +1021,7 @@ ${activePageHtml}
           templateSelectionAnswers = fallback.answers || [];
           answerSummary = templateSelectionAnswers
             .filter(a => a.q && a.a)
-            .map(a => `Q: ${a.q.substring(0, 100)}...\nA: ${a.a}`)
+            .map(a => `Q: ${a.q}\nA: ${a.a}`)
             .join("\n\n");
           alert("選択中の顧客にヒアリングデータがありません。直近の顧客回答を使用して生成します。\n（mainで生成・保存したレコードを先にご選択ください）");
         } else {

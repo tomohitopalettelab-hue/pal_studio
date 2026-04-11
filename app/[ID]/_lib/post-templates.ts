@@ -105,16 +105,23 @@ export const syncNavFromTopPage = (html: string, topHtml: string) => {
   }
   if (topLinks.length === 0) return html;
 
-  // サブページのdata-sync navの中身をTOPのリンクで上書き（構造はサブページの1つ目のaのclassを継承）
-  return html.replace(/<nav[^>]*data-sync=["']site-pages["'][^>]*>[\s\S]*?<\/nav>/gi, (match) => {
-    const anchorClassMatch = match.match(/<a[^>]*class=["']([^"']+)["']/i);
+  // サブページのheader内のnavを探してリンクを上書き
+  const headerMatch = html.match(/<header[\s\S]*?<\/header>/i);
+  if (!headerMatch) return html;
+  const originalHeader = headerMatch[0];
+
+  // header内の<nav>を見つけて中身を差し替え（data-sync有無問わず）
+  const updatedHeader = originalHeader.replace(/<nav[^>]*>[\s\S]*?<\/nav>/i, (navMatch) => {
+    const anchorClassMatch = navMatch.match(/<a[^>]*class=["']([^"']+)["']/i);
     const anchorClassName = anchorClassMatch ? anchorClassMatch[1] : '';
     const classAttr = anchorClassName ? ` class="${anchorClassName}"` : '';
     const links = topLinks.map((link) =>
       `<a href="${link.href}"${classAttr}>${escapeHtml(link.text)}</a>`
     ).join('');
-    return match.replace(/>\s*[\s\S]*?<\/nav>/i, `>${links}</nav>`);
+    return navMatch.replace(/>\s*[\s\S]*?<\/nav>/i, `>${links}</nav>`);
   });
+
+  return html.replace(/<header[\s\S]*?<\/header>/i, updatedHeader);
 };
 
 export const syncNavWithSitePagesHtml = (

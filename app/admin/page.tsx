@@ -1242,6 +1242,11 @@ ${baseHtml}
 
           // TOPページ生成時は結果を保持
           if (pageSlug === 'top') {
+            // テンプレートにid="blog"がない場合、AIが生成したblogセクションを除去
+            const resolvedTpl = getTemplateById(recommendedTemplateId);
+            if (resolvedTpl && !resolvedTpl.html.includes('id="blog"')) {
+              generatedHtml = generatedHtml.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');
+            }
             latestTopHtml = generatedHtml;
           }
 

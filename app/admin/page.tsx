@@ -28,8 +28,6 @@ import {
   buildRelatedNewsSectionHtml,
   syncNavFromTopPage,
   applyCustomerName,
-  extractHeaderHtml,
-  replaceHeaderHtml,
 } from '../[ID]/_lib/post-templates';
 
 type Customer = {
@@ -1138,12 +1136,9 @@ ${activePageHtml}
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
-          // TOPのheaderを取得してnavと屋号を統一
+          // navリンクと屋号だけTOPと統一（header構造/CSSは維持）
           if (latestTopHtml) {
-            const topHeader = extractHeaderHtml(latestTopHtml);
-            if (topHeader) {
-              dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
-            }
+            dynamicHtml = syncNavFromTopPage(dynamicHtml, latestTopHtml);
           }
           // 顧客名をフッター等にも適用
           dynamicHtml = applyCustomerName(dynamicHtml, selectedCustomer?.name);
@@ -1248,12 +1243,10 @@ ${baseHtml}
             latestTopHtml = generatedHtml;
           }
 
-          // サブページのheaderをTOPのheaderで上書き（navと屋号をTOPと統一）
+          // サブページ: navリンクと屋号だけTOPと統一（header構造/CSSは維持）
           if (pageSlug !== 'top' && latestTopHtml) {
-            const topHeader = extractHeaderHtml(latestTopHtml);
-            if (topHeader) {
-              generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
-            }
+            generatedHtml = syncNavFromTopPage(generatedHtml, latestTopHtml);
+            generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (

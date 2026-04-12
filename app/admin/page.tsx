@@ -1767,16 +1767,6 @@ ${baseHtmlForAI}
     ];
     let output = String(html);
 
-    // DEBUG
-    const _dbgSec = (label: string, src: string) => {
-      const ids: string[] = [];
-      const re = /<section[^>]*id=["']([^"']+)["']/gi;
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(src)) !== null) ids.push(m[1]);
-      console.log(`[buildPreviewHtml] ${label}: sections=${ids.join(',')}`);
-    };
-    _dbgSec('input', output);
-
     const resolvePreviewBaseHtml = () => {
       const variant = hasTemplateVariantId(activePageTemplateId)
         ? getTemplateVariantById(activePageTemplateId)
@@ -1848,34 +1838,12 @@ ${baseHtmlForAI}
         : hasTemplateId(selectedTemplateId) ? selectedTemplateId
         : TEMPLATE_DEFAULT_ID;
 
-      // news/blogセクション差し替え前にセクション一覧を保存
-      const sectionIdsBefore = (() => {
-        const ids: string[] = [];
-        const re = /<section[^>]*id=["']([^"']+)["']/gi;
-        let m: RegExpExecArray | null;
-        while ((m = re.exec(output)) !== null) ids.push(m[1]);
-        return ids;
-      })();
-
       const newsSection = buildTopNewsSectionHtmlByTemplate(newsPosts, '/news', resolvedTemplateId, defaultEyecatchUrl)
         || buildTopNewsSectionHtml(newsPosts, '/news', defaultEyecatchUrl)
         || `<section id="news" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのニュースがありません。</p></section>`;
       const afterNews = hasSectionId(output, 'news')
         ? replaceSectionBlock(output, 'news', newsSection)
         : insertSectionAfterId(output, 'top', newsSection);
-
-      // 差し替え後にセクションが消えていないかチェック
-      const sectionIdsAfterNews = (() => {
-        const ids: string[] = [];
-        const re = /<section[^>]*id=["']([^"']+)["']/gi;
-        let m: RegExpExecArray | null;
-        while ((m = re.exec(afterNews)) !== null) ids.push(m[1]);
-        return ids;
-      })();
-      const lostAfterNews = sectionIdsBefore.filter(id => id !== 'news' && !sectionIdsAfterNews.includes(id));
-      if (lostAfterNews.length > 0) {
-        console.error('[buildPreviewHtml] NEWS差し替えでセクション消失:', lostAfterNews, 'before:', sectionIdsBefore, 'after:', sectionIdsAfterNews);
-      }
 
       // blogセクションの差し替え（テンプレートに応じてblogまたはworksを使用）
       const baseTemplate = getTemplateById(resolvedTemplateId);
@@ -1893,19 +1861,30 @@ ${baseHtmlForAI}
         afterBlog = insertSectionAfterId(afterNews, 'news', blogSection);
       }
 
-      const sectionIdsAfterBlog = (() => {
+      // 防御: セクションが消えていたら入力をそのまま使用
+      const outputIds = (() => {
         const ids: string[] = [];
         const re = /<section[^>]*id=["']([^"']+)["']/gi;
         let m: RegExpExecArray | null;
         while ((m = re.exec(afterBlog)) !== null) ids.push(m[1]);
         return ids;
       })();
-      const lostAfterBlog = sectionIdsAfterNews.filter(id => id !== blogTargetSectionId && !sectionIdsAfterBlog.includes(id));
-      if (lostAfterBlog.length > 0) {
-        console.error('[buildPreviewHtml] BLOG差し替えでセクション消失:', lostAfterBlog);
+      const inputIds = (() => {
+        const ids: string[] = [];
+        const re = /<section[^>]*id=["']([^"']+)["']/gi;
+        let m: RegExpExecArray | null;
+        while ((m = re.exec(html)) !== null) ids.push(m[1]);
+        return ids;
+      })();
+      // news/works/blogは差し替えるので除外して比較
+      const protectedIds = inputIds.filter(id => !['news', 'blog', 'works'].includes(id));
+      const lostProtected = protectedIds.filter(id => !outputIds.includes(id));
+      if (lostProtected.length > 0) {
+        console.error('[buildPreviewHtml] セクション消失検出、入力HTMLにフォールバック:', lostProtected);
+        output = html; // 元のHTMLをそのまま使用
+      } else {
+        output = afterBlog;
       }
-
-      output = afterBlog;
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';
@@ -1945,9 +1924,7 @@ ${baseHtmlForAI}
     }
 
     const withEmail = applyContactEmail(output, contactEmail);
-    const _result = applyLogoToHeader(withEmail, logoUrl);
-    _dbgSec('output', _result);
-    return _result;
+    return applyLogoToHeader(withEmail, logoUrl);
   };
 
   // ファイルアップロードハンドラ
@@ -1965,16 +1942,6 @@ ${baseHtmlForAI}
   const getProcessedHtml = (html: string, enableEdit: boolean = true) => {
     if (!html) return "";
     let processed = html;
-
-    // DEBUG: セクション追跡
-    const _dbgSections = (label: string, src: string) => {
-      const ids: string[] = [];
-      const re = /<section[^>]*id=["']([^"']+)["']/gi;
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(src)) !== null) ids.push(m[1]);
-      if (ids.length < 8) console.warn(`[getProcessedHtml] ${label}: sections=${ids.join(',')} len=${src.length}`);
-    };
-    _dbgSections('input', processed);
 
     // フッターデータがあればフッターを置換
     if (selectedCustomer?.footerData?.companyName) {

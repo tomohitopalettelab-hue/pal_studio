@@ -30,6 +30,9 @@ import {
   applyCustomerName,
   extractHeaderHtml,
   replaceHeaderHtml,
+  parseHtmlSections,
+  buildFooterHtml,
+  applyFooterToHtml,
 } from '../[ID]/_lib/post-templates';
 
 type Customer = {
@@ -52,6 +55,19 @@ type Customer = {
   description?: string;
   isTemplate?: boolean;
   draftGenerated?: boolean;
+  lockedSections?: Record<string, string>;
+  footerData?: {
+    companyName: string;
+    address: string;
+    postalCode: string;
+    tel: string;
+    fax?: string;
+    email?: string;
+    businessHours?: string;
+    links: { category: string; items: { label: string; href: string }[] }[];
+    copyright: string;
+    socialLinks?: { platform: string; url: string }[];
+  };
 };
 
 type PalDbAccount = {
@@ -807,42 +823,6 @@ export default function PaletteLab() {
     return ids;
   };
 
-  const ensureTopSections = (html: string, baseHtml: string, templateId?: string) => {
-    let output = String(html || '');
-    const topSection = extractSectionById(baseHtml, 'top');
-    const newsSection = extractSectionById(baseHtml, 'news');
-    const blogSectionBase = extractSectionById(baseHtml, 'blog');
-
-    if (!hasSectionId(output, 'top') && topSection) {
-      output = `${topSection}${output}`;
-    }
-    if (!hasSectionId(output, 'news') && newsSection) {
-      output = output.replace(/<section[^>]*id=["']top["'][^>]*>[\s\S]*?<\/section>/i, `$&${newsSection}`);
-    }
-
-    // Noir: テンプレートにid="blog"がないのでblog追加をスキップ
-    if (templateId === 'template-noir') {
-      // blogセクションは追加しない（worksセクションがブログの役割を担う）
-    } else {
-      // 他テンプレート: blogがなければnewsの後に追加
-      if (!hasSectionId(output, 'blog') && blogSectionBase) {
-        output = output.replace(/<section[^>]*id=["']news["'][^>]*>[\s\S]*?<\/section>/i, `$&${blogSectionBase}`);
-      }
-    }
-    return output;
-  };
-
-  const restoreBaseIfMissingSections = (html: string, baseHtml: string) => {
-    const baseIds = getSectionIds(baseHtml);
-    if (baseIds.length === 0) return html;
-    // news/blog は ensureTopSections で保証済みのため除外してコアのみチェック
-    const coreIds = baseIds.filter((id) => !['news', 'blog'].includes(id));
-    const missing = coreIds.filter((id) => !hasSectionId(html, id));
-    if (missing.length === 0) return html;
-    // コアセクションの過半数（60%以上）が欠けていたらベースに戻す
-    if (missing.length >= Math.ceil(coreIds.length * 0.6)) return baseHtml;
-    return html;
-  };
 
   // テンプレート自動選択ロジック
   const autoSelectTemplate = (answers: { q: string, a: string }[]) => {
@@ -1011,7 +991,7 @@ ${activePageHtml}
       // ヒアリング内容のサマリー（answers から Q&A をまとめる）
       let answerSummary = templateSelectionAnswers
         .filter(a => a.q && a.a) // q と a が両方存在するもののみ
-        .map(a => `Q: ${a.q}\nA: ${a.a}`) // 質問は最初の100文字のみ
+        .map(a => `Q: ${a.q}\nA: ${a.a}`)
         .join("\n\n");
       
       if (!answerSummary || answerSummary.trim().length === 0) {
@@ -1153,8 +1133,19 @@ ${activePageHtml}
           continue;
         }
 
+        const locked = selectedCustomer?.lockedSections || {};
+
+        // 確定済みセクションをマスクしたbaseHtmlを生成（AIに書き換えさせない）
+        let baseHtmlForAI = baseHtml;
+        for (const [id, lockedHtml] of Object.entries(locked)) {
+          const sectionRe = new RegExp(`<section[^>]*id=["']${id}["'][^>]*>[\\s\\S]*?<\\/section>`, 'i');
+          if (sectionRe.test(baseHtmlForAI)) {
+            baseHtmlForAI = baseHtmlForAI.replace(sectionRe, `<!-- LOCKED:${id} -->`);
+          }
+        }
+
         const topNewsInstruction = pageSlug === 'top'
-          ? '\n      6. topページでは、ニュースセクション（id="news"）をヒーローセクション（id="top"）の下に配置してください。セクション内部の構造は維持してください。\n'
+          ? '\n6. topページでは、ニュースセクション（id="news"）をヒーローセクション（id="top"）の下に配置してください。セクション内部の構造は維持してください。\n'
           : '';
 
         const prompt = `
@@ -1182,14 +1173,15 @@ ${activePageHtml}
 4. テキストはヒアリング内容とテーマに合わせて魅力的な日本語にしてください。
 5. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像に差し替えてください。
 6. 配色はTailwind CSSのクラスを変更して調整してください。
-7. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
+7. **\`<!-- LOCKED:xxx -->\` というコメントはそのまま出力してください。書き換え禁止です。**
+8. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
 ${topNewsInstruction}
 
 【ヒアリング内容】
 ${answerSummary}
 
 【ベースHTML】
-${baseHtml}
+${baseHtmlForAI}
 `;
 
         // 高負荷や503エラーに備えてリトライを行う
@@ -1228,31 +1220,38 @@ ${baseHtml}
 
         if (/<[^>]+>/.test(normalized)) {
           let generatedHtml = normalized || html;
-          if (pageSlug === 'top') {
-            if (!isRenderableHtml(generatedHtml)) {
-              generatedHtml = baseHtml || generatedHtml;
-            }
-            generatedHtml = ensureTopSections(generatedHtml, baseHtml, recommendedTemplateId);
-            generatedHtml = restoreBaseIfMissingSections(generatedHtml, baseHtml);
-          }
+
           if (!isRenderableHtml(generatedHtml)) {
-            const fallbackHtml = normalizeHtmlString(baseHtml) || baseHtml;
-            generatedHtml = fallbackHtml || generatedHtml;
+            generatedHtml = baseHtml || generatedHtml;
           }
 
-          // TOPページ生成時は結果を保持
+          // 確定済み(locked)セクションを復元: <!-- LOCKED:id --> を元のHTMLに差し替え
+          for (const [id, lockedHtml] of Object.entries(locked)) {
+            generatedHtml = generatedHtml.replace(new RegExp(`<!--\\s*LOCKED:${id}\\s*-->`, 'gi'), lockedHtml);
+          }
+
+          // TOPページ: header/footer/styleをbaseHtmlから保護
           if (pageSlug === 'top') {
+            // baseHtmlのstyleを復元（AIが変更しないように）
+            const baseStyleMatch = baseHtml.match(/<style[\s\S]*?<\/style>/i);
+            const genStyleMatch = generatedHtml.match(/<style[\s\S]*?<\/style>/i);
+            if (baseStyleMatch && genStyleMatch) {
+              generatedHtml = generatedHtml.replace(/<style[\s\S]*?<\/style>/i, baseStyleMatch[0]);
+            }
+
             // テンプレートにid="blog"がない場合、AIが生成したblogセクションを除去
-            const resolvedTpl = getTemplateById(recommendedTemplateId);
-            if (resolvedTpl && !resolvedTpl.html.includes('id="blog"')) {
+            if (!baseHtml.includes('id="blog"')) {
               generatedHtml = generatedHtml.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');
             }
+
             latestTopHtml = generatedHtml;
           }
 
-          // サブページ: TOPのheader+styleを適用してデザインを統一
+          // 顧客名適用
+          generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
+
+          // サブページ: TOPのheader+styleを適用
           if (pageSlug !== 'top' && latestTopHtml) {
-            // TOPの<style>ブロックを抽出してサブページに注入（headerのCSSクラスが機能するように）
             const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
             if (topStyleMatch) {
               const subStyleMatch = generatedHtml.match(/<style[\s\S]*?<\/style>/i);
@@ -1262,12 +1261,8 @@ ${baseHtml}
                 generatedHtml = topStyleMatch[0] + generatedHtml;
               }
             }
-            // TOPのheaderで丸ごと上書き
             const topHeader = extractHeaderHtml(latestTopHtml);
-            if (topHeader) {
-              generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
-            }
-            generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
+            if (topHeader) generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (
@@ -1285,13 +1280,14 @@ ${baseHtml}
               : c
           ));
         } else {
+          // HTML抽出に失敗した場合はベースHTMLを使用
           const fallbackHtml = normalizeHtmlString(baseHtml) || baseHtml;
           if (/<[^>]+>/.test(fallbackHtml)) {
             updateSelectedCustomerPages((pages) => pages.map((p) => (
               p.slug === pageSlug ? { ...p, htmlCode: fallbackHtml } : p
             )));
           }
-          setCustomers(prev => prev.map(c => 
+          setCustomers(prev => prev.map(c =>
             c.id === selectedCustomerId
               ? {
                 ...c,
@@ -1693,9 +1689,27 @@ ${baseHtml}
 
   const insertSectionAfterId = (source: string, afterId: string, sectionHtml: string) => {
     if (!sectionHtml) return source;
-    const re = new RegExp(`(<section[^>]*id=["']${afterId}["'][^>]*>[\s\S]*?</section>)`, 'i');
-    if (re.test(source)) {
-      return source.replace(re, `$1${sectionHtml}`);
+    // depth tracking で正しいsection終了位置を見つける
+    const openRe = new RegExp(`<section[^>]*id=["']${afterId}["'][^>]*>`, 'i');
+    const openMatch = openRe.exec(source);
+    if (openMatch) {
+      let pos = openMatch.index + openMatch[0].length;
+      let depth = 1;
+      while (depth > 0 && pos < source.length) {
+        const nextOpen = source.indexOf('<section', pos);
+        const nextClose = source.indexOf('</section>', pos);
+        if (nextClose === -1) break;
+        if (nextOpen !== -1 && nextOpen < nextClose) {
+          depth++;
+          pos = nextOpen + '<section'.length;
+        } else {
+          depth--;
+          pos = nextClose + '</section>'.length;
+        }
+      }
+      if (depth === 0) {
+        return source.slice(0, pos) + sectionHtml + source.slice(pos);
+      }
     }
     if (/<\/main>/i.test(source)) {
       return source.replace(/<\/main>/i, `${sectionHtml}</main>`);
@@ -1703,18 +1717,6 @@ ${baseHtml}
     return `${source}${sectionHtml}`;
   };
 
-  const removeAutoPlaceholderSections = (source: string) => {
-    const patterns = [
-      '最新情報は公開投稿から自動生成されます。',
-      'ブログ記事は公開投稿から自動生成されます。'
-    ];
-    let output = source;
-    patterns.forEach((text) => {
-      const re = new RegExp(`<section[^>]*>[\\s\\S]*?${text}[\\s\\S]*?</section>`, 'i');
-      output = output.replace(re, '');
-    });
-    return output;
-  };
   const insertSectionBeforeMainClose = (source: string, sectionHtml: string) => {
     if (!sectionHtml) return source;
     if (/<\/main>/i.test(source)) {
@@ -1782,12 +1784,49 @@ ${baseHtml}
     };
 
     if (pageSlug === 'top') {
-      const missingCore = !hasSectionId(output, 'top')
-        || !hasSectionId(output, 'news')
-        || !hasSectionId(output, 'blog');
-      if (missingCore || !isRenderableHtml(output)) {
+      const previewTemplate = getTemplateById(
+        hasTemplateId(activePageTemplateId) ? activePageTemplateId
+        : hasTemplateId(selectedTemplateId) ? selectedTemplateId
+        : TEMPLATE_DEFAULT_ID
+      );
+      // htmlCodeが空またはレンダリング不可の場合はbaseHtmlにフォールバック
+      if (!isRenderableHtml(output)) {
         const baseHtml = resolvePreviewBaseHtml();
         if (baseHtml) output = baseHtml;
+      }
+      // heroセクション(id="top")が欠けている場合、baseHtmlから復元
+      if (!hasSectionId(output, 'top')) {
+        const baseHtml = resolvePreviewBaseHtml();
+        if (baseHtml) {
+          const heroRe = /<section[^>]*id=["']top["'][^>]*>/i;
+          const heroMatch = heroRe.exec(baseHtml);
+          if (heroMatch) {
+            // depth trackingでheroセクション全体を抽出
+            let pos = heroMatch.index + heroMatch[0].length;
+            let depth = 1;
+            while (depth > 0 && pos < baseHtml.length) {
+              const nextOpen = baseHtml.indexOf('<section', pos);
+              const nextClose = baseHtml.indexOf('</section>', pos);
+              if (nextClose === -1) break;
+              if (nextOpen !== -1 && nextOpen < nextClose) { depth++; pos = nextOpen + 8; }
+              else { depth--; pos = nextClose + 10; }
+            }
+            if (depth === 0) {
+              const heroHtml = baseHtml.slice(heroMatch.index, pos);
+              // <main>の直後、または最初のsectionの前に挿入
+              const mainMatch = output.match(/<main[^>]*>/i);
+              if (mainMatch && mainMatch.index != null) {
+                const insertPos = mainMatch.index + mainMatch[0].length;
+                output = output.slice(0, insertPos) + heroHtml + output.slice(insertPos);
+              } else {
+                const firstSection = output.match(/<section/i);
+                if (firstSection) {
+                  output = output.slice(0, firstSection.index) + heroHtml + output.slice(firstSection.index);
+                }
+              }
+            }
+          }
+        }
       }
     }
 
@@ -1805,19 +1844,22 @@ ${baseHtml}
         ? replaceSectionBlock(output, 'news', newsSection)
         : insertSectionAfterId(output, 'top', newsSection);
 
-      // テンプレートにid="blog"が存在する場合のみblogセクションを追加
+      // blogセクションの差し替え（テンプレートに応じてblogまたはworksを使用）
       const baseTemplate = getTemplateById(resolvedTemplateId);
-      const templateHasBlog = baseTemplate && baseTemplate.html.includes('id="blog"');
+      const blogTargetSectionId = baseTemplate.features.hasBlog ? 'blog' : baseTemplate.features.blogSectionId;
       let afterBlog = afterNews;
-      if (templateHasBlog) {
+      if (blogTargetSectionId && hasSectionId(afterNews, blogTargetSectionId)) {
+        const blogSection = buildTopBlogSectionHtmlByTemplate(blogPosts, '/blog', resolvedTemplateId, defaultEyecatchUrl);
+        if (blogSection) {
+          afterBlog = replaceSectionBlock(afterNews, blogTargetSectionId, blogSection);
+        }
+      } else if (baseTemplate.features.hasBlog) {
         const blogSection = buildTopBlogSectionHtmlByTemplate(blogPosts, '/blog', resolvedTemplateId, defaultEyecatchUrl)
           || buildTopBlogSectionHtml(blogPosts, '/blog', defaultEyecatchUrl)
           || `<section id="blog" class="py-16 px-6"><p class="text-sm text-slate-400">公開済みのブログがありません。</p></section>`;
-        afterBlog = hasSectionId(afterNews, 'blog')
-          ? replaceSectionBlock(afterNews, 'blog', blogSection)
-          : insertSectionAfterId(afterNews, 'news', blogSection);
+        afterBlog = insertSectionAfterId(afterNews, 'news', blogSection);
       }
-      output = removeAutoPlaceholderSections(afterBlog);
+      output = afterBlog;
     } else if (pageSlug === 'news') {
       const listHtml = buildPostListHtml(newsPosts, '/news', 'ニュース', defaultEyecatchUrl)
         || '<p class="text-sm text-slate-400">公開済みのニュースがありません。</p>';
@@ -1875,6 +1917,14 @@ ${baseHtml}
   const getProcessedHtml = (html: string, enableEdit: boolean = true) => {
     if (!html) return "";
     let processed = html;
+
+    // フッターデータがあればフッターを置換
+    if (selectedCustomer?.footerData?.companyName) {
+      const templateId = selectedCustomer.selectedTemplateId || selectedTemplateId || '';
+      const footerHtml = buildFooterHtml(templateId, selectedCustomer.footerData as any);
+      processed = applyFooterToHtml(processed, footerHtml);
+    }
+
     const sectionState = canShowStandardSections
       ? activeSections
       : { ...activeSections, news: false, blog: false };
@@ -2459,6 +2509,148 @@ ${baseHtml}
                           placeholder="info@example.com"
                         />
                       </div>
+
+                      {/* フッター設定 */}
+                      <div className="pt-3 border-t border-slate-100 space-y-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">フッター設定</p>
+                        {(() => {
+                          const fd = selectedCustomer.footerData || {
+                            companyName: selectedCustomer.name || '',
+                            address: '',
+                            postalCode: '',
+                            tel: '',
+                            copyright: '',
+                            links: [],
+                          };
+                          const updateFooter = (patch: Partial<typeof fd>) => {
+                            setCustomers(prev => prev.map(c =>
+                              c.id === selectedCustomerId
+                                ? { ...c, footerData: { ...fd, ...patch } }
+                                : c
+                            ));
+                          };
+                          return (
+                            <div className="space-y-2">
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">会社名</label>
+                                <input type="text" value={fd.companyName} onChange={e => updateFooter({ companyName: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">郵便番号</label>
+                                <input type="text" value={fd.postalCode} onChange={e => updateFooter({ postalCode: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" placeholder="000-0000" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">住所</label>
+                                <input type="text" value={fd.address} onChange={e => updateFooter({ address: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">電話番号</label>
+                                <input type="text" value={fd.tel} onChange={e => updateFooter({ tel: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">FAX</label>
+                                <input type="text" value={fd.fax || ''} onChange={e => updateFooter({ fax: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">メール</label>
+                                <input type="email" value={fd.email || ''} onChange={e => updateFooter({ email: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">営業時間</label>
+                                <input type="text" value={fd.businessHours || ''} onChange={e => updateFooter({ businessHours: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" placeholder="9:00-18:00" />
+                              </div>
+                              <div>
+                                <label className="text-[9px] font-bold text-slate-400 uppercase">コピーライト</label>
+                                <input type="text" value={fd.copyright} onChange={e => updateFooter({ copyright: e.target.value })} className="w-full p-1.5 bg-white border border-slate-200 rounded text-xs outline-none focus:border-indigo-500" placeholder="© Company Name" />
+                              </div>
+                              {/* ナビリンク */}
+                              <div>
+                                <div className="flex items-center justify-between mb-1">
+                                  <label className="text-[9px] font-bold text-slate-400 uppercase">ナビリンク</label>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateFooter({ links: [...(fd.links || []), { category: '新規カテゴリ', items: [{ label: 'リンク', href: '#' }] }] })}
+                                    className="text-[9px] font-bold text-indigo-600 hover:underline"
+                                  >+ カテゴリ追加</button>
+                                </div>
+                                {(fd.links || []).map((cat, ci) => (
+                                  <div key={ci} className="mb-2 p-2 bg-slate-50 rounded border border-slate-100">
+                                    <div className="flex items-center gap-1 mb-1">
+                                      <input
+                                        type="text"
+                                        value={cat.category}
+                                        onChange={e => {
+                                          const next = [...(fd.links || [])];
+                                          next[ci] = { ...next[ci], category: e.target.value };
+                                          updateFooter({ links: next });
+                                        }}
+                                        className="flex-1 p-1 bg-white border border-slate-200 rounded text-[10px] outline-none"
+                                        placeholder="カテゴリ名"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const next = (fd.links || []).filter((_, i) => i !== ci);
+                                          updateFooter({ links: next });
+                                        }}
+                                        className="text-[9px] text-red-400 hover:text-red-600"
+                                      >削除</button>
+                                    </div>
+                                    {cat.items.map((item, ii) => (
+                                      <div key={ii} className="flex items-center gap-1 ml-2 mb-0.5">
+                                        <input
+                                          type="text"
+                                          value={item.label}
+                                          onChange={e => {
+                                            const next = [...(fd.links || [])];
+                                            const items = [...next[ci].items];
+                                            items[ii] = { ...items[ii], label: e.target.value };
+                                            next[ci] = { ...next[ci], items };
+                                            updateFooter({ links: next });
+                                          }}
+                                          className="flex-1 p-1 bg-white border border-slate-200 rounded text-[10px] outline-none"
+                                          placeholder="ラベル"
+                                        />
+                                        <input
+                                          type="text"
+                                          value={item.href}
+                                          onChange={e => {
+                                            const next = [...(fd.links || [])];
+                                            const items = [...next[ci].items];
+                                            items[ii] = { ...items[ii], href: e.target.value };
+                                            next[ci] = { ...next[ci], items };
+                                            updateFooter({ links: next });
+                                          }}
+                                          className="flex-1 p-1 bg-white border border-slate-200 rounded text-[10px] outline-none"
+                                          placeholder="URL"
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const next = [...(fd.links || [])];
+                                            next[ci] = { ...next[ci], items: next[ci].items.filter((_, i) => i !== ii) };
+                                            updateFooter({ links: next });
+                                          }}
+                                          className="text-[9px] text-red-400"
+                                        >x</button>
+                                      </div>
+                                    ))}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const next = [...(fd.links || [])];
+                                        next[ci] = { ...next[ci], items: [...next[ci].items, { label: '', href: '#' }] };
+                                        updateFooter({ links: next });
+                                      }}
+                                      className="text-[9px] text-indigo-500 ml-2 hover:underline"
+                                    >+ リンク追加</button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2880,6 +3072,50 @@ ${baseHtml}
                   </select>
                 </div>
               </section>
+              {/* セクション確定パネル */}
+              {activePageHtml && isHtmlText(activePageHtml) && (() => {
+                const sectionIds = getSectionIds(activePageHtml);
+                if (sectionIds.length === 0) return null;
+                const locked = selectedCustomer?.lockedSections || {};
+                return (
+                  <div className="px-2 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sections</h3>
+                      <span className="text-[9px] text-slate-300">({Object.keys(locked).length}/{sectionIds.length} locked)</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {sectionIds.map(id => {
+                        const isLocked = !!locked[id];
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => {
+                              const next = { ...locked };
+                              if (isLocked) {
+                                delete next[id];
+                              } else {
+                                const sectionRe = new RegExp(`<section[^>]*id=["']${id}["'][^>]*>[\\s\\S]*?<\\/section>`, 'i');
+                                const match = activePageHtml.match(sectionRe);
+                                if (match) next[id] = match[0];
+                              }
+                              setCustomers(prev => prev.map(c =>
+                                c.id === selectedCustomerId ? { ...c, lockedSections: next } : c
+                              ));
+                            }}
+                            className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider border transition-all ${
+                              isLocked
+                                ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                            }`}
+                          >
+                            {isLocked ? '🔒' : '○'} {id}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="flex-1 w-full flex justify-center items-stretch overflow-hidden bg-slate-300/50 rounded-2xl">
                 {activeTab === 'preview' ? (
                   <div className={`bg-white transition-all duration-500 shadow-2xl relative flex flex-col ${viewMode === 'pc' ? 'w-full h-full' : 'w-[375px] h-[667px] my-auto mx-auto rounded-[40px] border-[12px] border-slate-900 overflow-hidden shrink-0'}`}>

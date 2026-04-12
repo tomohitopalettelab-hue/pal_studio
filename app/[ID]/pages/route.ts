@@ -9,6 +9,8 @@ import {
   ensureHtmlDocument,
   applyContactEmail,
   applyLogoToHeader,
+  buildFooterHtml,
+  applyFooterToHtml,
 } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -177,6 +179,11 @@ export async function GET(
     html = syncNavWithSitePagesHtml(html, getCustomerPagesForNav(customer), baseForPosts);
     html = applyContactEmail(html, customer?.contactEmail);
     html = applyLogoToHeader(html, customer?.logoUrl);
+    // Apply footer if footerData exists
+    if (customer?.footerData?.companyName) {
+      const footerHtml = buildFooterHtml(customer.selectedTemplateId || '', customer.footerData);
+      html = applyFooterToHtml(html, footerHtml);
+    }
     const output = ensureHtmlDocument(html, {
       faviconUrl: customer?.faviconUrl,
       headHtml: linkSyncScript,

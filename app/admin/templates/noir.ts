@@ -2074,4 +2074,30 @@ export const noirTemplate: Template = {
 </script>
 
 </div>`,
+  features: {
+    hasBlog: false,    // worksがブログ兼用
+    hasNews: true,
+    blogSectionId: 'works',
+    newsSectionId: 'news',
+  },
+  // ブログカード（一覧ページ用）
+  postCardTemplate: `<a href="{{href}}" style="display:block;text-decoration:none;color:inherit;"><div style="aspect-ratio:16/9;overflow:hidden;margin-bottom:20px;background:#eee;">{{image}}</div><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="font-family:'Cormorant Garamond',serif;font-size:0.75rem;color:#999;letter-spacing:0.06em;">{{date}}</span><span style="font-size:0.6rem;font-weight:500;padding:3px 12px;border:1px solid var(--main-color,#c8161d);color:var(--main-color,#c8161d);letter-spacing:0.08em;text-transform:uppercase;">Blog</span></div><h3 style="font-size:0.95rem;font-weight:400;line-height:1.6;">{{title}}</h3></a>`,
+  postListWrapper: `<div style="max-width:1200px;margin:0 auto;padding:0 60px;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px 24px;">{{items}}</div></div>`,
+  // ニュースアイテム（一覧ページ用）
+  newsItemTemplate: `<a href="{{href}}" style="display:flex;align-items:center;gap:24px;padding:24px 0;border-bottom:1px solid #e5e5e5;transition:opacity 0.3s;text-decoration:none;color:var(--text-color,#1a1a1a);"><time style="font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:#999;letter-spacing:0.04em;flex-shrink:0;width:100px;">{{date}}</time><span style="font-size:0.6rem;font-weight:500;padding:4px 14px;border:1px solid var(--main-color,#c8161d);color:var(--main-color,#c8161d);flex-shrink:0;letter-spacing:0.08em;text-transform:uppercase;">{{tagLabel}}</span><span style="flex:1;font-size:0.9rem;line-height:1.6;font-weight:400;">{{title}}</span><svg style="width:16px;height:16px;color:#999;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>`,
+  newsListWrapper: `<div style="max-width:1000px;margin:0 auto;padding:0 60px;"><div style="border-top:1px solid #e5e5e5;">{{items}}</div></div>`,
+  // TOPページ用ニュースセクション
+  topNewsSectionTemplate: `<section id="news" style="padding:140px 0;background:#f7f7f5;"><div style="max-width:1200px;margin:0 auto;padding:0 60px;"><div style="margin-bottom:56px;"><span style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;font-weight:300;color:#999;display:block;margin-bottom:16px;">( News )</span><h3 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;letter-spacing:-0.02em;">Latest Updates</h3></div><div style="margin-bottom:48px;">{{items}}</div><div style="text-align:center;"><a href="{{newsListHref}}" style="display:inline-flex;align-items:center;gap:16px;font-family:'Cormorant Garamond',serif;font-size:0.95rem;padding:14px 32px;border:1px solid #e5e5e5;transition:all 0.4s;color:#1a1a1a;text-decoration:none;">View All News <span>→</span></a></div></div></section>`,
+  // TOPページ用ブログセクション（worksデザイン）
+  topBlogSectionTemplate: `<section id="works" class="works" style="padding:160px 0;background:var(--color-bg,#fff);"><div class="works__inner" style="max-width:1200px;margin:0 auto;padding:0 60px;"><div class="works__header" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:72px;"><div><p class="works__label" style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;font-weight:300;color:#999;margin-bottom:12px;">ブログ</p><h2 class="works__title" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;letter-spacing:-0.02em;">最新の<br>記事</h2></div><a href="{{blogListHref}}" class="works__more" style="font-family:'Cormorant Garamond',serif;font-size:0.8rem;letter-spacing:0.08em;border-bottom:1px solid #e5e5e5;padding-bottom:4px;text-decoration:none;color:inherit;">すべての記事を見る</a></div><div class="works__marquee" style="overflow:hidden;white-space:nowrap;margin-bottom:-20px;padding:20px 0;"><div class="works__marquee-inner"><span class="works__marquee-text" style="display:inline-block;font-family:'Cormorant Garamond',serif;font-size:clamp(4rem,10vw,8rem);font-weight:300;font-style:italic;color:transparent;-webkit-text-stroke:1px #e5e5e5;letter-spacing:-0.02em;">BLOG BLOG BLOG BLOG&nbsp;</span><span class="works__marquee-text" style="display:inline-block;font-family:'Cormorant Garamond',serif;font-size:clamp(4rem,10vw,8rem);font-weight:300;font-style:italic;color:transparent;-webkit-text-stroke:1px #e5e5e5;letter-spacing:-0.02em;">BLOG BLOG BLOG BLOG&nbsp;</span></div></div><div class="works__grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px 24px;margin-bottom:64px;">{{items}}</div><div style="text-align:center;"><a href="{{blogListHref}}" class="u-btn" style="display:inline-flex;align-items:center;gap:16px;font-family:'Cormorant Garamond',serif;font-size:0.95rem;padding:14px 32px;border:1px solid #e5e5e5;transition:all 0.4s;color:#1a1a1a;text-decoration:none;">View All Posts <span>→</span></a></div></div></section>`,
+  footerDefaults: {
+    companyName: 'Studio Name',
+    address: '〒000-0000 東京都渋谷区1-1-1',
+    tel: '000-0000-0000',
+    links: [
+      { label: 'About', href: '#' },
+      { label: 'Works', href: '#' },
+      { label: 'Contact', href: '#' },
+    ],
+  },
 };

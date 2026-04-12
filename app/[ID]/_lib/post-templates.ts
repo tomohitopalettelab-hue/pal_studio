@@ -1,4 +1,4 @@
-import { templateVariants, hasTemplateId } from '../../admin/templates';
+import { templateVariants, hasTemplateId, getTemplateById } from '../../admin/templates';
 
 export type PostItem = {
   id: string;
@@ -185,6 +185,14 @@ export const sortPostsByTag = (posts: PostItem[]) => {
   });
 };
 
+const renderTemplate = (template: string, vars: Record<string, string>): string => {
+  let output = template;
+  for (const [key, value] of Object.entries(vars)) {
+    output = output.replaceAll(`{{${key}}}`, value);
+  }
+  return output;
+};
+
 export const getCustomerTemplateId = (customer: any) => {
   const raw = String(customer?.selectedTemplateId || customer?.templateId || '').trim();
   return hasTemplateId(raw) ? raw : '';
@@ -198,6 +206,63 @@ export const selectVariantHtml = (pageSlug: string, templateId?: string) => {
     if (matched) return matched.html;
   }
   return variants[0].html;
+};
+
+export type ParsedHtml = {
+  style: string;
+  header: string;
+  sections: { id: string; html: string }[];
+  footer: string;
+  rest: string;
+};
+
+export const parseHtmlSections = (html: string): ParsedHtml => {
+  const src = String(html || '');
+
+  // style抽出
+  const styleMatch = src.match(/<style[\s\S]*?<\/style>/i);
+  const style = styleMatch ? styleMatch[0] : '';
+
+  // header抽出
+  const headerMatch = src.match(/<header[\s\S]*?<\/header>/i);
+  const header = headerMatch ? headerMatch[0] : '';
+
+  // footer抽出
+  const footerMatch = src.match(/<footer[\s\S]*?<\/footer>/i);
+  const footer = footerMatch ? footerMatch[0] : '';
+
+  // sections抽出（id付きsection）
+  const sections: { id: string; html: string }[] = [];
+  const sectionRe = /<section[^>]*id=["']([^"']+)["'][^>]*>[\s\S]*?<\/section>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = sectionRe.exec(src)) !== null) {
+    sections.push({ id: match[1], html: match[0] });
+  }
+
+  // rest: style/header/footer/sections以外の要素（loader, mobile-nav等）
+  let rest = src;
+  if (style) rest = rest.replace(style, '');
+  if (header) rest = rest.replace(header, '');
+  if (footer) rest = rest.replace(footer, '');
+  for (const s of sections) {
+    rest = rest.replace(s.html, '');
+  }
+  // 空白のみのdivラッパーなどは残す
+  rest = rest.replace(/^\s+|\s+$/g, '');
+
+  return { style, header, sections, footer, rest };
+};
+
+export const reassembleHtml = (parts: ParsedHtml): string => {
+  const sectionHtml = parts.sections.map(s => s.html).join('\n');
+  // 元のHTML構造を再構築: style + wrapper開始 + header + main(sections) + footer + wrapper終了 + rest
+  return [
+    parts.style,
+    parts.header,
+    sectionHtml,
+    parts.footer,
+    parts.rest,
+  ].filter(Boolean).join('\n');
 };
 
 export const replaceSectionContent = (html: string, sectionId: string, content: string) => {
@@ -318,18 +383,11 @@ export const buildPostListHtml = (
 ) => {
   if (posts.length === 0) return '';
 
-  if (templateId === 'template-warm') {
-    return buildPostListHtmlWarm(posts, basePath, typeLabel, defaultImageUrl);
-  }
-
-  if (templateId === 'template-noir') {
-    return buildPostListHtmlNoir(posts, basePath, typeLabel, defaultImageUrl);
-  }
-
+  const template = getTemplateById(templateId);
   const isBlog = basePath.includes('/blog');
 
   if (isBlog) {
-    // ブログ: カードグリッド（CSS変数でどのテンプレートにも対応）
+    const cardTemplate = template.postCardTemplate;
     const listItems = sortPostsByTag(posts).map((post) => {
       const title = escapeHtml(post.title || '');
       const excerpt = escapeHtml(post.excerpt || '');
@@ -339,22 +397,23 @@ export const buildPostListHtml = (
       const image = imageUrl
         ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;">`
         : '';
-      return `
-        <a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:block;text-decoration:none;color:inherit;">
-          <div style="aspect-ratio:16/9;overflow:hidden;margin-bottom:16px;background:#eee;border-radius:8px;">${image}</div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <span style="font-size:0.8rem;color:var(--text-light,#999);">${date}</span>
-            <span style="font-size:0.65rem;font-weight:600;padding:3px 12px;border:1px solid var(--main-color,#333);color:var(--main-color,#333);border-radius:3px;text-transform:uppercase;">Blog</span>
-          </div>
-          <h3 style="font-size:1rem;font-weight:700;line-height:1.6;color:var(--text-color,#1a1a1a);">${title}</h3>
-          ${excerpt ? `<p style="font-size:0.85rem;color:var(--text-light,#999);margin-top:8px;line-height:1.8;">${excerpt}</p>` : ''}
-        </a>`;
+      const excerptHtml = excerpt ? `<p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>` : '';
+      return renderTemplate(cardTemplate, {
+        href: `${basePath}/${encodeURIComponent(post.slug)}`,
+        title,
+        date,
+        image,
+        excerpt,
+        excerptHtml,
+        imageAlt,
+      });
     }).join('\n');
 
-    return `<div style="max-width:1200px;margin:0 auto;padding:0 40px;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px;">${listItems}</div></div>`;
+    return renderTemplate(template.postListWrapper, { items: listItems });
   }
 
-  // ニュース: リスト形式（CSS変数でどのテンプレートにも対応）
+  // ニュース
+  const newsTemplate = template.newsItemTemplate;
   const listItems = sortPostsByTag(posts).map((post) => {
     const title = escapeHtml(post.title || '');
     const excerpt = escapeHtml(post.excerpt || '');
@@ -366,127 +425,24 @@ export const buildPostListHtml = (
     const image = imageUrl
       ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" style="width:100%;height:100%;object-fit:cover;">`
       : '';
-
-    return `
-      <a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:flex;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid var(--color-border,#e5e5e5);text-decoration:none;color:var(--text-color,#1a1a1a);transition:opacity 0.3s;">
-        ${image ? `<div style="width:120px;height:80px;overflow:hidden;border-radius:6px;flex-shrink:0;background:#eee;">${image}</div>` : ''}
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-            <span style="font-size:0.8rem;color:var(--text-light,#999);">${date}</span>
-            <span style="font-size:0.6rem;font-weight:600;padding:3px 12px;border:1px solid var(--main-color,#333);color:var(--main-color,#333);border-radius:3px;text-transform:uppercase;">${tagLabel}</span>
-          </div>
-          <h3 style="font-size:0.95rem;font-weight:600;line-height:1.6;">${title}</h3>
-          ${excerpt ? `<p style="font-size:0.8rem;color:var(--text-light,#999);margin-top:4px;line-height:1.6;">${excerpt}</p>` : ''}
-        </div>
-      </a>`;
-  }).join('\n');
-
-  return `<div style="max-width:1000px;margin:0 auto;padding:0 40px;"><div style="border-top:1px solid var(--color-border,#e5e5e5);">${listItems}</div></div>`;
-};
-
-const buildPostListHtmlWarm = (
-  posts: PostItem[],
-  basePath: string,
-  typeLabel: string,
-  defaultImageUrl?: string,
-) => {
-  const isBlog = basePath.includes('/blog');
-
-  if (isBlog) {
-    // ブログ: カードグリッド（元の静的デザイン準拠）
-    const listItems = sortPostsByTag(posts).map((post) => {
-      const title = escapeHtml(post.title || '');
-      const excerpt = escapeHtml(post.excerpt || '');
-      const date = escapeHtml(formatDate(post.publishedAt));
-      const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
-      const imageAlt = escapeHtml(post.imageAlt || post.title || '');
-      const image = imageUrl
-        ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">`
-        : '';
-      return `
-        <a href="${basePath}/${encodeURIComponent(post.slug)}" class="group">
-          <div class="aspect-video overflow-hidden rounded-3xl mb-5 shadow-md bg-gray-100">${image}</div>
-          <div class="flex items-center gap-3 mb-3">
-            <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span>
-            <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-          </div>
-          <h3 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-snug mb-3">${title}</h3>
-          ${excerpt ? `<p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>` : ''}
-        </a>`;
-    }).join('\n');
-
-    return `
-      <div class="max-w-6xl mx-auto px-6">
-        <div class="grid md:grid-cols-3 gap-8">${listItems}</div>
-      </div>`;
-  }
-
-  // ニュース: リスト形式（元の静的デザイン準拠）
-  const listItems = sortPostsByTag(posts).map((post) => {
-    const title = escapeHtml(post.title || '');
-    const excerpt = escapeHtml(post.excerpt || '');
-    const date = escapeHtml(formatDate(post.publishedAt));
-    const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
-    const imageAlt = escapeHtml(post.imageAlt || post.title || '');
-    const image = imageUrl
-      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
+    const imageBlock = image
+      ? `<div class="w-full md:w-48 h-32 bg-gray-100 rounded-[20px] overflow-hidden shrink-0">${image}</div>`
       : '';
-
-    return `
-      <a href="${basePath}/${encodeURIComponent(post.slug)}" class="group block bg-[var(--accent-color)] rounded-[30px] p-6 md:p-8 hover:shadow-lg transition-shadow">
-        <div class="flex flex-col md:flex-row gap-6 items-start">
-          ${image ? `<div class="w-full md:w-48 h-32 bg-gray-100 rounded-[20px] overflow-hidden shrink-0">${image}</div>` : ''}
-          <div class="flex-1">
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span>
-              <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">NEWS</span>
-            </div>
-            <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">${title}</h2>
-            ${excerpt ? `<p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>` : ''}
-          </div>
-        </div>
-      </a>`;
+    const excerptHtml = excerpt ? `<p class="text-sm text-[var(--text-light)] line-clamp-2 leading-relaxed">${excerpt}</p>` : '';
+    return renderTemplate(newsTemplate, {
+      href: `${basePath}/${encodeURIComponent(post.slug)}`,
+      title,
+      date,
+      tagLabel,
+      image,
+      imageBlock,
+      excerpt,
+      excerptHtml,
+      imageAlt,
+    });
   }).join('\n');
 
-  return `
-    <div class="max-w-6xl mx-auto px-6">
-      <div class="space-y-4">${listItems}</div>
-    </div>`;
-};
-
-const buildPostListHtmlNoir = (
-  posts: PostItem[],
-  basePath: string,
-  typeLabel: string,
-  defaultImageUrl?: string,
-) => {
-  const isBlog = basePath.includes('/blog');
-
-  if (isBlog) {
-    const listItems = sortPostsByTag(posts).map((post) => {
-      const title = escapeHtml(post.title || '');
-      const date = escapeHtml(formatDate(post.publishedAt));
-      const imageUrl = String(defaultImageUrl || post.imageUrl || '').trim();
-      const imageAlt = escapeHtml(post.imageAlt || post.title || '');
-      const image = imageUrl
-        ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.7s cubic-bezier(.22,1,.36,1);">`
-        : '';
-      return `<a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:block;text-decoration:none;color:inherit;"><div style="aspect-ratio:16/9;overflow:hidden;margin-bottom:20px;background:#eee;">${image}</div><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span style="font-family:'Cormorant Garamond',serif;font-size:0.75rem;color:#999;letter-spacing:0.06em;">${date}</span><span style="font-size:0.6rem;font-weight:500;padding:3px 12px;border:1px solid var(--main-color,#c8161d);color:var(--main-color,#c8161d);letter-spacing:0.08em;text-transform:uppercase;">Blog</span></div><h3 style="font-size:0.95rem;font-weight:400;line-height:1.6;">${title}</h3></a>`;
-    }).join('\n');
-
-    return `<div style="max-width:1200px;margin:0 auto;padding:0 60px;"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px 24px;">${listItems}</div></div>`;
-  }
-
-  const listItems = sortPostsByTag(posts).map((post) => {
-    const title = escapeHtml(post.title || '');
-    const date = escapeHtml(formatDate(post.publishedAt));
-    const tags = normalizeTags(post.tags);
-    const tagLabel = tags.length ? escapeHtml(tags[0]) : 'お知らせ';
-
-    return `<a href="${basePath}/${encodeURIComponent(post.slug)}" style="display:flex;align-items:center;gap:24px;padding:24px 0;border-bottom:1px solid #e5e5e5;transition:opacity 0.3s;text-decoration:none;color:var(--text-color,#1a1a1a);"><time style="font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:#999;letter-spacing:0.04em;flex-shrink:0;width:100px;">${date}</time><span style="font-size:0.6rem;font-weight:500;padding:4px 14px;border:1px solid var(--main-color,#c8161d);color:var(--main-color,#c8161d);flex-shrink:0;letter-spacing:0.08em;text-transform:uppercase;">${tagLabel}</span><span style="flex:1;font-size:0.9rem;line-height:1.6;font-weight:400;">${title}</span><svg style="width:16px;height:16px;color:#999;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg></a>`;
-  }).join('\n');
-
-  return `<div style="max-width:1000px;margin:0 auto;padding:0 60px;"><div style="border-top:1px solid #e5e5e5;">${listItems}</div></div>`;
+  return renderTemplate(template.newsListWrapper, { items: listItems });
 };
 
 export const buildTopNewsSectionHtml = (posts: PostItem[], basePath: string, defaultImageUrl?: string) => {
@@ -659,32 +615,37 @@ export const buildTopNewsSectionHtmlByTemplate = (
   defaultImageUrl?: string,
 ): string => {
   if (posts.length === 0) return '';
+
+  const template = getTemplateById(templateId);
   const detailHref = `${basePath}/news-page`;
   const slice = sortPostsByTag(posts).slice(0, 2);
 
-  switch (templateId) {
-    case 'template-warm': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />` : '';
-        return `<a href="${detailHref}" class="group block"><article class="flex flex-col sm:flex-row gap-4 p-5 bg-[var(--accent-color)] rounded-[24px] hover:shadow-lg transition-shadow"><div class="w-full sm:w-32 h-24 bg-gray-100 rounded-[16px] overflow-hidden shrink-0">${image}</div><div><p class="text-xs font-bold text-[var(--main-color)] mb-2" style="font-family:'Quicksand',sans-serif">${date}</p><h4 class="text-base font-bold group-hover:text-[var(--main-color)] transition-colors line-clamp-2">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] mt-1 line-clamp-1">${excerpt}</p>` : ''}</div></article></a>`;
-      }).join('');
-      return `<section id="news" class="py-20 bg-white relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">NEWS</h2><h3 class="text-3xl font-black">ニュース</h3></div><a href="${basePath}/news" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-2 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-noir': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        return `<a href="${detailHref}" class="group block"><article style="display:flex;align-items:center;gap:24px;padding:24px 0;border-bottom:1px solid #e5e5e5;transition:opacity 0.3s;"><time style="font-family:'Cormorant Garamond',serif;font-size:0.85rem;color:#999;letter-spacing:0.04em;flex-shrink:0;width:100px;">${date}</time><span style="font-size:0.65rem;font-weight:500;padding:3px 14px;border:1px solid #e5e5e5;color:#999;flex-shrink:0;">お知らせ</span><p style="flex:1;font-size:0.9rem;line-height:1.6;">${title}</p><span style="font-family:'Cormorant Garamond',serif;color:#999;font-size:1rem;flex-shrink:0;transition:transform 0.3s;">→</span></article></a>`;
-      }).join('');
-      return `<section id="news" style="padding:140px 0;background:#f7f7f5;"><div style="max-width:1200px;margin:0 auto;padding:0 60px;"><div style="margin-bottom:56px;"><span style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;font-weight:300;color:#999;display:block;margin-bottom:16px;">( News )</span><h3 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;letter-spacing:-0.02em;">Latest Updates</h3></div><div style="margin-bottom:48px;">${items}</div><div style="text-align:center;"><a href="${basePath}/news" style="display:inline-flex;align-items:center;gap:16px;font-family:'Cormorant Garamond',serif;font-size:0.95rem;padding:14px 32px;border:1px solid #e5e5e5;transition:all 0.4s;color:#1a1a1a;text-decoration:none;">View All News <span>→</span></a></div></div></section>`;
-    }
-    default:
-      return buildTopNewsSectionHtml(posts, basePath, defaultImageUrl);
-  }
+  const items = slice.map((p) => {
+    const title = escapeHtml(p.title || '');
+    const excerpt = escapeHtml(p.excerpt || '');
+    const date = escapeHtml(formatDate(p.publishedAt));
+    const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
+    const imageAlt = escapeHtml(p.imageAlt || p.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" style="width:100%;height:100%;object-fit:cover;">`
+      : '';
+    return renderTemplate(template.newsItemTemplate, {
+      href: detailHref,
+      title,
+      date,
+      image,
+      imageAlt,
+      excerpt,
+      excerptHtml: excerpt ? `<p class="text-sm text-[var(--text-light)] mt-1 line-clamp-1">${excerpt}</p>` : '',
+      tagLabel: 'お知らせ',
+      imageBlock: image ? `<div class="w-full sm:w-32 h-24 bg-gray-100 rounded-[16px] overflow-hidden shrink-0">${image}</div>` : '',
+    });
+  }).join('');
+
+  return renderTemplate(template.topNewsSectionTemplate, {
+    items,
+    newsListHref: `${basePath}/news`,
+  });
 };
 
 export const buildTopBlogSectionHtmlByTemplate = (
@@ -694,33 +655,113 @@ export const buildTopBlogSectionHtmlByTemplate = (
   defaultImageUrl?: string,
 ): string => {
   if (posts.length === 0) return '';
+
+  const template = getTemplateById(templateId);
   const detailHref = `${basePath}/blog-page`;
   const slice = sortPostsByTag(posts).slice(0, 2);
 
-  switch (templateId) {
-    case 'template-warm': {
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const excerpt = escapeHtml(p.excerpt || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />` : '';
-        return `<a href="${detailHref}" class="group"><div class="aspect-video overflow-hidden rounded-3xl mb-4 shadow-md">${image}</div><div class="flex items-center gap-3 mb-3"><span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">${date}</span><span class="bg-[var(--accent-color)] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span></div><h4 class="text-lg font-bold group-hover:text-[var(--main-color)] transition-all line-clamp-2">${title}</h4>${excerpt ? `<p class="text-sm text-[var(--text-light)] mt-2 line-clamp-2">${excerpt}</p>` : ''}</a>`;
-      }).join('');
-      return `<section id="blog" class="py-20 bg-[var(--accent-color)] relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">BLOG</h2><h3 class="text-3xl font-black">ブログ</h3></div><a href="${basePath}/blog" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-3 gap-6">${items}</div></div></section>`;
-    }
-    case 'template-noir': {
-      // worksデザイン（グリッド+マーキー）でブログ記事を表示
-      const items = slice.map((p) => {
-        const title = escapeHtml(p.title || '');
-        const date = escapeHtml(formatDate(p.publishedAt));
-        const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
-        const image = imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(p.title || '')}" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.8s cubic-bezier(0.22,1,0.36,1);">` : '';
-        return `<a href="${detailHref}" class="works__card" style="display:block;text-decoration:none;color:inherit;"><div class="works__card-img" style="position:relative;overflow:hidden;aspect-ratio:3/2;margin-bottom:16px;background:#eee;">${image}</div><div class="works__card-info"><p class="works__card-cat" style="font-family:'Cormorant Garamond',serif;font-size:0.75rem;color:#999;letter-spacing:0.06em;display:block;margin-bottom:6px;">${date}</p><h3 class="works__card-name" style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;letter-spacing:0.01em;transition:opacity 0.3s;">${title}</h3></div></a>`;
-      }).join('');
-      return `<section id="works" class="works" style="padding:160px 0;background:var(--color-bg,#fff);"><div class="works__inner" style="max-width:1200px;margin:0 auto;padding:0 60px;"><div class="works__header" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:72px;"><div><p class="works__label" style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;font-weight:300;color:#999;margin-bottom:12px;">ブログ</p><h2 class="works__title" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;letter-spacing:-0.02em;">最新の<br>記事</h2></div><a href="${basePath}/blog" class="works__more" style="font-family:'Cormorant Garamond',serif;font-size:0.8rem;letter-spacing:0.08em;border-bottom:1px solid #e5e5e5;padding-bottom:4px;text-decoration:none;color:inherit;">すべての記事を見る</a></div><div class="works__marquee" style="overflow:hidden;white-space:nowrap;margin-bottom:-20px;padding:20px 0;"><div class="works__marquee-inner"><span class="works__marquee-text" style="display:inline-block;font-family:'Cormorant Garamond',serif;font-size:clamp(4rem,10vw,8rem);font-weight:300;font-style:italic;color:transparent;-webkit-text-stroke:1px #e5e5e5;letter-spacing:-0.02em;">BLOG BLOG BLOG BLOG&nbsp;</span><span class="works__marquee-text" style="display:inline-block;font-family:'Cormorant Garamond',serif;font-size:clamp(4rem,10vw,8rem);font-weight:300;font-style:italic;color:transparent;-webkit-text-stroke:1px #e5e5e5;letter-spacing:-0.02em;">BLOG BLOG BLOG BLOG&nbsp;</span></div></div><div class="works__grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px 24px;margin-bottom:64px;">${items}</div><div style="text-align:center;"><a href="${basePath}/blog" class="u-btn" style="display:inline-flex;align-items:center;gap:16px;font-family:'Cormorant Garamond',serif;font-size:0.95rem;padding:14px 32px;border:1px solid #e5e5e5;transition:all 0.4s;color:#1a1a1a;text-decoration:none;">View All Posts <span>→</span></a></div></div></section>`;
-    }
-    default:
-      return buildTopBlogSectionHtml(posts, basePath, defaultImageUrl);
+  const items = slice.map((p) => {
+    const title = escapeHtml(p.title || '');
+    const excerpt = escapeHtml(p.excerpt || '');
+    const date = escapeHtml(formatDate(p.publishedAt));
+    const imageUrl = String(defaultImageUrl || p.imageUrl || '').trim();
+    const imageAlt = escapeHtml(p.imageAlt || p.title || '');
+    const image = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${imageAlt}" style="width:100%;height:100%;object-fit:cover;">`
+      : '';
+    return renderTemplate(template.postCardTemplate, {
+      href: detailHref,
+      title,
+      date,
+      image,
+      imageAlt,
+      excerpt,
+      excerptHtml: excerpt ? `<p class="text-sm text-[var(--text-light)] mt-2 line-clamp-2">${excerpt}</p>` : '',
+    });
+  }).join('');
+
+  return renderTemplate(template.topBlogSectionTemplate, {
+    items,
+    blogListHref: `${basePath}/blog`,
+  });
+};
+
+// ─── Footer ─────────────────────────────────────────────────────────────────
+
+export type FooterData = {
+  companyName: string;
+  address: string;
+  postalCode: string;
+  tel: string;
+  fax?: string;
+  email?: string;
+  businessHours?: string;
+  links: { category: string; items: { label: string; href: string }[] }[];
+  copyright: string;
+  socialLinks?: { platform: string; url: string }[];
+};
+
+export const buildFooterHtml = (templateId: string, footerData: FooterData): string => {
+  const template = getTemplateById(templateId);
+  const isWarm = template.id === 'template-warm';
+
+  const linkCategories = (footerData.links || []).map(cat => {
+    const items = cat.items.map(item =>
+      `<li><a href="${escapeHtml(item.href)}" class="hover:text-[var(--main-color)] transition-colors">${escapeHtml(item.label)}</a></li>`
+    ).join('');
+    return `<div>
+      <h4 class="${isWarm ? 'font-bold text-sm mb-6 border-l-4 border-[var(--main-color)] pl-3' : ''}" style="${!isWarm ? 'font-size:0.85rem;font-weight:500;margin-bottom:20px;' : ''}">${escapeHtml(cat.category)}</h4>
+      <ul class="${isWarm ? 'space-y-3 text-sm font-bold text-gray-500' : ''}" style="${!isWarm ? 'list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;font-size:0.8rem;color:#999;' : ''}">${items}</ul>
+    </div>`;
+  }).join('');
+
+  const contactInfo = [
+    footerData.companyName ? escapeHtml(footerData.companyName) : '',
+    footerData.postalCode ? `〒${escapeHtml(footerData.postalCode)}` : '',
+    footerData.address ? escapeHtml(footerData.address) : '',
+    footerData.tel ? `TEL: ${escapeHtml(footerData.tel)}` : '',
+    footerData.fax ? `FAX: ${escapeHtml(footerData.fax)}` : '',
+    footerData.email ? `Email: ${escapeHtml(footerData.email)}` : '',
+    footerData.businessHours ? `営業時間: ${escapeHtml(footerData.businessHours)}` : '',
+  ].filter(Boolean).join('<br>');
+
+  const copyright = escapeHtml(footerData.copyright || `© ${footerData.companyName}. ALL RIGHTS RESERVED.`);
+
+  if (isWarm) {
+    return `<footer class="bg-[var(--accent-color)] pt-14 pb-10 relative overflow-hidden">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-14">
+          <div class="col-span-2 md:col-span-1">
+            <div class="font-black text-lg mb-4">${escapeHtml(footerData.companyName)}</div>
+            <p class="text-xs font-bold text-gray-400 leading-loose">${contactInfo}</p>
+          </div>
+          ${linkCategories}
+        </div>
+        <div class="border-t border-gray-200 pt-6 text-center text-xs font-bold text-gray-400">
+          <p>${copyright}</p>
+        </div>
+      </div>
+    </footer>`;
   }
+
+  // Noir style footer
+  return `<footer style="padding:80px 0 40px;background:#f7f7f5;border-top:1px solid #e5e5e5;">
+    <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-bottom:60px;">
+        <div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;margin-bottom:16px;">${escapeHtml(footerData.companyName)}</p>
+          <p style="font-size:0.75rem;color:#999;line-height:2;">${contactInfo}</p>
+        </div>
+        ${linkCategories}
+      </div>
+      <div style="border-top:1px solid #e5e5e5;padding-top:24px;text-align:center;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:0.7rem;color:#999;letter-spacing:0.08em;">${copyright}</p>
+      </div>
+    </div>
+  </footer>`;
+};
+
+export const applyFooterToHtml = (html: string, footerHtml: string): string => {
+  if (!footerHtml) return html;
+  return html.replace(/<footer[\s\S]*?<\/footer>/i, footerHtml);
 };

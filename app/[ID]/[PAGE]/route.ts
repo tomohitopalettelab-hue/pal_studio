@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
-import { ensureHtmlDocument, applyContactEmail, applyLogoToHeader, syncNavFromTopPage, getCustomerTopHtml, applyCustomerName } from '../_lib/post-templates';
+import { ensureHtmlDocument, applyContactEmail, applyLogoToHeader, buildFooterHtml, applyFooterToHtml, syncNavFromTopPage, getCustomerTopHtml, applyCustomerName } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -76,7 +76,13 @@ export async function GET(
     const withName = applyCustomerName(withNav || html, customer?.name);
     const withEmail = applyContactEmail(withName, customer?.contactEmail);
     const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
-    const output = ensureHtmlDocument(withLogo, {
+    // Apply footer if footerData exists
+    let withFooter = withLogo;
+    if (customer?.footerData?.companyName) {
+      const footerHtml = buildFooterHtml(customer.selectedTemplateId || '', customer.footerData);
+      withFooter = applyFooterToHtml(withLogo, footerHtml);
+    }
+    const output = ensureHtmlDocument(withFooter, {
       faviconUrl: customer?.faviconUrl,
       headHtml: linkSyncScript,
       paletteId: customer?.customer_id || id,

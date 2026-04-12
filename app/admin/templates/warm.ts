@@ -343,4 +343,50 @@ export const warmTemplate: Template = {
     </footer>
   </div>
 </div>`,
+  features: {
+    hasBlog: true,
+    hasNews: true,
+    blogSectionId: 'blog',
+    newsSectionId: 'news',
+  },
+  // ブログカード（一覧ページ用）
+  postCardTemplate: `<a href="{{href}}" class="group">
+  <div class="aspect-video overflow-hidden rounded-3xl mb-5 shadow-md bg-gray-100">{{image}}</div>
+  <div class="flex items-center gap-3 mb-3">
+    <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">{{date}}</span>
+    <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
+  </div>
+  <h3 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors line-clamp-2 leading-snug mb-3">{{title}}</h3>
+  {{excerptHtml}}
+</a>`,
+  postListWrapper: `<div class="max-w-6xl mx-auto px-6"><div class="grid md:grid-cols-3 gap-8">{{items}}</div></div>`,
+  // ニュースアイテム（一覧ページ用）
+  newsItemTemplate: `<a href="{{href}}" class="group block bg-[var(--accent-color)] rounded-[30px] p-6 md:p-8 hover:shadow-lg transition-shadow">
+  <div class="flex flex-col md:flex-row gap-6 items-start">
+    {{imageBlock}}
+    <div class="flex-1">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-sm font-bold text-gray-400" style="font-family:'Quicksand',sans-serif">{{date}}</span>
+        <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">NEWS</span>
+      </div>
+      <h2 class="text-xl font-black group-hover:text-[var(--main-color)] transition-colors mb-3">{{title}}</h2>
+      {{excerptHtml}}
+    </div>
+  </div>
+</a>`,
+  newsListWrapper: `<div class="max-w-6xl mx-auto px-6"><div class="space-y-4">{{items}}</div></div>`,
+  // TOPページ用ニュースセクション
+  topNewsSectionTemplate: `<section id="news" class="py-20 bg-white relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">NEWS</h2><h3 class="text-3xl font-black">ニュース</h3></div><a href="{{newsListHref}}" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-2 gap-6">{{items}}</div></div></section>`,
+  // TOPページ用ブログセクション
+  topBlogSectionTemplate: `<section id="blog" class="py-20 bg-[var(--accent-color)] relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">BLOG</h2><h3 class="text-3xl font-black">ブログ</h3></div><a href="{{blogListHref}}" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-3 gap-6">{{items}}</div></div></section>`,
+  footerDefaults: {
+    companyName: 'Company Name',
+    address: '〒000-0000 東京都渋谷区1-1-1',
+    tel: '000-0000-0000',
+    links: [
+      { label: '会社概要', href: '#' },
+      { label: 'サービス一覧', href: '#' },
+      { label: 'お問い合わせ', href: '#' },
+    ],
+  },
 };

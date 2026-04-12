@@ -14,6 +14,8 @@ import {
   applyCustomerName,
   applyContactEmail,
   applyLogoToHeader,
+  buildFooterHtml,
+  applyFooterToHtml,
 } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
@@ -78,7 +80,13 @@ export async function GET(
     const withName = applyCustomerName(withNav || injected, customer?.name);
     const withEmail = applyContactEmail(withName, customer?.contactEmail);
     const withLogo = applyLogoToHeader(withEmail, customer?.logoUrl);
-    const output = ensureHtmlDocument(withLogo, { faviconUrl: customer?.faviconUrl, paletteId: customer?.customer_id || id });
+    // Apply footer if footerData exists
+    let withFooter = withLogo;
+    if (customer?.footerData?.companyName) {
+      const footerHtml = buildFooterHtml(customer.selectedTemplateId || '', customer.footerData);
+      withFooter = applyFooterToHtml(withLogo, footerHtml);
+    }
+    const output = ensureHtmlDocument(withFooter, { faviconUrl: customer?.faviconUrl, paletteId: customer?.customer_id || id });
 
     return new NextResponse(output, {
       headers: { 'Content-Type': 'text/html; charset=utf-8' },

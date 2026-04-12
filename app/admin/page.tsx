@@ -1106,17 +1106,8 @@ ${activePageHtml}
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
-          // TOPのstyle+headerを適用してデザインを統一
+          // TOPのheaderを適用してデザインを統一（styleはサブページ固有のものを維持）
           if (latestTopHtml) {
-            const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
-            if (topStyleMatch) {
-              const subStyleMatch = dynamicHtml.match(/<style[\s\S]*?<\/style>/i);
-              if (subStyleMatch) {
-                dynamicHtml = dynamicHtml.replace(/<style[\s\S]*?<\/style>/i, topStyleMatch[0]);
-              } else {
-                dynamicHtml = topStyleMatch[0] + dynamicHtml;
-              }
-            }
             const topHeader = extractHeaderHtml(latestTopHtml);
             if (topHeader) {
               dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
@@ -1280,17 +1271,8 @@ ${baseHtmlForAI}
           // 顧客名適用
           generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
 
-          // サブページ: TOPのheader+styleを適用
+          // サブページ: TOPのheaderを適用（styleはサブページ固有のものを維持）
           if (pageSlug !== 'top' && latestTopHtml) {
-            const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
-            if (topStyleMatch) {
-              const subStyleMatch = generatedHtml.match(/<style[\s\S]*?<\/style>/i);
-              if (subStyleMatch) {
-                generatedHtml = generatedHtml.replace(/<style[\s\S]*?<\/style>/i, topStyleMatch[0]);
-              } else {
-                generatedHtml = topStyleMatch[0] + generatedHtml;
-              }
-            }
             const topHeader = extractHeaderHtml(latestTopHtml);
             if (topHeader) generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
           }

@@ -1101,9 +1101,9 @@ ${activePageHtml}
           )));
         }
 
-        // news/blog/contactページはAI生成をスキップ（フォーム構造が壊れるため）
+        // news/blog系ページは投稿データから動的生成されるため、AI生成をスキップ
         // TOPのheader(nav+屋号)を適用してから保存
-        const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page', 'contact'];
+        const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
           // TOPのstyle+headerを適用してデザインを統一
@@ -1144,11 +1144,10 @@ ${activePageHtml}
           }
         }
 
-        const topNewsInstruction = pageSlug === 'top'
-          ? '\n6. topページでは、ニュースセクション（id="news"）をヒーローセクション（id="top"）の下に配置してください。セクション内部の構造は維持してください。\n'
-          : '';
+        const isTopPage = pageSlug === 'top';
 
-        const prompt = `
+        const prompt = isTopPage
+          ? `
 あなたはWebデザイナーです。以下の「ヒアリング内容」の**テーマ**を理解した上で、「ベースHTML」の中身（テキスト、画像URL、配色クラス）を書き換えて、顧客専用のHTMLを作成してください。
 
 【対象ページ】
@@ -1159,29 +1158,53 @@ ${activePageHtml}
 
 【言語ポリシー】
 **本文・見出し・説明文は日本語をメインにしてください。**
-英語は以下のようなデザイン要素としてのみ使用してください：
-- サイト全体の雰囲気を上品にするための英語タグライン（例: "Premium Quality", "Innovation", "Trust"）
-- セクションヘッダーの小さなラベル（例: "ABOUT US", "OUR SERVICES"）
-- ボタンラベルはシンプルな英語（例: "Learn More", "Contact Us"）
-
-ただし、日本語での適切な表現がある場合は日本語を優先してください。
+英語はデザイン要素としてのみ使用（タグライン、セクションラベル、ボタン等）。
 
 【最重要ルール - 必ず守ること】
 1. **ベースHTMLに存在する全ての section タグ（id属性付き）は、内容を変更しても絶対に削除・省略しないでください。** セクションのIDや個数はベースHTMLと完全に一致させてください。
-2. **ヒアリング情報が不足している場合でも、各セクションをそのまま残し、業種やテーマに合った自然な仮テキストで埋めてください。**（例：美容院なら「施術の流れ」「料金案内」など）セクションを空にしたり削除したりするのは禁止です。
+2. **ヒアリング情報が不足している場合でも、各セクションをそのまま残し、業種やテーマに合った自然な仮テキストで埋めてください。**
 3. **HTML構造（タグの入れ子構造・クラス名）は極力維持**してください。
 4. テキストはヒアリング内容とテーマに合わせて魅力的な日本語にしてください。
 5. 画像は \`https://placehold.co/600x400\` などのプレースホルダー画像に差し替えてください。
 6. 配色はTailwind CSSのクラスを変更して調整してください。
 7. **\`<!-- LOCKED:xxx -->\` というコメントはそのまま出力してください。書き換え禁止です。**
 8. **最後に、完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力してください。説明や雑談は含めないでください。**
-${topNewsInstruction}
+9. topページでは、ニュースセクション（id="news"）をヒーローセクション（id="top"）の下に配置してください。
 
 【ヒアリング内容】
 ${answerSummary}
 
 【ベースHTML】
 ${baseHtmlForAI}
+`
+          : `
+あなたはWebデザイナーです。以下の「ベースHTML」のテキスト内容・画像URL・連絡先情報を、「ヒアリング内容」に基づいて書き換えてください。
+
+**【絶対厳守】HTML構造の完全維持**
+- HTMLタグ、属性、クラス名、id、入れ子構造は**一切変更禁止**です。
+- <form>、<input>、<select>、<textarea>、<button>などのフォーム要素は構造・属性を完全に維持してください。
+- タグの追加・削除・並び替えは禁止です。
+- **変更して良いのは以下のみ：**
+  - テキストノード（タグの中のテキスト内容）
+  - placeholder属性の値
+  - alt属性の値
+  - src属性の値（画像URL）
+  - <option>のテキスト
+  - CSSカラー値（style属性内の色指定やCSS変数の値）
+
+【対象ページ】
+/${pageSlug} (${pageTitle})
+
+【デザインテーマ】
+${detectTheme(templateSelectionAnswers)}
+
+【ヒアリング内容】
+${answerSummary}
+
+【ベースHTML - 構造を維持してテキスト・画像・色のみ書き換え】
+${baseHtmlForAI}
+
+**出力: 完成したHTMLコードのみを \`\`\`html ... \`\`\` で囲んで出力。説明不要。**
 `;
 
         // 高負荷や503エラーに備えてリトライを行う

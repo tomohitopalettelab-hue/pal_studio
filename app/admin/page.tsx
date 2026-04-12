@@ -1106,12 +1106,9 @@ ${activePageHtml}
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
-          // TOPのheaderのみ適用（styleは触らない）
+          // TOPのナビリンクだけ同期（header構造・CSSはサブページのものを維持）
           if (latestTopHtml) {
-            const topHeader = extractHeaderHtml(latestTopHtml);
-            if (topHeader) {
-              dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
-            }
+            dynamicHtml = syncNavFromTopPage(dynamicHtml, latestTopHtml);
           }
           // 顧客名をフッター等にも適用
           dynamicHtml = applyCustomerName(dynamicHtml, selectedCustomer?.name);
@@ -1271,10 +1268,9 @@ ${baseHtmlForAI}
           // 顧客名適用
           generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
 
-          // サブページ: TOPのheaderのみ適用（styleは触らない）
+          // サブページ: TOPのナビリンクだけ同期（header構造・CSSはサブページのものを維持）
           if (pageSlug !== 'top' && latestTopHtml) {
-            const topHeader = extractHeaderHtml(latestTopHtml);
-            if (topHeader) generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
+            generatedHtml = syncNavFromTopPage(generatedHtml, latestTopHtml);
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (

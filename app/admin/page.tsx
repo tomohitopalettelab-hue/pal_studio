@@ -1106,16 +1106,11 @@ ${activePageHtml}
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
-          // TOPのheader+CSSを適用してデザインを統一（サブページ固有のstyleも維持）
+          // TOPのheaderのみ適用（styleは触らない）
           if (latestTopHtml) {
             const topHeader = extractHeaderHtml(latestTopHtml);
             if (topHeader) {
               dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
-            }
-            // TOPのstyle内容をサブページのstyleにマージ
-            const topStyleMatch = latestTopHtml.match(/<style>([\s\S]*?)<\/style>/i);
-            if (topStyleMatch && dynamicHtml.includes('</style>')) {
-              dynamicHtml = dynamicHtml.replace('</style>', `\n/* --- merged from top --- */\n${topStyleMatch[1]}\n</style>`);
             }
           }
           // 顧客名をフッター等にも適用
@@ -1276,19 +1271,10 @@ ${baseHtmlForAI}
           // 顧客名適用
           generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
 
-          // サブページ: TOPのheader+CSSを適用（サブページ固有のstyleも維持）
+          // サブページ: TOPのheaderのみ適用（styleは触らない）
           if (pageSlug !== 'top' && latestTopHtml) {
             const topHeader = extractHeaderHtml(latestTopHtml);
             if (topHeader) generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
-            // TOPのstyle内容をサブページのstyleにマージ（headerのCSSクラスが機能するように）
-            const topStyleMatch = latestTopHtml.match(/<style>([\s\S]*?)<\/style>/i);
-            if (topStyleMatch) {
-              const topCssContent = topStyleMatch[1];
-              // サブページの</style>の直前にTOPのCSSを追加
-              if (generatedHtml.includes('</style>')) {
-                generatedHtml = generatedHtml.replace('</style>', `\n/* --- merged from top --- */\n${topCssContent}\n</style>`);
-              }
-            }
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (

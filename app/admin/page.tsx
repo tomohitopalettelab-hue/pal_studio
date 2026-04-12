@@ -1253,15 +1253,22 @@ ${baseHtmlForAI}
             generatedHtml = generatedHtml.replace(new RegExp(`<!--\\s*LOCKED:${id}\\s*-->`, 'gi'), lockedHtml);
           }
 
-          // TOPページ: header/footer/styleをbaseHtmlから保護
-          if (pageSlug === 'top') {
-            // baseHtmlのstyleを復元（AIが変更しないように）
+          // 全ページ: baseHtmlのstyleブロックを復元（AIがCSS変更・削除するのを防止）
+          {
             const baseStyleMatch = baseHtml.match(/<style[\s\S]*?<\/style>/i);
             const genStyleMatch = generatedHtml.match(/<style[\s\S]*?<\/style>/i);
-            if (baseStyleMatch && genStyleMatch) {
-              generatedHtml = generatedHtml.replace(/<style[\s\S]*?<\/style>/i, baseStyleMatch[0]);
+            if (baseStyleMatch) {
+              if (genStyleMatch) {
+                generatedHtml = generatedHtml.replace(/<style[\s\S]*?<\/style>/i, baseStyleMatch[0]);
+              } else {
+                // AIがstyleを消した場合、先頭に追加
+                generatedHtml = baseStyleMatch[0] + generatedHtml;
+              }
             }
+          }
 
+          // TOPページ固有の後処理
+          if (pageSlug === 'top') {
             // テンプレートにid="blog"がない場合、AIが生成したblogセクションを除去
             if (!baseHtml.includes('id="blog"')) {
               generatedHtml = generatedHtml.replace(/<section[^>]*id=["']blog["'][^>]*>[\s\S]*?<\/section>/i, '');

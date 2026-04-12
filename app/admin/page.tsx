@@ -1101,9 +1101,9 @@ ${activePageHtml}
           )));
         }
 
-        // news/blog系ページは投稿データから動的生成されるため、AI生成をスキップ
+        // news/blog/contactページはAI生成をスキップ（フォーム構造が壊れるため）
         // TOPのheader(nav+屋号)を適用してから保存
-        const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
+        const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page', 'contact'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
           // TOPのstyle+headerを適用してデザインを統一

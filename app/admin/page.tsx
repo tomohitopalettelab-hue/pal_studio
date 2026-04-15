@@ -1268,9 +1268,11 @@ ${baseHtmlForAI}
           // 顧客名適用
           generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
 
-          // サブページ: TOPのナビリンクだけ同期（header構造・CSSはサブページのものを維持）
-          if (pageSlug !== 'top' && latestTopHtml) {
-            generatedHtml = syncNavFromTopPage(generatedHtml, latestTopHtml);
+          // サブページ: headerをbaseHTMLから復元（AIが色・構造を変えないように）、ナビリンクだけTOP同期
+          if (pageSlug !== 'top') {
+            const baseHeader = extractHeaderHtml(baseHtml);
+            if (baseHeader) generatedHtml = replaceHeaderHtml(generatedHtml, baseHeader);
+            if (latestTopHtml) generatedHtml = syncNavFromTopPage(generatedHtml, latestTopHtml);
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (

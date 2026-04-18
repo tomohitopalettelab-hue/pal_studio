@@ -1954,10 +1954,8 @@ ${baseHtmlForAI}
       }
     }
 
-    // サブページ表示時: TOPページのheaderを動的に注入（ナビ・屋号を常にTOPと一致）
+    // サブページ表示時: TOPページのheaderを動的に注入（ナビ・屋号・色を常にTOPと一致）
     if (pageSlug !== 'top') {
-      // ビジュアルマーカー: このコードが実行された証拠
-      output = `<!-- HEADER-SYNC-V3-${pageSlug} -->` + output;
       const pages = selectedCustomer?.pages || [];
       const topPage = pages.find((p: any) => {
         const s = String(p?.slug || '').trim().toLowerCase().replace(/^\/+/, '');
@@ -1965,12 +1963,18 @@ ${baseHtmlForAI}
       });
       const topHtmlCode = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
       if (topHtmlCode) {
-        output = `<!-- TOP-HTML-LEN-${topHtmlCode.length} -->` + output;
+        // 1. TOPのheaderを注入 + fixed headerの場合はスペーサー追加
         const topHeader = extractHeaderHtml(topHtmlCode);
         if (topHeader) {
-          output = `<!-- TOP-HEADER-LEN-${topHeader.length} -->` + output;
           output = replaceHeaderHtml(output, topHeader);
+          // TOPのstyleがposition:fixedなら、コンテンツが隠れないようspacerを追加
+          const topStyleForFixed = topHtmlCode.match(/<style[\s\S]*?<\/style>/i)?.[0] || '';
+          const isFixedHeader = /\.header\s*\{[^}]*position\s*:\s*fixed/i.test(topStyleForFixed);
+          if (isFixedHeader) {
+            output = output.replace(/(<\/header>)/i, `$1\n<div style="height:80px;" data-header-spacer></div>`);
+          }
         }
+        // 2. TOPのstyleを前置（サブページのstyleが後勝ち）
         const topStyleMatch = topHtmlCode.match(/<style[\s\S]*?<\/style>/i);
         if (topStyleMatch) {
           const subStyleMatch = output.match(/<style[\s\S]*?<\/style>/i);
@@ -1979,6 +1983,14 @@ ${baseHtmlForAI}
           } else {
             output = topStyleMatch[0] + output;
           }
+        }
+        // 3. template-rootのインラインstyle（CSS変数）をTOPに合わせる
+        const topRootMatch = topHtmlCode.match(/<div[^>]*class=["']template-root["'][^>]*style=["']([^"']*)["']/i);
+        if (topRootMatch) {
+          output = output.replace(
+            /(<div[^>]*class=["']template-root["'][^>]*style=["'])[^"']*(["'])/i,
+            `$1${topRootMatch[1]}$2`
+          );
         }
       }
     }

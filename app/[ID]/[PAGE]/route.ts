@@ -67,14 +67,23 @@ export async function GET(
       return new NextResponse('Page not found', { status: 404 });
     }
 
-    // TOPページのheader全体をサブページに注入（屋号・ナビをTOPと完全一致）
+    // TOPページのheader全体をサブページに注入（屋号・ナビ・色をTOPと完全一致）
     const publishBasePath = resolvePublishPath(customer) || basePath;
     const topHtml = getCustomerTopHtml(customer);
     let withNav = html;
     if (topHtml) {
+      // 1. TOPのheaderを注入
       const topHeader = extractHeaderHtml(topHtml);
-      if (topHeader) withNav = replaceHeaderHtml(withNav, topHeader);
-      // TOPのstyleをサブページのstyleの前に追加
+      if (topHeader) {
+        withNav = replaceHeaderHtml(withNav, topHeader);
+        // position:fixedならスペーサー追加
+        const topStyleRaw = topHtml.match(/<style[\s\S]*?<\/style>/i)?.[0] || '';
+        const isFixedHeader = /\.header\s*\{[^}]*position\s*:\s*fixed/i.test(topStyleRaw);
+        if (isFixedHeader) {
+          withNav = withNav.replace(/(<\/header>)/i, `$1\n<div style="height:80px;" data-header-spacer></div>`);
+        }
+      }
+      // 2. TOPのstyleをサブページのstyleの前に追加（後勝ちルールで維持）
       const topStyleMatch = topHtml.match(/<style[\s\S]*?<\/style>/i);
       if (topStyleMatch) {
         const subStyleMatch = withNav.match(/<style[\s\S]*?<\/style>/i);
@@ -83,6 +92,14 @@ export async function GET(
         } else {
           withNav = topStyleMatch[0] + withNav;
         }
+      }
+      // 3. template-rootのinline style(CSS変数)をTOPに合わせる
+      const topRootMatch = topHtml.match(/<div[^>]*class=["']template-root["'][^>]*style=["']([^"']*)["']/i);
+      if (topRootMatch) {
+        withNav = withNav.replace(
+          /(<div[^>]*class=["']template-root["'][^>]*style=["'])[^"']*(["'])/i,
+          `$1${topRootMatch[1]}$2`
+        );
       }
     }
     const linkSyncScript = `<script id="palette-link-sync">(function(){var basePath=${JSON.stringify(publishBasePath)};function normalize(s){return String(s||'').replace(/^\\/+/, '')}function build(slug){slug=normalize(slug);if(!slug||slug==='top')return basePath||'/';var baseForSubpages=basePath.endsWith('/pages')?basePath.replace(/\\/pages$/,''):basePath;if(!baseForSubpages)return '/'+slug;return baseForSubpages.replace(/\\/$/,'')+'/'+slug}var links=document.querySelectorAll('a[data-page-slug]');links.forEach(function(link){var slug=link.getAttribute('data-page-slug');if(!slug)return;var hash=link.getAttribute('data-page-hash')||'';hash=hash.replace(/^#/, '');var href=build(slug);link.setAttribute('href', hash?href+'#'+hash:href)});})();</script>`;

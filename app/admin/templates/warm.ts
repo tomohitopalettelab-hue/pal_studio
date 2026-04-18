@@ -235,51 +235,6 @@ export const warmTemplate: Template = {
         </div>
       </section>
 
-      <!-- blog: ブログ -->
-      <section id="blog" class="py-20 bg-[var(--accent-color)] relative overflow-hidden">
-        <div class="max-w-6xl mx-auto px-6">
-          <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-            <div>
-              <h2 class="font-en font-bold tracking-widest text-[var(--main-color)] mb-2 text-sm">BLOG</h2>
-              <h3 class="text-3xl font-black">ブログ</h3>
-            </div>
-            <a href="/blog" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a>
-          </div>
-          <div class="grid md:grid-cols-3 gap-6">
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden rounded-3xl mb-4 shadow-md">
-                <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=800" alt="Blog 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-sm font-en font-bold text-gray-400">2025.04.01</span>
-                <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-              </div>
-              <h4 class="text-lg font-bold group-hover:text-[var(--main-color)] transition-all line-clamp-2">ブログ記事は公開投稿から自動生成されます。</h4>
-            </a>
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden rounded-3xl mb-4 shadow-md">
-                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800" alt="Blog 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-sm font-en font-bold text-gray-400">2025.03.15</span>
-                <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-              </div>
-              <h4 class="text-lg font-bold group-hover:text-[var(--main-color)] transition-all line-clamp-2">ブログ記事のタイトルがここに表示されます。</h4>
-            </a>
-            <a href="/blog/blog-page" class="group">
-              <div class="aspect-video overflow-hidden rounded-3xl mb-4 shadow-md">
-                <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=800" alt="Blog 3" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              </div>
-              <div class="flex items-center gap-3 mb-3">
-                <span class="text-sm font-en font-bold text-gray-400">2025.03.01</span>
-                <span class="bg-[#F4F7F9] text-[var(--main-color)] text-xs font-bold px-3 py-1 rounded-full">BLOG</span>
-              </div>
-              <h4 class="text-lg font-bold group-hover:text-[var(--main-color)] transition-all line-clamp-2">最新のアプローチと私たちの取り組み。</h4>
-            </a>
-          </div>
-        </div>
-      </section>
-
       <!-- company: 企業情報・お問い合わせ -->
       <section id="company" class="py-12 px-6">
         <div class="max-w-5xl mx-auto bg-[var(--main-color)] rounded-[60px] p-10 md:p-16 text-center text-white shadow-2xl">
@@ -344,9 +299,9 @@ export const warmTemplate: Template = {
   </div>
 </div>`,
   features: {
-    hasBlog: true,
+    hasBlog: false,
     hasNews: true,
-    blogSectionId: 'blog',
+    blogSectionId: 'works',
     newsSectionId: 'news',
   },
   // ブログカード（一覧ページ用）
@@ -378,7 +333,7 @@ export const warmTemplate: Template = {
   // TOPページ用ニュースセクション
   topNewsSectionTemplate: `<section id="news" class="py-20 bg-white relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">NEWS</h2><h3 class="text-3xl font-black">ニュース</h3></div><a href="{{newsListHref}}" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-2 gap-6">{{items}}</div></div></section>`,
   // TOPページ用ブログセクション
-  topBlogSectionTemplate: `<section id="blog" class="py-20 bg-[var(--accent-color)] relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">BLOG</h2><h3 class="text-3xl font-black">ブログ</h3></div><a href="{{blogListHref}}" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-3 gap-6">{{items}}</div></div></section>`,
+  topBlogSectionTemplate: `<section id="works" class="py-20 bg-[#F4F7F9] relative overflow-hidden"><div class="max-w-6xl mx-auto px-6"><div class="flex flex-col md:flex-row justify-between items-end mb-12"><div><h2 class="text-sm font-bold tracking-widest text-[var(--main-color)] uppercase mb-2" style="font-family:'Quicksand',sans-serif">BLOG</h2><h3 class="text-3xl font-black">最新のブログ記事</h3></div><a href="{{blogListHref}}" class="text-sm font-bold border-b-2 border-[var(--main-color)] pb-1 mt-4 md:mt-0 hover:text-[var(--main-color)] transition-all">VIEW ALL</a></div><div class="grid md:grid-cols-3 gap-6">{{items}}</div></div></section>`,
   footerDefaults: {
     companyName: 'Company Name',
     address: '〒000-0000 東京都渋谷区1-1-1',

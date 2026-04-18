@@ -1956,18 +1956,25 @@ ${baseHtmlForAI}
 
     // サブページ表示時: TOPページのheaderを動的に注入（ナビ・屋号を常にTOPと一致）
     if (pageSlug !== 'top') {
-      const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
+      const pages = selectedCustomer?.pages || [];
+      const topPage = pages.find((p: any) => {
+        const s = String(p?.slug || '').trim().toLowerCase().replace(/^\/+/, '');
+        return s === 'top' || s === '';
+      });
       const topHtmlCode = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
+      console.log('[buildPreviewHtml] pageSlug:', pageSlug, 'topPage found:', !!topPage, 'topHtmlCode length:', topHtmlCode.length);
       if (topHtmlCode) {
         const topHeader = extractHeaderHtml(topHtmlCode);
+        console.log('[buildPreviewHtml] topHeader length:', topHeader.length, 'snippet:', topHeader.substring(0, 100));
         if (topHeader) {
+          const beforeLen = output.length;
           output = replaceHeaderHtml(output, topHeader);
+          console.log('[buildPreviewHtml] replaceHeader: before=', beforeLen, 'after=', output.length);
         }
         const topStyleMatch = topHtmlCode.match(/<style[\s\S]*?<\/style>/i);
         if (topStyleMatch) {
           const subStyleMatch = output.match(/<style[\s\S]*?<\/style>/i);
           if (subStyleMatch) {
-            // サブページのstyleの前にTOPのstyleを追加（後勝ちルールで優先は維持）
             output = output.replace(subStyleMatch[0], `${topStyleMatch[0]}\n${subStyleMatch[0]}`);
           } else {
             output = topStyleMatch[0] + output;

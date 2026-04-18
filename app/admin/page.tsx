@@ -1106,9 +1106,19 @@ ${activePageHtml}
         const dynamicPageSlugs = ['news', 'blog', 'news-page', 'blog-page'];
         if (dynamicPageSlugs.includes(pageSlug)) {
           let dynamicHtml = baseHtml;
-          // TOPのナビリンクだけ同期（header構造・CSSはサブページのものを維持）
+          // TOPのheader全体を注入 + TOPのstyleを前置
           if (latestTopHtml) {
-            dynamicHtml = syncNavFromTopPage(dynamicHtml, latestTopHtml);
+            const topHeader = extractHeaderHtml(latestTopHtml);
+            if (topHeader) dynamicHtml = replaceHeaderHtml(dynamicHtml, topHeader);
+            const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
+            if (topStyleMatch) {
+              const subStyleMatch = dynamicHtml.match(/<style[\s\S]*?<\/style>/i);
+              if (subStyleMatch) {
+                dynamicHtml = dynamicHtml.replace(subStyleMatch[0], `${topStyleMatch[0]}\n${subStyleMatch[0]}`);
+              } else {
+                dynamicHtml = topStyleMatch[0] + dynamicHtml;
+              }
+            }
           }
           // 顧客名をフッター等にも適用
           dynamicHtml = applyCustomerName(dynamicHtml, selectedCustomer?.name);
@@ -1268,11 +1278,22 @@ ${baseHtmlForAI}
           // 顧客名適用
           generatedHtml = applyCustomerName(generatedHtml, selectedCustomer?.name);
 
-          // サブページ: headerをbaseHTMLから復元（AIが色・構造を変えないように）、ナビリンクだけTOP同期
-          if (pageSlug !== 'top') {
-            const baseHeader = extractHeaderHtml(baseHtml);
-            if (baseHeader) generatedHtml = replaceHeaderHtml(generatedHtml, baseHeader);
-            if (latestTopHtml) generatedHtml = syncNavFromTopPage(generatedHtml, latestTopHtml);
+          // サブページ: TOPのheader全体を注入（屋号・ナビ・色・スタイル全部TOPと同じに）
+          // + TOPのstyleを前置（header用CSSクラスを有効化、サブページstyleは後優先で維持）
+          if (pageSlug !== 'top' && latestTopHtml) {
+            const topHeader = extractHeaderHtml(latestTopHtml);
+            if (topHeader) generatedHtml = replaceHeaderHtml(generatedHtml, topHeader);
+            const topStyleMatch = latestTopHtml.match(/<style[\s\S]*?<\/style>/i);
+            if (topStyleMatch) {
+              const subStyleMatch = generatedHtml.match(/<style[\s\S]*?<\/style>/i);
+              if (subStyleMatch) {
+                // サブページのstyleの前にTOPのstyleを追加（後勝ちルールで優先は維持）
+                generatedHtml = generatedHtml.replace(subStyleMatch[0], `${topStyleMatch[0]}\n${subStyleMatch[0]}`);
+              } else {
+                // サブページにstyleがなければheadの先頭に追加
+                generatedHtml = topStyleMatch[0] + generatedHtml;
+              }
+            }
           }
 
           updateSelectedCustomerPages((pages) => pages.map((p) => (

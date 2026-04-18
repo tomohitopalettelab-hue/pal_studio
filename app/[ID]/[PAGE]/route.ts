@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readCustomers } from '../../api/_lib/customer-store';
-import { ensureHtmlDocument, applyContactEmail, applyLogoToHeader, buildFooterHtml, applyFooterToHtml, syncNavFromTopPage, getCustomerTopHtml, applyCustomerName } from '../_lib/post-templates';
+import { ensureHtmlDocument, applyContactEmail, applyLogoToHeader, buildFooterHtml, applyFooterToHtml, syncNavFromTopPage, getCustomerTopHtml, applyCustomerName, extractHeaderHtml, replaceHeaderHtml } from '../_lib/post-templates';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -67,10 +67,24 @@ export async function GET(
       return new NextResponse('Page not found', { status: 404 });
     }
 
-    // navリンクをTOPページと同期
+    // TOPページのheader全体をサブページに注入（屋号・ナビをTOPと完全一致）
     const publishBasePath = resolvePublishPath(customer) || basePath;
     const topHtml = getCustomerTopHtml(customer);
-    const withNav = syncNavFromTopPage(html, topHtml);
+    let withNav = html;
+    if (topHtml) {
+      const topHeader = extractHeaderHtml(topHtml);
+      if (topHeader) withNav = replaceHeaderHtml(withNav, topHeader);
+      // TOPのstyleをサブページのstyleの前に追加
+      const topStyleMatch = topHtml.match(/<style[\s\S]*?<\/style>/i);
+      if (topStyleMatch) {
+        const subStyleMatch = withNav.match(/<style[\s\S]*?<\/style>/i);
+        if (subStyleMatch) {
+          withNav = withNav.replace(subStyleMatch[0], `${topStyleMatch[0]}\n${subStyleMatch[0]}`);
+        } else {
+          withNav = topStyleMatch[0] + withNav;
+        }
+      }
+    }
     const linkSyncScript = `<script id="palette-link-sync">(function(){var basePath=${JSON.stringify(publishBasePath)};function normalize(s){return String(s||'').replace(/^\\/+/, '')}function build(slug){slug=normalize(slug);if(!slug||slug==='top')return basePath||'/';var baseForSubpages=basePath.endsWith('/pages')?basePath.replace(/\\/pages$/,''):basePath;if(!baseForSubpages)return '/'+slug;return baseForSubpages.replace(/\\/$/,'')+'/'+slug}var links=document.querySelectorAll('a[data-page-slug]');links.forEach(function(link){var slug=link.getAttribute('data-page-slug');if(!slug)return;var hash=link.getAttribute('data-page-hash')||'';hash=hash.replace(/^#/, '');var href=build(slug);link.setAttribute('href', hash?href+'#'+hash:href)});})();</script>`;
 
     const withName = applyCustomerName(withNav || html, customer?.name);

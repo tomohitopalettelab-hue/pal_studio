@@ -1954,6 +1954,28 @@ ${baseHtmlForAI}
       }
     }
 
+    // サブページ表示時: TOPページのheaderを動的に注入（ナビ・屋号を常にTOPと一致）
+    if (pageSlug !== 'top') {
+      const topPage = (selectedCustomer?.pages || []).find((p: any) => String(p?.slug || '').trim().toLowerCase() === 'top');
+      const topHtmlCode = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
+      if (topHtmlCode) {
+        const topHeader = extractHeaderHtml(topHtmlCode);
+        if (topHeader) {
+          output = replaceHeaderHtml(output, topHeader);
+        }
+        const topStyleMatch = topHtmlCode.match(/<style[\s\S]*?<\/style>/i);
+        if (topStyleMatch) {
+          const subStyleMatch = output.match(/<style[\s\S]*?<\/style>/i);
+          if (subStyleMatch) {
+            // サブページのstyleの前にTOPのstyleを追加（後勝ちルールで優先は維持）
+            output = output.replace(subStyleMatch[0], `${topStyleMatch[0]}\n${subStyleMatch[0]}`);
+          } else {
+            output = topStyleMatch[0] + output;
+          }
+        }
+      }
+    }
+
     const withEmail = applyContactEmail(output, contactEmail);
     return applyLogoToHeader(withEmail, logoUrl);
   };

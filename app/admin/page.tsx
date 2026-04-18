@@ -1956,20 +1956,20 @@ ${baseHtmlForAI}
 
     // サブページ表示時: TOPページのheaderを動的に注入（ナビ・屋号を常にTOPと一致）
     if (pageSlug !== 'top') {
+      // ビジュアルマーカー: このコードが実行された証拠
+      output = `<!-- HEADER-SYNC-V3-${pageSlug} -->` + output;
       const pages = selectedCustomer?.pages || [];
       const topPage = pages.find((p: any) => {
         const s = String(p?.slug || '').trim().toLowerCase().replace(/^\/+/, '');
         return s === 'top' || s === '';
       });
       const topHtmlCode = String(topPage?.htmlCode || selectedCustomer?.htmlCode || '');
-      console.log('[buildPreviewHtml] pageSlug:', pageSlug, 'topPage found:', !!topPage, 'topHtmlCode length:', topHtmlCode.length);
       if (topHtmlCode) {
+        output = `<!-- TOP-HTML-LEN-${topHtmlCode.length} -->` + output;
         const topHeader = extractHeaderHtml(topHtmlCode);
-        console.log('[buildPreviewHtml] topHeader length:', topHeader.length, 'snippet:', topHeader.substring(0, 100));
         if (topHeader) {
-          const beforeLen = output.length;
+          output = `<!-- TOP-HEADER-LEN-${topHeader.length} -->` + output;
           output = replaceHeaderHtml(output, topHeader);
-          console.log('[buildPreviewHtml] replaceHeader: before=', beforeLen, 'after=', output.length);
         }
         const topStyleMatch = topHtmlCode.match(/<style[\s\S]*?<\/style>/i);
         if (topStyleMatch) {

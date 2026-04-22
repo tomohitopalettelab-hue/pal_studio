@@ -35,8 +35,6 @@ export const noirTemplate: Template = {
 
 .template-root *, .template-root *::before, .template-root *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 .template-root a {

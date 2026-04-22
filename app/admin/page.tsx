@@ -2367,6 +2367,16 @@ ${baseHtmlForAI}
             <Copy className="w-3 h-3" /> 複製
           </button>
           <button onClick={handlePublish} className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95"><Check className="w-4 h-4" /> 送信</button>
+          <button
+            onClick={() => {
+              if (!selectedCustomer?.id) { alert('顧客を選択してください'); return; }
+              const url = `/api/download-site?id=${encodeURIComponent(selectedCustomer.id)}`;
+              window.open(url, '_blank');
+            }}
+            className="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95"
+          >
+            DL
+          </button>
           <button onClick={handleLogout} className="bg-slate-500 hover:bg-slate-400 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all active:scale-95">ログアウト</button>
         </div>
       </header>

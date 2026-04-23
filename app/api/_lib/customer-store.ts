@@ -93,6 +93,20 @@ export const readCustomers = async (): Promise<CustomerRecord[]> => {
   return result.rows.map(normalizeRow);
 };
 
+// CMS-owned fields on the payload that non-CMS callers (chat hearing, save-customer, etc.)
+// must not silently wipe. If a caller doesn't pass them, we preserve whatever is already in the DB.
+const CMS_OWNED_FIELDS = ['publicSlug', 'publicOrigins', 'posts'] as const;
+
+const fetchExistingPayload = async (id: string, customerId: string): Promise<Record<string, any> | null> => {
+  const byId = await sql`SELECT payload FROM customers WHERE id = ${id} LIMIT 1`;
+  if (byId.rows?.[0]?.payload) return byId.rows[0].payload as Record<string, any>;
+  if (customerId) {
+    const byCid = await sql`SELECT payload FROM customers WHERE customer_id = ${customerId} LIMIT 1`;
+    if (byCid.rows?.[0]?.payload) return byCid.rows[0].payload as Record<string, any>;
+  }
+  return null;
+};
+
 export const upsertCustomer = async (customer: CustomerRecord): Promise<CustomerRecord> => {
   await ensureTable();
 
@@ -118,8 +132,20 @@ export const upsertCustomer = async (customer: CustomerRecord): Promise<Customer
     }
   }
 
+  const existingPayload = await fetchExistingPayload(id, customerId);
+  const preservedCmsFields: Record<string, any> = {};
+  if (existingPayload) {
+    for (const key of CMS_OWNED_FIELDS) {
+      const hasInIncoming = Object.prototype.hasOwnProperty.call(customer, key) && (customer as any)[key] !== undefined;
+      if (!hasInIncoming && existingPayload[key] !== undefined) {
+        preservedCmsFields[key] = existingPayload[key];
+      }
+    }
+  }
+
   const payload = {
     ...customer,
+    ...preservedCmsFields,
     id,
     customer_id: customerId,
     name,

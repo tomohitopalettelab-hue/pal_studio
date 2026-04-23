@@ -152,6 +152,25 @@ const getPostTypeLabel = (postType: PostItem['postType']) => (
   postType === 'blog' ? 'ブログ' : '最新情報'
 );
 
+// 公開サイト側で利用するカテゴリ。tags[0] に格納される規約。
+const NEWS_CATEGORIES = ['Release', 'Notice', 'Works', 'Media'] as const;
+const BLOG_CATEGORIES = ['Web', 'Video', 'AI', 'MEO', 'Review', 'Ads'] as const;
+
+const getCategoryOptions = (postType: PostItem['postType']): readonly string[] => (
+  postType === 'blog' ? BLOG_CATEGORIES : NEWS_CATEGORIES
+);
+
+const getPostCategory = (post: PostItem): string => {
+  const tag = Array.isArray(post.tags) && post.tags.length > 0 ? String(post.tags[0] || '').trim() : '';
+  return tag;
+};
+
+const setPostCategory = (post: PostItem, category: string): string[] => {
+  const rest = (post.tags || []).slice(1).filter((t) => String(t || '').trim());
+  const cleaned = String(category || '').trim();
+  return cleaned ? [cleaned, ...rest] : rest;
+};
+
 const MainScrollStyles = () => (
   <style jsx global>{`
     html, body {
@@ -826,9 +845,37 @@ if (isLoading) {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">タグ</label>
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      カテゴリ
+                      <span className="ml-2 text-[9px] font-mono text-slate-300 normal-case tracking-normal">
+                        公開サイトの色分け・絞り込みに使用
+                      </span>
+                    </label>
+                    <select
+                      value={getPostCategory(selectedPost)}
+                      onChange={(event) =>
+                        updatePost(selectedPost.id, {
+                          tags: setPostCategory(selectedPost, event.target.value),
+                        })
+                      }
+                      className="w-full appearance-none px-6 py-4 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none cursor-pointer focus:bg-white focus:border-[#00B7CE] transition-all"
+                    >
+                      <option value="">（未設定）</option>
+                      {getCategoryOptions(selectedPost.postType).map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      追加タグ
+                      <span className="ml-2 text-[9px] font-mono text-slate-300 normal-case tracking-normal">
+                        補助情報（カテゴリ以外）
+                      </span>
+                    </label>
                     <div className="flex flex-wrap gap-2">
-                      {(selectedPost.tags || []).map((tag) => (
+                      {(selectedPost.tags || []).slice(1).map((tag) => (
                         <button
                           key={tag}
                           type="button"
@@ -852,7 +899,7 @@ if (isLoading) {
                           }
                         }}
                         className="flex-1 px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-[#00B7CE] transition-all"
-                        placeholder="タグを追加"
+                        placeholder="補助タグを追加"
                       />
                       <button
                         type="button"

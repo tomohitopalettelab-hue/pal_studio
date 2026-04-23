@@ -91,14 +91,16 @@ export async function GET(req: Request) {
 /**
  * 公開状態が変化した投稿がある場合のみ、顧客ごとに登録された
  * Vercel Deploy Hook を呼び出して公開サイトを再ビルドする。
- * fire-and-forget（レスポンスをブロックしない）。
+ *
+ * NOTE: Vercel serverless では レスポンス送信後に fire-and-forget Promise が
+ * 終了前に kill されるため、この関数は await で同期待ちする必要がある。
  */
-const triggerDeployHookIfNeeded = (
+const triggerDeployHookIfNeeded = async (
   previousPosts: PostItem[],
   nextPosts: PostItem[],
   deployHookUrl: string | undefined,
-) => {
-  if (!deployHookUrl) return;
+): Promise<{ triggered: boolean; status?: number; error?: string }> => {
+  if (!deployHookUrl) return { triggered: false };
   const prevMap = new Map(previousPosts.map((p) => [p.id, p]));
   const changed = nextPosts.some((p) => {
     const prev = prevMap.get(p.id);
@@ -108,19 +110,20 @@ const triggerDeployHookIfNeeded = (
     return false;
   });
   const removed = previousPosts.some((p) => p.status === 'published' && !nextPosts.find((n) => n.id === p.id));
-  if (!changed && !removed) return;
+  if (!changed && !removed) return { triggered: false };
 
-  void fetch(deployHookUrl, { method: 'POST' })
-    .then((res) => {
-      if (!res.ok) {
-        console.error(`[deploy-hook] non-OK response: ${res.status}`);
-      } else {
-        console.log('[deploy-hook] triggered successfully');
-      }
-    })
-    .catch((err) => {
-      console.error('[deploy-hook] failed:', err?.message || err);
-    });
+  try {
+    const res = await fetch(deployHookUrl, { method: 'POST' });
+    if (!res.ok) {
+      console.error(`[deploy-hook] non-OK response: ${res.status}`);
+      return { triggered: true, status: res.status, error: `HTTP ${res.status}` };
+    }
+    console.log('[deploy-hook] triggered successfully');
+    return { triggered: true, status: res.status };
+  } catch (err: any) {
+    console.error('[deploy-hook] failed:', err?.message || err);
+    return { triggered: true, error: err?.message || String(err) };
+  }
 };
 
 export async function POST(req: Request) {
@@ -150,9 +153,9 @@ export async function POST(req: Request) {
     const saved = await upsertCustomer(updatedCustomer);
     const posts = Array.isArray(saved.posts) ? saved.posts : [];
 
-    triggerDeployHookIfNeeded(previousPosts, normalized, (saved as any).deployHookUrl);
+    const hookResult = await triggerDeployHookIfNeeded(previousPosts, normalized, (saved as any).deployHookUrl);
 
-    return NextResponse.json({ success: true, posts });
+    return NextResponse.json({ success: true, posts, deployHook: hookResult });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error?.message || 'failed to save posts' }, { status: 500 });
   }

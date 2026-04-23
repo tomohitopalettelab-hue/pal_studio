@@ -229,6 +229,17 @@ export default function MainPage() {
   const [draftLength, setDraftLength] = useState(400);
   const [tagInput, setTagInput] = useState('');
 
+  // 画像ピッカーモーダル state
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const [imageTab, setImageTab] = useState<'search' | 'upload' | 'media' | 'generate'>('search');
+  const [imageSearchQuery, setImageSearchQuery] = useState('');
+  const [searchedImages, setSearchedImages] = useState<{ id: string; url: string; thumb: string; alt?: string; photographer?: string }[]>([]);
+  const [isSearchingImage, setIsSearchingImage] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState('');
+  const [generatedImageError, setGeneratedImageError] = useState('');
+  const pickerUploadRef = useRef<HTMLInputElement>(null);
+
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === selectedPostId) || null,
     [posts, selectedPostId],
@@ -346,6 +357,112 @@ export default function MainPage() {
       imageUrl: url,
       imageAlt: selectedPost.imageAlt || asset.originalName || '',
     });
+    setShowImagePicker(false);
+  };
+
+  // 画像ピッカー: URLを直接適用
+  const applyImageUrl = (url: string, alt?: string) => {
+    if (!selectedPost || !url) return;
+    updatePost(selectedPost.id, {
+      imageUrl: url,
+      imageAlt: alt || selectedPost.imageAlt || '',
+    });
+    setShowImagePicker(false);
+  };
+
+  // 画像検索
+  const handlePickerImageSearch = async () => {
+    if (!imageSearchQuery) return;
+    setIsSearchingImage(true);
+    try {
+      const res = await fetch('/api/search-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: imageSearchQuery }),
+      });
+      const data = await res.json();
+      setSearchedImages(data.images || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSearchingImage(false);
+    }
+  };
+
+  // AI画像生成
+  const handlePickerGenerateImage = async () => {
+    const prompt = String(imageSearchQuery || '').trim();
+    if (!prompt) {
+      setGeneratedImageError('画像生成プロンプトを入力してください。');
+      return;
+    }
+    setIsGeneratingImage(true);
+    setGeneratedImageError('');
+    setGeneratedImageUrl('');
+    try {
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&nologo=true&seed=${Date.now()}`;
+      await new Promise<void>((resolve, reject) => {
+        const img = new Image();
+        const timer = window.setTimeout(() => reject(new Error('画像生成がタイムアウトしました。')), 15000);
+        img.onload = () => { window.clearTimeout(timer); resolve(); };
+        img.onerror = () => { window.clearTimeout(timer); reject(new Error('画像の取得に失敗しました。')); };
+        img.src = url;
+      });
+      setGeneratedImageUrl(url);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '画像生成に失敗しました。';
+      setGeneratedImageError(message);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  // ピッカーからアップロード
+  const handlePickerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0 || !customerId || !selectedPost) return;
+    setIsUploadingMedia(true);
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach((f) => formData.append('files', f));
+      formData.append('paletteId', customerId);
+      const res = await fetch('/api/media/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'アップロード失敗');
+      // 最新メディアを取得して最新のものを選択
+      await loadMediaAssets(customerId);
+      const firstUploaded = (data?.assets || [])[0];
+      if (firstUploaded?.url) {
+        updatePost(selectedPost.id, {
+          imageUrl: String(firstUploaded.url),
+          imageAlt: selectedPost.imageAlt || firstUploaded.originalName || '',
+        });
+        setShowImagePicker(false);
+      }
+    } catch (e) {
+      console.error(e);
+      alert(e instanceof Error ? e.message : 'アップロード失敗');
+    } finally {
+      setIsUploadingMedia(false);
+      event.target.value = '';
+    }
+  };
+
+  // 画像ピッカーを開く
+  const openImagePicker = () => {
+    setImageTab('search');
+    setImageSearchQuery('');
+    setSearchedImages([]);
+    setGeneratedImageUrl('');
+    setGeneratedImageError('');
+    setShowImagePicker(true);
+    if (canUseMedia) loadMediaAssets(customerId);
+  };
+
+  // カバー画像を削除
+  const clearCoverImage = () => {
+    if (!selectedPost) return;
+    updatePost(selectedPost.id, { imageUrl: '', imageAlt: '' });
   };
 
   useEffect(() => {
@@ -916,17 +1033,65 @@ if (isLoading) {
 
                   {/* Media Section */}
                   <div className="p-8 bg-gradient-to-br from-white to-[#F0FDFF] rounded-[2rem] border border-white shadow-inner space-y-6">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-4 bg-[#00B7CE] rounded-full" />
-                      <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-widest">メディア</h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-4 bg-[#00B7CE] rounded-full" />
+                        <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-widest">カバー画像</h3>
+                      </div>
+                      <button
+                        onClick={openImagePicker}
+                        className="px-4 py-2 rounded-full text-[11px] font-black text-white bg-[#00B7CE] hover:bg-[#009FB3] shadow-sm"
+                      >
+                        {selectedPost.imageUrl ? '画像を変更' : '+ 画像を選択'}
+                      </button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    {/* 選択中画像のプレビュー */}
+                    {selectedPost.imageUrl ? (
+                      <div className="relative rounded-2xl overflow-hidden border-2 border-[#00B7CE] bg-white group">
+                        <img
+                          src={selectedPost.imageUrl}
+                          alt={selectedPost.imageAlt || 'cover'}
+                          className="w-full aspect-video object-cover"
+                        />
+                        <div className="absolute top-3 left-3 bg-[#00B7CE] text-white text-[10px] font-black px-3 py-1 rounded-full flex items-center gap-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                          選択中
+                        </div>
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <button
+                            onClick={openImagePicker}
+                            className="px-3 py-1 rounded-full text-[10px] font-bold bg-white/90 text-slate-700 hover:bg-white shadow"
+                          >
+                            変更
+                          </button>
+                          <button
+                            onClick={clearCoverImage}
+                            className="px-3 py-1 rounded-full text-[10px] font-bold bg-red-500 text-white hover:bg-red-600 shadow"
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={openImagePicker}
+                        className="w-full aspect-video rounded-2xl border-2 border-dashed border-slate-300 bg-white/50 hover:bg-white hover:border-[#00B7CE] transition-all flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-[#00B7CE]"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <span className="text-[11px] font-bold">クリックして画像を選択</span>
+                        <span className="text-[10px] opacity-70">素材検索・アップロード・メディア・AI生成</span>
+                      </button>
+                    )}
+
+                    {/* Alt & URL */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-[11px] font-bold text-slate-400 ml-1">カバー画像URL</label>
+                        <label className="text-[11px] font-bold text-slate-400 ml-1">画像URL（手動入力も可）</label>
                         <input
                           value={selectedPost.imageUrl || ''}
                           onChange={(event) => updatePost(selectedPost.id, { imageUrl: event.target.value })}
-                          className="w-full px-5 py-3 bg-white border border-slate-100 rounded-xl text-sm outline-none focus:border-[#00B7CE]"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-100 rounded-xl text-xs outline-none focus:border-[#00B7CE]"
                           placeholder="https://..."
                         />
                       </div>
@@ -935,81 +1100,10 @@ if (isLoading) {
                         <input
                           value={selectedPost.imageAlt || ''}
                           onChange={(event) => updatePost(selectedPost.id, { imageAlt: event.target.value })}
-                          className="w-full px-5 py-3 bg-white border border-slate-100 rounded-xl text-sm outline-none focus:border-[#00B7CE]"
+                          className="w-full px-4 py-2.5 bg-white border border-slate-100 rounded-xl text-xs outline-none focus:border-[#00B7CE]"
                           placeholder="画像の説明"
                         />
                       </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">メディア一覧</div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => loadMediaAssets(customerId)}
-                            disabled={!canUseMedia || mediaLoading}
-                            className="px-3 py-1.5 rounded-full text-[10px] font-black border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-50"
-                          >
-                            更新
-                          </button>
-                          <button
-                            onClick={() => mediaInputRef.current?.click()}
-                            disabled={!canUseMedia || isUploadingMedia}
-                            className="px-3.5 py-1.5 rounded-full text-[10px] font-black text-white bg-[#00B7CE] hover:bg-[#009FB3] disabled:opacity-50"
-                          >
-                            {isUploadingMedia ? 'アップロード中' : 'アップロード'}
-                          </button>
-                          <input
-                            ref={mediaInputRef}
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleMediaFileChange}
-                            className="hidden"
-                          />
-                        </div>
-                      </div>
-
-                      {!canUseMedia && (
-                        <div className="text-[11px] text-slate-400">顧客IDの認証後に利用できます。</div>
-                      )}
-
-                      {canUseMedia && mediaLoading && (
-                        <div className="text-[11px] text-slate-400">読み込み中...</div>
-                      )}
-
-                      {canUseMedia && !mediaLoading && mediaError && (
-                        <div className="text-[11px] text-red-500">{mediaError}</div>
-                      )}
-
-                      {canUseMedia && !mediaLoading && !mediaError && imageAssets.length === 0 && (
-                        <div className="text-[11px] text-slate-400">まだメディアがありません。</div>
-                      )}
-
-                      {canUseMedia && !mediaLoading && imageAssets.length > 0 && (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                          {imageAssets.map((asset) => (
-                            <button
-                              key={asset.id}
-                              type="button"
-                              onClick={() => handleMediaSelect(asset)}
-                              className="group text-left rounded-2xl border border-slate-100 bg-white shadow-sm hover:shadow-md transition overflow-hidden"
-                            >
-                              <div className="aspect-[4/3] bg-slate-100">
-                                <img
-                                  src={asset.url}
-                                  alt={asset.originalName || 'media'}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <div className="px-3 py-2">
-                                <p className="text-[10px] font-bold text-slate-600 truncate">{asset.originalName || asset.fileName}</p>
-                                <p className="text-[9px] text-slate-400">{formatBytes(Number(asset.sizeBytes || 0))}</p>
-                                <p className="text-[9px] text-[#00B7CE] font-bold mt-1">この画像を設定</p>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
 
@@ -1090,6 +1184,180 @@ if (isLoading) {
           </section>
         </div>
       </div>
+
+      {/* 画像ピッカーモーダル */}
+      {showImagePicker && (
+        <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="p-4 border-b flex justify-between items-center bg-slate-50">
+              <h3 className="font-black text-sm uppercase tracking-widest text-slate-700">画像を選択</h3>
+              <button onClick={() => setShowImagePicker(false)} className="p-2 hover:bg-slate-200 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div className="flex border-b">
+              {[
+                { id: 'search', label: '素材検索 (無料)' },
+                { id: 'upload', label: 'アップロード' },
+                { id: 'media', label: 'メディア' },
+                { id: 'generate', label: 'AI生成' },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setImageTab(t.id as any)}
+                  className={`flex-1 py-3 text-[11px] font-black uppercase tracking-wider ${imageTab === t.id ? 'border-b-2 border-[#00B7CE] text-[#00B7CE] bg-cyan-50' : 'text-slate-500 hover:bg-slate-50'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 bg-slate-50">
+              {/* 素材検索 */}
+              {imageTab === 'search' && (
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={imageSearchQuery}
+                      onChange={(e) => setImageSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handlePickerImageSearch()}
+                      placeholder="キーワード (例: cafe, office, nature)"
+                      className="flex-1 p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#00B7CE]"
+                    />
+                    <button onClick={handlePickerImageSearch} disabled={isSearchingImage} className="px-6 bg-[#00B7CE] text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#009FB3] disabled:opacity-50">
+                      {isSearchingImage ? '検索中...' : '検索'}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {searchedImages.map((img) => (
+                      <button
+                        key={img.id}
+                        onClick={() => applyImageUrl(img.url, img.alt || imageSearchQuery)}
+                        className="group relative aspect-video bg-slate-200 rounded-lg overflow-hidden hover:ring-2 ring-[#00B7CE] transition-all"
+                      >
+                        <img src={img.thumb} alt={img.alt || ''} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                  {searchedImages.length === 0 && !isSearchingImage && (
+                    <p className="text-center text-xs text-slate-400 py-8">キーワードで無料素材(Pexels等)を検索</p>
+                  )}
+                </div>
+              )}
+
+              {/* アップロード */}
+              {imageTab === 'upload' && (
+                <div className="space-y-4">
+                  <div
+                    onClick={() => pickerUploadRef.current?.click()}
+                    className="p-10 border-2 border-dashed border-slate-300 rounded-2xl text-center cursor-pointer hover:border-[#00B7CE] hover:bg-white transition-all"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" className="mx-auto mb-3 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p className="text-sm font-bold text-slate-600">{isUploadingMedia ? 'アップロード中...' : 'クリックしてファイルを選択'}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">画像ファイル（PNG, JPG, WebP等）</p>
+                  </div>
+                  <input
+                    ref={pickerUploadRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handlePickerUpload}
+                    className="hidden"
+                  />
+                  {!canUseMedia && (
+                    <p className="text-[11px] text-slate-400 text-center">顧客IDの認証後に利用できます。</p>
+                  )}
+                </div>
+              )}
+
+              {/* メディア */}
+              {imageTab === 'media' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">アップロード済み画像</p>
+                    <button
+                      onClick={() => loadMediaAssets(customerId)}
+                      disabled={!canUseMedia || mediaLoading}
+                      className="px-3 py-1 rounded-full text-[10px] font-black border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      更新
+                    </button>
+                  </div>
+                  {!canUseMedia && <p className="text-[11px] text-slate-400">顧客IDの認証後に利用できます。</p>}
+                  {canUseMedia && mediaLoading && <p className="text-[11px] text-slate-400">読み込み中...</p>}
+                  {canUseMedia && !mediaLoading && mediaError && <p className="text-[11px] text-red-500">{mediaError}</p>}
+                  {canUseMedia && !mediaLoading && !mediaError && imageAssets.length === 0 && (
+                    <p className="text-[11px] text-slate-400">まだメディアがありません。アップロードタブから追加してください。</p>
+                  )}
+                  {canUseMedia && !mediaLoading && imageAssets.length > 0 && (
+                    <div className="grid grid-cols-3 gap-3">
+                      {imageAssets.map((asset) => {
+                        const isSelected = selectedPost?.imageUrl === asset.url;
+                        return (
+                          <button
+                            key={asset.id}
+                            onClick={() => handleMediaSelect(asset)}
+                            className={`group relative aspect-video bg-slate-200 rounded-lg overflow-hidden transition-all ${isSelected ? 'ring-4 ring-[#00B7CE]' : 'hover:ring-2 hover:ring-[#00B7CE]'}`}
+                          >
+                            <img src={asset.url} alt={asset.originalName || ''} className="w-full h-full object-cover" />
+                            {isSelected && (
+                              <div className="absolute top-1 right-1 bg-[#00B7CE] text-white rounded-full p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* AI生成 */}
+              {imageTab === 'generate' && (
+                <div className="space-y-4">
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 text-[11px] text-slate-600">
+                    <strong className="text-[#00B7CE]">AI生成 (Beta):</strong> 理想の画像が見つからない場合に利用してください。プロンプトに基づいて画像を生成します。
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={imageSearchQuery}
+                      onChange={(e) => setImageSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handlePickerGenerateImage()}
+                      placeholder="例: 夕焼けの海沿いのカフェの外観、水彩画風"
+                      className="flex-1 p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#00B7CE]"
+                    />
+                    <button
+                      onClick={handlePickerGenerateImage}
+                      disabled={isGeneratingImage}
+                      className="px-6 bg-[#00B7CE] text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#009FB3] disabled:opacity-50"
+                    >
+                      {isGeneratingImage ? '生成中...' : '生成'}
+                    </button>
+                  </div>
+                  {generatedImageError && <p className="text-[11px] text-red-500">{generatedImageError}</p>}
+                  {generatedImageUrl && (
+                    <div className="space-y-2">
+                      <img src={generatedImageUrl} alt="generated" className="w-full rounded-xl" />
+                      <button
+                        onClick={() => applyImageUrl(generatedImageUrl, imageSearchQuery)}
+                        className="w-full py-3 bg-[#00B7CE] text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#009FB3]"
+                      >
+                        この画像を使用
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

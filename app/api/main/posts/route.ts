@@ -89,12 +89,24 @@ export async function GET(req: Request) {
 }
 
 /**
- * 公開状態が変化した投稿がある場合のみ、顧客ごとに登録された
+ * 公開状態や公開中の投稿の中身が変化した場合のみ、顧客ごとに登録された
  * Vercel Deploy Hook を呼び出して公開サイトを再ビルドする。
  *
  * NOTE: Vercel serverless では レスポンス送信後に fire-and-forget Promise が
  * 終了前に kill されるため、この関数は await で同期待ちする必要がある。
  */
+const POST_COMPARE_KEYS: (keyof PostItem)[] = [
+  'title', 'slug', 'bodyHtml', 'bodyText', 'excerpt',
+  'status', 'postType', 'tags', 'publishedAt', 'imageUrl', 'imageAlt',
+];
+
+const postContentChanged = (prev: PostItem, next: PostItem): boolean => {
+  for (const key of POST_COMPARE_KEYS) {
+    if (JSON.stringify(prev[key] ?? null) !== JSON.stringify(next[key] ?? null)) return true;
+  }
+  return false;
+};
+
 const triggerDeployHookIfNeeded = async (
   previousPosts: PostItem[],
   nextPosts: PostItem[],
@@ -105,8 +117,10 @@ const triggerDeployHookIfNeeded = async (
   const changed = nextPosts.some((p) => {
     const prev = prevMap.get(p.id);
     if (!prev) return p.status === 'published';
-    if (prev.status !== p.status) return true;
-    if (p.status === 'published' && (prev.bodyHtml !== p.bodyHtml || prev.title !== p.title || prev.slug !== p.slug)) return true;
+    // どちらかが published で、内容に差分があれば再ビルド
+    if (prev.status === 'published' || p.status === 'published') {
+      return postContentChanged(prev, p);
+    }
     return false;
   });
   const removed = previousPosts.some((p) => p.status === 'published' && !nextPosts.find((n) => n.id === p.id));

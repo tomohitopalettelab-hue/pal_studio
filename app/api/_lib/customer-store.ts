@@ -95,7 +95,7 @@ export const readCustomers = async (): Promise<CustomerRecord[]> => {
 
 // CMS-owned fields on the payload that non-CMS callers (chat hearing, save-customer, etc.)
 // must not silently wipe. If a caller doesn't pass them, we preserve whatever is already in the DB.
-const CMS_OWNED_FIELDS = ['publicSlug', 'publicOrigins', 'posts'] as const;
+const CMS_OWNED_FIELDS = ['publicSlug', 'publicOrigins', 'posts', 'deployHookUrl'] as const;
 
 const fetchExistingPayload = async (id: string, customerId: string): Promise<Record<string, any> | null> => {
   const byId = await sql`SELECT payload FROM customers WHERE id = ${id} LIMIT 1`;

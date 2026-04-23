@@ -88,6 +88,41 @@ export async function GET(req: Request) {
   }
 }
 
+/**
+ * 公開状態が変化した投稿がある場合のみ、顧客ごとに登録された
+ * Vercel Deploy Hook を呼び出して公開サイトを再ビルドする。
+ * fire-and-forget（レスポンスをブロックしない）。
+ */
+const triggerDeployHookIfNeeded = (
+  previousPosts: PostItem[],
+  nextPosts: PostItem[],
+  deployHookUrl: string | undefined,
+) => {
+  if (!deployHookUrl) return;
+  const prevMap = new Map(previousPosts.map((p) => [p.id, p]));
+  const changed = nextPosts.some((p) => {
+    const prev = prevMap.get(p.id);
+    if (!prev) return p.status === 'published';
+    if (prev.status !== p.status) return true;
+    if (p.status === 'published' && (prev.bodyHtml !== p.bodyHtml || prev.title !== p.title || prev.slug !== p.slug)) return true;
+    return false;
+  });
+  const removed = previousPosts.some((p) => p.status === 'published' && !nextPosts.find((n) => n.id === p.id));
+  if (!changed && !removed) return;
+
+  void fetch(deployHookUrl, { method: 'POST' })
+    .then((res) => {
+      if (!res.ok) {
+        console.error(`[deploy-hook] non-OK response: ${res.status}`);
+      } else {
+        console.log('[deploy-hook] triggered successfully');
+      }
+    })
+    .catch((err) => {
+      console.error('[deploy-hook] failed:', err?.message || err);
+    });
+};
+
 export async function POST(req: Request) {
   try {
     const customer = await getSessionCustomer(req);
@@ -105,6 +140,7 @@ export async function POST(req: Request) {
       normalizePost(post, `post-${Date.now()}-${index}`),
     );
 
+    const previousPosts: PostItem[] = Array.isArray((customer as any).posts) ? (customer as any).posts : [];
     const updatedCustomer = {
       ...customer,
       posts: normalized,
@@ -113,6 +149,8 @@ export async function POST(req: Request) {
 
     const saved = await upsertCustomer(updatedCustomer);
     const posts = Array.isArray(saved.posts) ? saved.posts : [];
+
+    triggerDeployHookIfNeeded(previousPosts, normalized, (saved as any).deployHookUrl);
 
     return NextResponse.json({ success: true, posts });
   } catch (error: any) {
